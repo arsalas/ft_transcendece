@@ -1,0 +1,69 @@
+version: '3.7'
+
+services:
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+      args:
+        database_version: ${POSTGRE_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-database
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - database_volume:/var/lib/mysql
+    ports:
+      - "${BBDD_PORT}:5432"
+    expose:
+      - "5432"
+    restart: always
+    networks:
+      - transcendence
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        backend_version: ${NODE_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-backend
+    ports:
+      - "${BACKEND_PORT}:3000"
+    expose:
+      - "3000"
+    volumes:
+      - ./backend:/app
+      - backend_volume:/app/node_modules
+    networks:
+      - transcendence
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+       web_version: ${NODE_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-web
+    ports:
+      - "${WEB_PORT}:5173"
+    expose:
+      - "5173"
+    volumes:
+      - ./web:/app
+      - web_volume:/app/node_modules
+    networks:
+      - transcendence
+ 
+volumes:
+  database_volume:
+    external: false
+  backend_volume:
+    external: false
+  web_volume:
+    external: false
+
+networks:
+  transcendence:
+    driver: bridge
