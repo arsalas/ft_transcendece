@@ -1,6 +1,7 @@
-ARG database_version
+# ARG database_version
 
-FROM postgres:$database_version
+# FROM postgres:${database_version}
+FROM postgres:alpine3.17
 
 #ENV POSTGRES_PASSWORD docker
 #ENV POSTGRES_DB world
