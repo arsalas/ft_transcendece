@@ -11,7 +11,7 @@ Surprise
 `Rigor`
 `Group & interpersonal`
 
-### Docker run server
+### Docker run containers
 ```
 docker compose up -d
 ```
