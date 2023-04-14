@@ -10,3 +10,8 @@ Surprise
 `Web`
 `Rigor`
 `Group & interpersonal`
+
+### Docker run server
+```
+docker compose up -d
+```
