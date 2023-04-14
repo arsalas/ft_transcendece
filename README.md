@@ -9,5 +9,4 @@ Surprise
 ## Skills
 `Web`
 `Rigor`
-`Unix`
 `Group & interpersonal`
