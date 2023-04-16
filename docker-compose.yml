@@ -5,14 +5,12 @@ services:
     build:
       context: ./database
       dockerfile: Dockerfile
-      args:
-        database_version: ${POSTGRE_VERSION}
     container_name: ${COMPOSE_PROJECT_NAME}-database
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      # - ./database:/docker-entrypoint-initdb.d
       - database_volume:/var/lib/postgresql
       - database_data_volume:/var/lib/postgresql/data
     ports:
@@ -27,8 +25,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        backend_version: ${NODE_VERSION}
     container_name: ${COMPOSE_PROJECT_NAME}-backend
     ports:
       - "${BACKEND_PORT}:3000"
@@ -44,8 +40,6 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
-      args:
-       web_version: ${NODE_VERSION}
     container_name: ${COMPOSE_PROJECT_NAME}-web
     ports:
       - "${WEB_PORT}:5173"
