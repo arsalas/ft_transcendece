@@ -2,10 +2,8 @@ version: '3.7'
 
 services:
   database:
-    build:
-      context: ./database
-      dockerfile: Dockerfile
-    container_name: ${COMPOSE_PROJECT_NAME}-database
+    image: postgres:alpine3.17
+    container_name: ${COMPOSE_PROJECT_NAME}_database
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -25,7 +23,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ${COMPOSE_PROJECT_NAME}-backend
+    container_name: ${COMPOSE_PROJECT_NAME}_backend
     ports:
       - "${BACKEND_PORT}:3000"
     expose:
@@ -40,7 +38,7 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
-    container_name: ${COMPOSE_PROJECT_NAME}-web
+    container_name: ${COMPOSE_PROJECT_NAME}_web
     ports:
       - "${WEB_PORT}:5173"
     expose:
