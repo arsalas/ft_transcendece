@@ -24,6 +24,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}_backend
+    depends_on:
+      - database
     ports:
       - "${BACKEND_PORT}:3000"
     expose:
@@ -57,7 +59,11 @@ volumes:
   backend_volume:
     external: false
   web_volume:
-    external: false
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './web/node_modules'
 
 networks:
   transcendence:

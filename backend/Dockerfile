@@ -7,5 +7,6 @@ COPY package.json .
 RUN yarn
 
 EXPOSE 3000
+ENV CHOKIDAR_USEPOLLING=true
 
 CMD ["yarn", "start:dev"]

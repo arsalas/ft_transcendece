@@ -10,12 +10,13 @@ import { UserModule } from './user/user.module';
 		host: 'database',
 		port: 5432,
 		username: 'root',
-		password: '$42transcendence$',
+		password: 'trascendencepass',
 		database: 'transcendence',
 		entities: [__dirname + '/**/*.entity{.ts,.js}'],
 		synchronize: true
 	}), UserModule],
 	controllers: [AppController],
 	providers: [AppService],
+	
 })
 export class AppModule { }
