@@ -59,11 +59,12 @@ volumes:
   backend_volume:
     external: false
   web_volume:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './web/node_modules'
+    external: false
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: './web/node_modules'
 
 networks:
   transcendence:
