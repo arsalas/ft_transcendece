@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { InjectRepository } from '@nestjs/typeorm';
+import axios, { AxiosResponse } from 'axios';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { IOauth, IUser42 } from './interfaces';
 
 @Injectable()
 export class UserService {
 
+  constructor(@InjectRepository(User) private userRepository: Repository<User>){}
 
   async signIn(code: string) {
     try {
@@ -17,11 +22,22 @@ export class UserService {
         redirect_uri: "http://localhost"
       }
       console.log(body)
-      const response:Axios<IOauth> = await axios.post("https://api.intra.42.fr/oauth/token", body);
-      console.log(response)
+
+      const response:AxiosResponse<IOauth> = await axios.post("https://api.intra.42.fr/oauth/token", body);
+      const data = response.data;
+      const resp:AxiosResponse<IUser42> = await axios.get("https://api.intra.42.fr/v2/me", {headers: {Authorization: "Bearer " + data.access_token}})
+
+      const user = await this.userRepository.findBy({login: resp.data.login});
+      if (user.length == 0) console.log("no existe usuario");
+      // No existe el usuario
+      else console.log("existe usuario")
+      //existe el usuario
+      console.log(user);
+
     } catch (error) {
       console.log("ERROR");
-      // console.log({error});
+      console.log(error);
+      console.log(error.response.data);
     }
 
     // 2 - Buscar en nuestra BBDD si existe el usuario
