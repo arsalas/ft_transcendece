@@ -1,5 +1,15 @@
 import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createPinia } from 'pinia';
 
-createApp(App).mount('#app')
+import App from './App.vue'
+import router from './router';
+
+import 'animate.css'  // you need to require the css somewhere
+import './styles/main.scss'
+
+const pinia = createPinia();
+
+createApp(App)
+	.use(pinia)
+	.use(router)
+	.mount('#app')
