@@ -1,4 +1,9 @@
-<template></template>
+<template>
+
+    {{ user }}
+
+    <img :src="user.image" alt="" srcset="">
+</template>
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'

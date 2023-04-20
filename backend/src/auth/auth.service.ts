@@ -19,7 +19,7 @@ export class AuthService {
 				grant_type: "authorization_code",
 				client_secret: "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",
 				code, // su valor va a ser el mismo que la variable
-				redirect_uri: "http://localhost"
+				redirect_uri: "http://localhost:5173/auth/confirm"
 			}
 			console.log(body)
 
@@ -50,7 +50,7 @@ export class AuthService {
 			//existe el usuario
 			const payload = { id: user.id, name: user.login };
 			const token = this.jwtService.sign(payload);
-			return {token, user}
+			return {token, user, image: user42.image.link}
 
 
 		} catch (error) {
