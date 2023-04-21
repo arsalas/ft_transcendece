@@ -12,8 +12,8 @@ export class AuthService {
 	constructor(@InjectRepository(User) private userRepository: Repository<User>, private jwtService: JwtService) { }
 
 	private async signIn42(code: string):Promise<IUser42> {
+		// 1 - Pedir a la api de 42 que identifique al usuario
 		try {
-			// 1 - Pedir ala api de 42 que identifique al usuario
 			const body = {
 				client_id: "u-s4t2ud-002f8307ed61fa03609f72d495d3a6e7efe6c446b08744c9b33e4ea27e613829",
 				grant_type: "authorization_code",
@@ -35,10 +35,11 @@ export class AuthService {
 	}
 
 	async signIn(code: string) {
+		// Intentamos hacer el signIn
 		try {
 			const user42 = await this.signIn42(code);
 			let user = await this.userRepository.findOneBy({ login: user42.login });
-			// no existe el usuario
+			// Si no existe el usuario, se indica y se crea
 			if (!user) {
 				// TODO habra que crear todos los registros de todas las tablas del usuario con una transaccion
 				console.log("no existe usuario");
@@ -47,7 +48,7 @@ export class AuthService {
 				})
 				user = await this.userRepository.save(userRepo);
 			}
-			//existe el usuario
+			// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
 			const payload = { id: user.id, name: user.login };
 			const token = this.jwtService.sign(payload);
 			return {token, user, image: user42.image.link}
