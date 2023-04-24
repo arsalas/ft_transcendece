@@ -22,4 +22,11 @@ import { signIn } from '../api'
 
 
 </script>
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+
+    .title {
+        flex-direction: row-reverse;
+        justify-content: center;
+        align-items: flex-end;
+        }
+</style>
