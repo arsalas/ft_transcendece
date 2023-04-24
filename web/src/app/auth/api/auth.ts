@@ -15,4 +15,3 @@ export const signIn = async (code: string): Promise<ISignin> => {
     }
 
 }
-

@@ -1,10 +1,6 @@
 <template>
-    <div class="section">
-
-        AUTH LAYOUT
-
+    <div>
         <RouterView/>
-
     </div>
 </template>
 <script lang='ts' setup>
