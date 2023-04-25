@@ -5,6 +5,12 @@ import authRoutes from '../app/auth/router'
 
 const routes: RouteRecordRaw[] = [
     ...authRoutes,
+    // TODO borrar la ruta cuabndo este terminado
+    {
+        path: '/chat',
+        name: 'chat',
+        component: () => import(/* webpackChunkName: "account" */'../app/chat/components/Chat.vue'),
+    },
 ];
 
 const router = createRouter({
