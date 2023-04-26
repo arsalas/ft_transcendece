@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosResponse } from 'axios';
-import { Repository, getConnection } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User, Profile } from '../user/entities';
 import { IOauth, IUser42 } from './interfaces';
 import { JwtService } from '@nestjs/jwt'
@@ -11,8 +11,9 @@ export class AuthService {
 
 	constructor(
 		@InjectRepository(User) private userRepository: Repository<User>,
-		@InjectRepository(Profile) private profileRepository: Repository<User>,
-		private jwtService: JwtService) { }
+		@InjectRepository(Profile) private profileRepository: Repository<Profile>,
+		private jwtService: JwtService
+	) { }
 
 	private async signIn42(code: string): Promise<IUser42> {
 		// 1 - Pedir a la api de 42 que identifique al usuario
@@ -44,8 +45,6 @@ export class AuthService {
 			let user = await this.userRepository.findOneBy({ login: user42.login });
 			// Si no existe el usuario, se indica y se crea
 			if (!user) {
-				// TODO habra que crear todos los registros de todas las tablas del usuario con una transaccion
-				//TODO crear tambien un profile
 				console.log("no existe usuario");
 				const userRepo = this.userRepository.create({
 					login: user42.login
@@ -54,40 +53,14 @@ export class AuthService {
 					login: user42.login,
 
 				})
-				// user = await this.userRepository.save(userRepo);
-
-
-				// get a connection and create a new query runner 
-				const connection = getConnection();
-				const queryRunner = connection.createQueryRunner();
-
-				// establish real database connection using our new query runner 
-				await queryRunner.connect();
-
-				// a new transaction:
-				await queryRunner.startTransaction()
-
-				try {
-					// execute some operations on this transaction:
-					user = await queryRunner.manager.save(userRepo)
-					const profile = await queryRunner.manager.save(profileRepo)
-
-					// commit transaction:
-					await queryRunner.commitTransaction()
-				} catch (err) {
-					// if we have errors, rollback changes we made
-					await queryRunner.rollbackTransaction()
-				} finally {
-					// release query runner which is manually created:
-					await queryRunner.release()
-				}
+				user = await this.userRepository.save(userRepo);
+				const profile = await this.profileRepository.save(profileRepo);
 			}
 			// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
 			const payload = { name: user.login };
 			const token = this.jwtService.sign(payload);
-			return { token, user, image: user42.image.link }
-
-
+			const profile = await this.profileRepository.findOneBy({ login: user42.login });
+			return { token, user, image: user42.image.link, profile }
 		} catch (error) {
 			console.log("ERROR");
 			console.log(error);
