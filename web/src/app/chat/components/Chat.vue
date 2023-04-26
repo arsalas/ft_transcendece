@@ -9,16 +9,21 @@ date.toDateString(); -->
             <div class="conversation-start">
                 <span>Today, 9:00 PM</span>
             </div>
-
+            
             <div class="bubble" :class="chat.login == 'amurcia-' ? 'me' : 'other'" v-for="chat in chats">
-                <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div>
+                <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div> <!-- si el usuario no soy yo, printa el nombre del login  -->
                 {{ chat.message }}
-
             </div>
-
-
+            
+            
+            <button @click="closeChat">CLOSE</button>
             <button @click="addMsg">ADD</button>
-
+            
+         <!--    <form @submit.prevent="Send msg"></form>
+            <input class="input" type="text"> -->
+            <form @submit.prevent="sendMsg()">
+                <input v-model.trim="message" type="text" placeHolder="Enviar mensaje" class="input">
+            </form>
         </div>
     </div>
 </template>
@@ -28,13 +33,38 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 interface IChat {
+    open: boolean;
     login: string;
     message: string;
     date: string;
 }
 
+const message = ref<string>("");
+
+const sendMsg = () => {
+    if (message.value.length > 0) {
+        chats.value.push({
+            open: true,
+            login: "amurcia-",
+            message: message.value,
+            date: "10.05.2023",
+        })
+        message.value = ""
+    }
+}
+
+const closeChat = () => {
+    chats.value.push({
+        open: true,
+        login: "amurcia-",
+        message: "ADIOS!",
+        date: "10.05.2023",
+    })
+}
+
 const addMsg = () => {
     chats.value.push({
+        open: true,
         login: "amurcia-",
         message: "Hola Alberto",
         date: "10.05.2023",
@@ -43,11 +73,13 @@ const addMsg = () => {
 
 const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
     {
+        open: true,
         login: "amurcia-",
         message: "Hola Alberto",
         date: "10.05.2023",
     },
     {
+        open: true,
         login: "aramirez",
         message: "Hola Alicia",
         date: "11.05.2023",
@@ -75,7 +107,11 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
         overflow: auto;
         padding: 0.5rem;
 
-
+        & .input {
+            position: relative;
+            align-items: center;
+            vertical-align: bottom;
+        }
         & .conversation-start {
             position: relative;
             width: 100%;
@@ -101,7 +137,7 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             display: inline-block;
             clear: both;
             margin-bottom: 1rem;
-            padding: 1rem 1rem;
+            padding: 0.2rem 0.5rem;
             vertical-align: top;
             border-radius: 1rem;
             border-top-left-radius: 0rem;
@@ -113,6 +149,25 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
                 font-size: 0.8rem;
                 font-weight: bold;
             }
+        }
+
+        #message-input {
+            height: 3rem;
+            width: 70%;
+            border: 1px solid #8e8888;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        #send-button {
+            height: 30px;
+            width: 20%;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #35e93b;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
         }
 
         & .other {
