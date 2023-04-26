@@ -2,9 +2,11 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 
 import authRoutes from '../app/auth/router'
+import dashboardRoutes from '../app/dashboard/router'
 
 const routes: RouteRecordRaw[] = [
     ...authRoutes,
+    ...dashboardRoutes,
     // TODO borrar la ruta cuabndo este terminado
     {
         path: '/chat',

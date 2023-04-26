@@ -42,7 +42,7 @@ export class AuthService {
 		// Intentamos hacer el signIn
 		try {
 			const user42 = await this.signIn42(code);
-			let user = await this.userRepository.findOneBy({ login: user42.login });
+			let user: User = await this.userRepository.findOneBy({ login: user42.login });
 			// Si no existe el usuario, se indica y se crea
 			if (!user) {
 				console.log("no existe usuario");
@@ -59,8 +59,18 @@ export class AuthService {
 			// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
 			const payload = { name: user.login };
 			const token = this.jwtService.sign(payload);
-			const profile = await this.profileRepository.findOneBy({ login: user42.login });
-			return { token, user, image: user42.image.link, profile }
+			const profile: Profile = await this.profileRepository.findOneBy({ login: user42.login });
+			return {
+				token,
+				user: {
+					login: user.login,
+					avatar42: user42.image.link,
+					username: profile.username,
+					avatar: profile.avatar,
+					tfa: profile.tfa,
+					status: profile.status
+				}
+			}
 		} catch (error) {
 			console.log("ERROR");
 			console.log(error);
