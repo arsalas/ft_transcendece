@@ -16,7 +16,12 @@ const routes: RouteRecordRaw[] =
 					meta: { title: 'Profile' },
 					component: () => import(/* webpackChunkName: "create-contest" */'../pages/Profile.vue')
 				},
-				
+				{
+					path: '/chat',
+					meta: { title: 'Chats' },
+					name: 'chat',
+					component: () => import(/* webpackChunkName: "account" */'../pages/Chats.vue'),
+				},
 			]
 		},
 	]

@@ -7,12 +7,6 @@ import dashboardRoutes from '../app/dashboard/router'
 const routes: RouteRecordRaw[] = [
     ...authRoutes,
     ...dashboardRoutes,
-    // TODO borrar la ruta cuabndo este terminado
-    {
-        path: '/chat',
-        name: 'chat',
-        component: () => import(/* webpackChunkName: "account" */'../app/chat/components/Chat.vue'),
-    },
 ];
 
 const router = createRouter({

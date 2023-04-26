@@ -1,5 +1,5 @@
 <template>
-    <header>
+    <header class="navbar">
         <div class="left">
             <div class="brand">
                 <img src="../../../assets/pong logo.png" alt="">
@@ -7,9 +7,11 @@
             <nav>
                 <ul>
                     <li>
-                        <span class="icon">
-                            <i class="fa-sharp fa-solid fa-comments"></i>
-                        </span>
+                        <router-link :to="{ name: 'chat' }">
+                            <span class="icon">
+                                <i class="fa-sharp fa-solid fa-comments"></i>
+                            </span>
+                        </router-link>
                     </li>
                     <li>
                         <span class="icon">
@@ -22,9 +24,11 @@
                         </span>
                     </li>
                     <li>
-                        <span class="icon ">
-                            <i class="fa-solid fa-user"></i>
-                        </span>
+                        <router-link :to="{ name: 'profile' }">
+                            <span class="icon ">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                        </router-link>
                     </li>
                 </ul>
             </nav>
@@ -49,12 +53,14 @@
 <script lang='ts' setup>
 </script>
 <style lang='scss' scoped>
-header {
+.navbar {
     height: 60px;
     background-color: var(--color-bg-primary);
     display: flex;
     padding: 0rem 0rem;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
 }
 
 .left {
@@ -97,6 +103,15 @@ nav {
                 &:hover {
                     color: var(--color-primary)
                 }
+            }
+
+            & a {
+                color: var(--color-text-primary);
+            }
+
+            & .router-link-active {
+
+                color: var(--color-primary);
             }
 
         }

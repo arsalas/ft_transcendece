@@ -5,26 +5,51 @@ date.toDateString(); -->
 
 <template>
     <div class="chat-container">
+        <header>
+            <div class="left">
+                <div class="media-object">
+                    <img class="avatar" src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
+                        alt="">
+                    <div class="media-text">
+                        <div class="name">
+                            aramirez
+                        </div>
+                        <div class="status">
+                            conectado
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right">
+
+            </div>
+        </header>
         <div class="chat">
             <div class="conversation-start">
                 <span>Today, 9:00 PM</span>
             </div>
-            
+
             <div class="bubble" :class="chat.login == 'amurcia-' ? 'me' : 'other'" v-for="chat in chats">
-                <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div> <!-- si el usuario no soy yo, printa el nombre del login  -->
+                <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div>
+                <!-- si el usuario no soy yo, printa el nombre del login  -->
                 {{ chat.message }}
             </div>
-            
-            
-            <button @click="closeChat">CLOSE</button>
+
+
+            <!-- <button @click="closeChat">CLOSE</button>
             <button @click="addMsg">ADD</button>
-            
-         <!--    <form @submit.prevent="Send msg"></form>
+ -->
+            <!--    <form @submit.prevent="Send msg"></form>
             <input class="input" type="text"> -->
+
+        </div>
+
+        <footer>
             <form @submit.prevent="sendMsg()">
                 <input v-model.trim="message" type="text" placeHolder="Enviar mensaje" class="input">
             </form>
-        </div>
+        </footer>
+
     </div>
 </template>
 
@@ -91,17 +116,65 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
 
 <style lang='scss' scoped>
 .chat-container {
-    display: flex;
-    height: 100vh;
+    // display: flex;
+    // height: 100vh;
+    height: 100%;
+    width: 100%;
+    background-color: yellow;
     color: var(--color-text-primary);
+    display: flex;
+    flex-direction: column;
+
+
+    & header {
+        height: 50px;
+        background-color: green;
+
+        .left {
+            height: 100%;
+            padding: 0.2rem;
+
+            & .media-object {
+                height: 100%;
+                display: flex;
+
+                & .avatar {
+                    height: 100%;
+                    aspect-ratio: 1;
+                    border-radius: 50%;
+                }
+            }
+
+            & .media-text {
+                display: flex;
+                padding-left: 1rem;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+    }
+
+    & footer {
+        height: 50px;
+        background-color: pink;
+
+        & form,
+        input {
+            height: 100%;
+        }
+
+
+    }
 
 
     & .chat {
-        position: fixed;
-        bottom: 1rem;
-        left: 1rem;
-        height: 50vh;
-        width: calc((100vw) / 2);
+        // position: fixed;
+        // bottom: 1rem;
+        // left: 1rem;
+        // height: 50vh;
+        // width: calc((100vw) / 2);
+        flex: 1;
         background: rgb(193, 255, 250);
         border: 1px solid #333;
         overflow: auto;
@@ -111,7 +184,9 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             position: relative;
             align-items: center;
             vertical-align: bottom;
+
         }
+
         & .conversation-start {
             position: relative;
             width: 100%;
@@ -141,7 +216,6 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             vertical-align: top;
             border-radius: 1rem;
             border-top-left-radius: 0rem;
-            box-shadow: -1px 2px 0px rgb(0, 0, 0);
 
 
 
@@ -175,6 +249,8 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             color: rgba(0, 0, 128, 0.931);
             background-color: rgb(4, 223, 223);
             animation-name: slideFromLeft;
+            box-shadow: -1px 2px 0px rgba(0, 0, 128, 0.931);
+
 
         }
 
@@ -183,6 +259,8 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             color: rgb(115, 8, 115);
             background-color: rgb(255, 158, 255);
             animation-name: slideFromRight;
+            box-shadow: -1px 2px 0px rgb(115, 8, 115);
+
         }
     }
 
