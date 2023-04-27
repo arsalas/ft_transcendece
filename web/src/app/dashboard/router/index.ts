@@ -12,12 +12,26 @@ const routes: RouteRecordRaw[] =
 			children: [
 				{
 					path: 'profile',
-					name: 'profile',
+					name: 'profileLayout',
 					meta: { title: 'Profile' },
-					component: () => import(/* webpackChunkName: "create-contest" */'../pages/Profile.vue')
+					component: () => import(/* webpackChunkName: "create-contest" */'../layouts/Profile.vue'),
+					children: [
+						{
+							path: '',
+							name: 'profile',
+							meta: { title: 'Profile' },
+							component: () => import(/* webpackChunkName: "create-contest" */'../pages/profile/Profile.vue')
+						},
+						{
+							path: 'two-factor-auth',
+							meta: { title: 'Two-Factor Auth' },
+							name: 'twoFactorAuth',
+							component: () => import(/* webpackChunkName: "account" */'../pages/profile/TwoFactorAuth.vue'),
+						},
+					]
 				},
 				{
-					path: '/chat',
+					path: 'chat',
 					meta: { title: 'Chats' },
 					name: 'chat',
 					component: () => import(/* webpackChunkName: "account" */'../pages/Chats.vue'),

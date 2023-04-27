@@ -12,7 +12,7 @@ export class Profile {
 	avatar: string;
 
 	@Column({ default: false })
-	tfa: boolean;
+	twoFactorAuth: boolean;
 
 	@Column({ nullable: true })
 	status: string;

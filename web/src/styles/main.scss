@@ -5,7 +5,7 @@
 'themes/config';
 
 // Base stuff
-// @import 'base/base';
+@import 'base/base';
 
 // Layout-related sections
 // @import
@@ -13,11 +13,8 @@
 //   'layout/footer';
 
 // Components
-// @import 'components/actions',
-// 'components/box',
-// 'components/buttons',
-// 'components/tags',
-// 'components/loaders';
+@import 'components/buttons',
+'components/loaders';
 
 // 6. Page-specific styles
 // @import

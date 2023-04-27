@@ -67,7 +67,7 @@ export class AuthService {
 					avatar42: user42.image.link,
 					username: profile.username,
 					avatar: profile.avatar,
-					tfa: profile.tfa,
+					twoFactorAuth: profile.twoFactorAuth,
 					status: profile.status
 				}
 			}
