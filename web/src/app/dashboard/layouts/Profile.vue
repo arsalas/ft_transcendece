@@ -54,12 +54,12 @@ const handleChange = async (e: Event) => {
 <style lang='scss' scoped>
 .menu-options {
 	& ul {
-		border: 1px solid #333;
+		border: 1px solid var(--border-color);
 
 		& li {
 			padding: 0.6rem 1.2rem;
-			border-top: 1px solid #333;
-			border-left: 5px solid #333;
+			border-top: 1px solid var(--border-color);
+			border-left: 5px solid var(--border-color);
 			font-weight: 400;
 
 			&:first-child {

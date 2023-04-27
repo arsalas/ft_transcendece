@@ -3,27 +3,27 @@
 	transition: 300ms;
 }
 
-.button.is-primary {
-	background-color: var(--color-bg-btn-primary-default);
-	color: var(--color-text-btn);
-	transition: 300ms;
-	border-radius: var(--border-radius-btn);
+// .button.is-primary {
+// 	background-color: var(--color-bg-btn-primary-default);
+// 	color: var(--color-text-btn);
+// 	transition: 300ms;
+// 	border-radius: var(--border-radius-btn);
 	
-	&:hover {
-		background-color: var(--color-bg-btn-primary-hover);
-		color: var(--color-text-btn);
-	}
+// 	&:hover {
+// 		background-color: var(--color-bg-btn-primary-hover);
+// 		color: var(--color-text-btn);
+// 	}
 	
-	&:active {
-		background-color: var(--color-bg-btn-primary-active);
-		color: var(--color-text-btn);
-	}
+// 	&:active {
+// 		background-color: var(--color-bg-btn-primary-active);
+// 		color: var(--color-text-btn);
+// 	}
 	
-	&:disabled {
-		background-color: var(--color-bg-btn-primary-disabled);
-		color: var(--color-text-btn);
-	}
-	&:focus {
-		color: var(--color-text-btn);
-	}
-}
+// 	&:disabled {
+// 		background-color: var(--color-bg-btn-primary-disabled);
+// 		color: var(--color-text-btn);
+// 	}
+// 	&:focus {
+// 		color: var(--color-text-btn);
+// 	}
+// }

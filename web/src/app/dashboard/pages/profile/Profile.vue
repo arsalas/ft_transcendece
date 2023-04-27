@@ -79,7 +79,7 @@ const handleChange = async (e: Event) => {
 	border: 1px solid #333;
 
 	& header {
-		background-color: red;
+		background-color: var(--color-bg-primary);
 		padding: 0.5rem;
 		font-weight: bold;
 		font-size: 1.2rem;
@@ -87,6 +87,8 @@ const handleChange = async (e: Event) => {
 
 	& .body {
 		padding: 1.5rem;
+		// background-color: var(--color-bg-primary);
+		
 	}
 }
 </style>

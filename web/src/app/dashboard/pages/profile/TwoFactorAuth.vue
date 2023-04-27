@@ -108,10 +108,10 @@ const handleChange = async (e: Event) => {
 }
 
 .container-profile {
-	border: 1px solid #333;
+	border: 1px solid var(--border-color);
 
 	& header {
-		background-color: red;
+		background-color: var(--color-bg-primary);
 		padding: 0.5rem;
 		font-weight: bold;
 		font-size: 1.2rem;
@@ -124,7 +124,7 @@ const handleChange = async (e: Event) => {
 
 	.qr {
 		padding: 2rem;
-		background-color: red;
+		background-color: var(--color-bg-primary);
 
 		& img {
 			aspect-ratio: 1;
