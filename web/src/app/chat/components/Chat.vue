@@ -7,18 +7,8 @@ date.toDateString(); -->
     <div class="chat-container">
         <header>
             <div class="left">
-                <div class="media-object">
-                    <img class="avatar" src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
-                        alt="">
-                    <div class="media-text">
-                        <div class="name">
-                            aramirez
-                        </div>
-                        <div class="status">
-                            conectado
-                        </div>
-                    </div>
-                </div>
+                <MediaObject avatar="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg" status="conectado" username="aramirez" />
+
             </div>
             <div class="right">
 
@@ -42,6 +32,7 @@ date.toDateString(); -->
             <!--    <form @submit.prevent="Send msg"></form>
             <input class="input" type="text"> -->
 
+            <!-- aqui -->
         </div>
 
         <footer>
@@ -55,7 +46,9 @@ date.toDateString(); -->
 
 <script lang='ts' setup>
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
+
+const MediaObject = defineAsyncComponent(() => import('../../common/components/MediaObject.vue'))
 
 interface IChat {
     open: boolean;
@@ -77,6 +70,15 @@ const sendMsg = () => {
         message.value = ""
     }
 }
+chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+
+window.setInterval(function() {
+  var elem = document.getElementById('data');
+  elem.scrollTop = elem.scrollHeight;
+}, 5000);
+
+// var objDiv = document.getElementById("your_div");
+// objDiv.scrollTop = objDiv.scrollHeight;
 
 const closeChat = () => {
     chats.value.push({
@@ -128,29 +130,11 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
 
     & header {
         height: 50px;
-        background-color: green;
+        background-color: var(--color-bg-primary);
 
         .left {
             height: 100%;
             padding: 0.2rem;
-
-            & .media-object {
-                height: 100%;
-                display: flex;
-
-                & .avatar {
-                    height: 100%;
-                    aspect-ratio: 1;
-                    border-radius: 50%;
-                }
-            }
-
-            & .media-text {
-                display: flex;
-                padding-left: 1rem;
-                flex-direction: column;
-                justify-content: center;
-            }
         }
 
     }
@@ -163,8 +147,6 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
         input {
             height: 100%;
         }
-
-
     }
 
 
@@ -175,7 +157,7 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
         // height: 50vh;
         // width: calc((100vw) / 2);
         flex: 1;
-        background: rgb(193, 255, 250);
+        background: var(--color-bg-secondary);
         border: 1px solid #333;
         overflow: auto;
         padding: 0.5rem;
@@ -246,24 +228,22 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
 
         & .other {
             float: left;
-            color: rgba(0, 0, 128, 0.931);
-            background-color: rgb(4, 223, 223);
+            color: var(--color-bg-primary);
+            background-color: var(--color-box-other);
             animation-name: slideFromLeft;
-            box-shadow: -1px 2px 0px rgba(0, 0, 128, 0.931);
+            box-shadow: -1px 2px 0px var(--color-bg-primary);
 
 
         }
 
         & .me {
             float: right;
-            color: rgb(115, 8, 115);
-            background-color: rgb(255, 158, 255);
+            color: var(--color-bg-primary);
+            background-color: var(--color-box-me);
             animation-name: slideFromRight;
-            box-shadow: -1px 2px 0px rgb(115, 8, 115);
+            box-shadow: -1px 2px 0px var(--color-bg-primary);
 
         }
     }
-
-
 }
 </style>
