@@ -1,48 +1,56 @@
 <template>
 	<div class="container-profile">
-		<header>
-			Profile
-		</header>
-		<div class="body">
-			<div class="container-avatar">
-				<figure class="avatar">
-					<img class="is-rounded" :src="image">
-				</figure>
-				<button @click="formRef.click()" class="mt-2 button is-primary">
-					<span class="icon">
-						<i class="fa-solid fa-upload"></i>
-					</span>
-					<span> Upload new avatar</span>
-				</button>
-				<input ref="formRef" @change="handleChange" type="file" hidden>
-			</div>
-			<form class="container-username mt-4">
-				<div class="field">
-					<div class="control">
-						<input class="input" type="text" placeholder="Username">
-					</div>
-				</div>
-				<div class="field is-grouped">
-					<div class="control">
-						<button class="button is-primary">
-							<span class="icon">
-								<i class="fa-solid fa-floppy-disk"></i>
-							</span>
-							<span> Save</span>
-						</button>
-					</div>
 
+		<Box>
+			<template v-slot:header>
+				Profile
+			</template>
+			<template v-slot:body>
+				<div class="container-avatar">
+					<figure class="avatar">
+						<img class="is-rounded" :src="image">
+					</figure>
+					<button @click="formRef.click()" class="mt-2 button is-primary">
+						<span class="icon">
+							<i class="fa-solid fa-upload"></i>
+						</span>
+						<span> Upload new avatar</span>
+					</button>
+					<input ref="formRef" @change="handleChange" type="file" hidden>
 				</div>
-			</form>
-		</div>
+				<form class="container-username mt-4">
+					<div class="field">
+						<div class="control">
+							<input class="input" type="text" placeholder="Username">
+						</div>
+					</div>
+					<div class="field is-grouped">
+						<div class="control">
+							<button class="button is-primary">
+								<span class="icon">
+									<i class="fa-solid fa-floppy-disk"></i>
+								</span>
+								<span> Save</span>
+							</button>
+						</div>
+
+					</div>
+				</form>
+			</template>
+		</Box>
+
+
+
 	</div>
 </template>
 <script lang='ts' setup>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia';
 
 import { useUserStore } from '../../../../stores'
 import { useForm } from '../../../common/composables'
+
+const Box = defineAsyncComponent(() => import('../../../common/components/Box.vue'))
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
