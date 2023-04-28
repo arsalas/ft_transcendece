@@ -1,12 +1,29 @@
 :root {
 
-	--font-size: 12px;
-	// --font-family: Roboto;
-	--color-text-primary: #e0d9f6;
+	--font-size: 16px;
+	--font-family: 'Orbitron', sans-serif;
 
+	--alpha: 0.5;
+
+	// TEXT
+	--color-text-primary: #e0d9f6;
+	--color-text-link: var(--color-text-primary);
+	--color-text-link-active: #44b9c6;
+	--color-text-link-hover: #ecaefd;
+	--color-text-btn: #fff;
+
+	--font-weight-link: 500;
+
+
+	// COLORS
+	--bg-dark-0: #090221;
+	--bg-dark-1: #01012b;
+	--bg-dark-2: #180D7C;
+	--bg-dark-3: #221097;
 
 
 	--color-primary: #c252e1;
+
 	--color-bg-dark: #01012b;
 	--color-bg-primary: #2a2356;
 	--color-bg-secondary: #586ae2;
@@ -16,19 +33,18 @@
 	--color-default: #eee;
 	--red: #84333B;
 
-	--border-color: #586ae2;
+	// BORDERS
+	--border-color: #2554a5;
 	--border-color-active: var(--color-primary);
+	--border-size: 1px;
+	--border: var(--border-size) solid var(--border-color);
+	--border-radius: 0px;
 
-
+	//BUTTONS
 	--border-radius-btn: 4px;
+	--color-text-btn: var(--color-text-primary);
 
 
-	--color-text-link: #fff;
-	--color-text-link-active: #44b9c6;
-	--color-text-link-hover: #44b9c6;
-	--color-text-btn: #fff;
-
-	--font-weight-link: 500;
 
 
 }

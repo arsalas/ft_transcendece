@@ -1,4 +1,6 @@
-<template></template>
+<template>
+	<Loader :is-fullsize="true" />
+</template>
 <script lang='ts' setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -6,6 +8,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { signIn } from '../api'
 import { useAuthStore, useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
+import Loader from '../../common/components/Loader.vue';
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
@@ -25,9 +28,9 @@ const signInApp = async (): Promise<void> => {
 		authStore.signIn(response.token);
 		userStore.setUser(response.user);
 		if (!user.value.username)
-			router.push({ name: 'profile' })
+			router.push({ name: 'editProfile' })
 		else
-			router.push({ name: 'profile' })
+			router.push({ name: 'editProfile' })
 
 	} catch (error) {
 

@@ -2,69 +2,128 @@
 	<header class="navbar">
 		<div class="left">
 			<div class="brand">
-				<img src="../../../assets/pong logo.png" alt="">
+				<div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG
+				</div>
+				<!-- <img src="../../../assets/pong logo.png" alt=""> -->
 			</div>
 			<nav>
 				<ul>
 					<li>
-						<router-link :to="{ name: 'chat' }">
+
+
+						<span class="icon-text text">
 							<span class="icon">
-								<i class="fa-sharp fa-solid fa-comments"></i>
+								<i class="fa-solid fa-table-tennis-paddle-ball"></i>
 							</span>
+							<span>Play</span>
+						</span>
+
+					</li>
+					<li>
+						<router-link :to="{ name: 'chat' }">
+							<span class="icon-text text">
+								<span class="icon">
+									<i class="fa-sharp fa-solid fa-comments"></i>
+								</span>
+								<span>Chats</span>
+							</span>
+
 						</router-link>
 					</li>
 					<li>
-						<span class="icon">
-							<i class="fa-solid fa-table"></i>
+
+
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-table"></i>
+							</span>
+							<span>Ladder</span>
 						</span>
+
 					</li>
 					<li>
-						<span class="icon ">
-							<i class="fa-solid fa-trophy"></i>
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-trophy"></i>
+							</span>
+							<span>Achivements</span>
 						</span>
+
 					</li>
 					<li>
-						<router-link :to="{ name: 'profile' }">
-							<span class="icon ">
+						<!-- <router-link :to="{ name: 'profile' }"> -->
+
+						<span class="icon-text text">
+							<span class="icon">
 								<i class="fa-solid fa-user"></i>
 							</span>
-						</router-link>
+							<span>Profile</span>
+						</span>
+
+
+						<!-- </router-link> -->
 					</li>
 				</ul>
 			</nav>
-		</div>
-		<aside class="right">
-			<div class="media-object">
+			<!-- </div>
+		<aside class="right"> -->
+			<!-- <div class="right"> -->
 
-				<img class="avatar" :src="user.avatar || user.avatar42" alt="">
+			<div class="media-object right">
+
+				<Image class="avatar" :src="user.avatar!" :fallback="user.avatar42"/>
+				<!-- <img class="avatar" :src="user.avatar || user.avatar42" alt=""> -->
 				<div class="media-text">
-					<div class="name">
+					<div class="name text">
 						{{ user.username || user.login }}
 					</div>
 					<div class="status">
 						conectado
 					</div>
 				</div>
+				<router-link :to="{ name: 'editProfile' }">
+					<span class="icon text" style="font-size: 1rem; margin-left: 1rem;">
+						<i class="fa-solid fa-gear"></i>
+					</span>
+				</router-link>
+				<span @click="logout" class="icon text is-clickable" style="font-size: 1rem; margin-left: 1rem;">
+					<i class="fa-solid fa-right-from-bracket"></i>
+				</span>
 			</div>
-		</aside>
+			<!-- </div> -->
+			<!-- </aside> -->
+		</div>
 	</header>
 </template>
 <script lang='ts' setup>
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '../../../stores';
 
+import { useUserStore, useAuthStore } from '../../../stores';
+import Image from './Image.vue';
+
+const router = useRouter();
+const authStore = useAuthStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+
+const logout = () => {
+	authStore.logOut();
+	router.push({ name: 'signin' })
+}
+
 </script>
 <style lang='scss' scoped>
 .navbar {
-	height: 60px;
-	background-color: var(--color-bg-primary);
+	height: 59px;
+	background-color: var(--bg-dark-0);
 	display: flex;
 	padding: 0rem 0rem;
 	justify-content: space-between;
 	position: sticky;
 	top: 0;
+	border-bottom: var(--border);
+	z-index: 1;
 }
 
 .left {
@@ -78,12 +137,25 @@ const { user } = storeToRefs(userStore);
 
 .right {
 	padding: 0.4rem 2rem;
-	width: 20rem;
+	// width: 20rem;
 
 }
 
 .brand {
 	height: 100%;
+	display: flex;
+	align-items: center;
+	font-weight: bold;
+
+	& .text {
+		font-size: 1.5rem;
+
+	}
+
+	& i {
+		padding: 0;
+		margin: 0;
+	}
 
 	& img {
 		height: 100%;
@@ -100,8 +172,8 @@ nav {
 			padding: 0rem 1rem;
 			cursor: pointer;
 
-			& .icon {
-				font-size: 1.2rem;
+			& .icon-text {
+				font-size: 1.0rem;
 				transition: 300ms;
 
 				&:hover {
@@ -113,9 +185,9 @@ nav {
 				color: var(--color-text-primary);
 			}
 
-			& .router-link-active {
+			& .router-link-active .icon-text {
 
-				color: var(--color-primary);
+				color: var(--color-primary)
 			}
 
 		}
@@ -130,6 +202,7 @@ aside {
 .media-object {
 	height: 100%;
 	display: flex;
+	align-items: center;
 
 	& .media-text {
 		padding-left: 1rem;

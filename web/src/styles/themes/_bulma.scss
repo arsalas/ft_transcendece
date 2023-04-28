@@ -14,13 +14,16 @@ $secondary: #000000;
 $danger: #D51F06;
 
 //INPUTS
+$label-color: var(--color-text-primary);
 $input-focus-border-color: var(--color-primary);
 $input-focus-box-shadow-color: rgba($primary, 0.25);
+
+$input-background-color: var(--bg-dark-0);
 $input-color: var(--color-text-primary);
-$input-background-color: var(--color-bg-dark);
-$input-border-color: var(--color-bg-primary);
+$input-border-color: var(--border-color);
+
 $input-hover-color: var(--color-primary);
-$input-hover-border-color: var(--color-text-primary);
+$input-hover-border-color: var(--color-primary);
 $input-icon-color: var(--color-text-primary);
 $input-icon-active-color: var(--color-text-primary);
 
@@ -29,7 +32,8 @@ $title-color: var(--text-color);
 $subtitle-color: var(--text-secondary);
 
 //LINK
-$link: $primary;
+$link: var(--color-text-link);
+$link-hover: var(--color-text-link-hover);
 
 
 // Import only what you need from Bulma
