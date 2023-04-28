@@ -2,11 +2,13 @@
 	<img loading="lazy" :src="src ? src : fallback" @error="handleError">
 </template>
 <script lang='ts' setup>
+
 const props = defineProps<{
 	src?: string;
 	fallback?: string;
 	isRounded?: boolean;
 }>()
+
 
 const handleError = (event: Event) => {
 	const img = event.target as HTMLImageElement;

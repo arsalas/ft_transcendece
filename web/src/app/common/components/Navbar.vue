@@ -71,7 +71,7 @@
 
 			<div class="media-object right">
 
-				<Image class="avatar" :src="user.avatar!" :fallback="user.avatar42"/>
+				<Image class="avatar" :src="user.avatar!" :fallback="user.avatar42" />
 				<!-- <img class="avatar" :src="user.avatar || user.avatar42" alt=""> -->
 				<div class="media-text">
 					<div class="name text">
@@ -226,5 +226,6 @@ aside {
 	height: 100%;
 	border-radius: 100%;
 	aspect-ratio: 1;
+	object-fit: cover;
 }
 </style>

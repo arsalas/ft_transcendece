@@ -1,1 +1,1 @@
-export * from './providers2'
+export * from './providers'

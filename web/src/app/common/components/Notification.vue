@@ -1,21 +1,21 @@
 <template>
 	<!-- <Transition name="custom-classes" enter-active-class="animate__animated animate__slideInRight"
 		leave-active-class="animate__animated animate__slideOutRight"> -->
-	<div class="notif">
+	<div class="notif" :class="[type]">
 		<div class="text">
-			{{ notifications.message }}
+			{{ message }}
 		</div>
 	</div>
 	<!-- </Transition> -->
 </template>
 <script lang='ts' setup>
 import { onMounted } from 'vue';
-import { useNotifications } from '../composables/useNotifications';
+import { useNotifications } from '../composables';
 
-const notifications = useNotifications();
+const { close, message, type } = useNotifications();
 
 onMounted(() => {
-	setTimeout(() => { notifications.close() }, 2000)
+	setTimeout(() => { close() }, 2000)
 })
 
 </script>
@@ -29,5 +29,16 @@ onMounted(() => {
 	min-width: 16rem;
 	border: var(--border);
 	z-index: 2;
+	border-left: 5px solid var(--border-color);
+}
+
+.notif.success {
+	border-color: var(--color-sucess);
+}
+.notif.error {
+	border-color: var(--color-danger);
+}
+.notif.info {
+	border-color: var(--border-color);
 }
 </style>

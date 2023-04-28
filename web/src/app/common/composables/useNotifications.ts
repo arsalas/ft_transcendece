@@ -2,7 +2,8 @@ import { ref } from "vue"
 
 
 const isOpen = ref<boolean>(false);
-const message = ref<string>("")
+const message = ref<string>("");
+const type = ref<"success" | "error" | "info">("info");
 
 export const useNotifications = () => {
 
@@ -13,14 +14,17 @@ export const useNotifications = () => {
 	}
 
 	const success = (msg: string) => {
+		type.value = "success";
 		open(msg);
 	}
-
+	
 	const error = (msg: string) => {
+		type.value = "error";
 		open(msg);
 	}
-
+	
 	const info = (msg: string) => {
+		type.value = "info";
 		open(msg);
 	}
 
@@ -36,6 +40,7 @@ export const useNotifications = () => {
 		success,
 		error,
 		info,
-		close
+		close,
+		type
 	}
 }

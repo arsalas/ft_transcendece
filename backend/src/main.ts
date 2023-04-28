@@ -13,6 +13,9 @@ async function bootstrap() {
 		})
 	);
 
+	// console.log(
+	// 	app.getUrl()
+	// )
 
 	await app.listen(3000);
 }

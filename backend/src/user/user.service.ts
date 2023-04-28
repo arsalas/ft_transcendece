@@ -25,6 +25,8 @@ export class UserService {
 			// "generatedMaps": [],
 			// "raw": [],
 			// "affected": 1
+			if (profile.avatar)
+				profile = { ...profile, avatar: 'http://localhost:3000/image/' + profile.avatar }
 			return profile;
 		} catch (error) {
 			console.log(error)

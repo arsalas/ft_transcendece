@@ -5,7 +5,6 @@
 		</template>
 		<template v-slot:body>
 			<p class="text">Two-Factor Auth helps to secure your ArtStation account from takeover and data loss</p>
-
 			<p class="mt-2 text">To enable Two-Factor Auth:</p>
 			<ul class="mt-2">
 				<li class="text">
@@ -17,12 +16,12 @@
 					Download Google Authenticator
 				</li>
 			</ul>
-			<button class="button is-primary mt-4" :class="{ 'is-outlined': !user.twoFactorAuth }">
+			<button @click="handleClick" class="button is-primary mt-4"
+				:class="{ 'is-outlined': !user.twoFactorAuth, 'is-loading': isLoading }">
 				{{ user.twoFactorAuth ? 'Enabled' : 'Disabled' }}
 			</button>
 			<div class="columns mt-2">
 				<div class="column">
-
 					<a href="https://itunes.apple.com/us/app/artstation-app/id924645286" target="_blank">
 						<QRCode icon="fa-brands fa-google-play" image="qr_android.png" text="Google Play" />
 					</a>
@@ -37,28 +36,46 @@
 	</Box>
 </template>
 <script lang='ts' setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { storeToRefs } from 'pinia';
 
 import { useUserStore } from '../../../../stores'
-import { useForm } from '../../../common/composables'
+import { useLoading, useNotifications } from '../../../common/composables'
+import { providers } from '../../../../providers';
 
+// COMPONENTES
 const Box = defineAsyncComponent(() => import('../../../common/components/Box.vue'))
 const QRCode = defineAsyncComponent(() => import('../../components/QRCode.vue'))
 
+// STORES
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
-const formRef = ref(null);
-const image = ref(user.value.avatar || user.value.avatar42);
+// PROVIDERS
+const { srvEditProfile } = providers();
 
+// COMPOSABLES
+const notifications = useNotifications()
+const { isLoading } = useLoading();
 
-const { createImageFromInput } = useForm();
-const handleChange = async (e: Event) => {
+// FUNCIONES
+const handleClick = async (e: Event): Promise<void> => {
+	try {
+		isLoading.value = true;
+		const body = {
+			twoFactorAuth: !user.value.twoFactorAuth
+		}
+		await srvEditProfile.update(body);
+		user.value.twoFactorAuth = body.twoFactorAuth;
+		notifications.success("Changes saved");
+	} catch (error) {
+		notifications.error("Can't save changes");
 
-	image.value = await createImageFromInput(e);
-
+	} finally {
+		isLoading.value = false;
+	}
 }
+
 </script>
 <style lang='scss' scoped>
 li {
@@ -75,6 +92,5 @@ li {
 	justify-content: center;
 	align-items: center;
 	margin-right: 1rem;
-	// aspect-ratio: 1;
 }
 </style>

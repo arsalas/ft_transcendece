@@ -6,9 +6,9 @@
 		<template v-slot:body>
 			<div class="container-avatar">
 				<figure class="avatar">
-					<img class="is-rounded" :src="image">
+					<Image class="is-rounded" :src="image" :fallback="user.avatar42"/>
 				</figure>
-				<button @click="formRef.click()" class="mt-2 button is-primary">
+				<button @click="formRef!.click()" class="mt-2 button is-primary">
 					<span class="icon">
 						<i class="fa-solid fa-upload"></i>
 					</span>
@@ -16,22 +16,21 @@
 				</button>
 				<input ref="formRef" @change="handleChange" type="file" hidden>
 			</div>
-			<form @submit.prevent="" class="container-username mt-4">
+			<form @submit.prevent="handleSubmit" class="container-username mt-4">
 				<div class="field">
 					<div class="control">
-						<input class="input" type="text" placeholder="Username">
+						<input v-model="username" class="input" type="text" placeholder="Username">
 					</div>
 				</div>
 				<div class="field is-grouped">
 					<div class="control">
-						<button class="button is-primary" @click="notifications.success('Hola')">
+						<button class="button is-primary" :class="{ 'is-loading': isLoading }">
 							<span class="icon">
 								<i class="fa-solid fa-floppy-disk"></i>
 							</span>
 							<span> Save</span>
 						</button>
 					</div>
-
 				</div>
 			</form>
 		</template>
@@ -41,26 +40,68 @@
 import { defineAsyncComponent, ref } from 'vue'
 import { storeToRefs } from 'pinia';
 
+import { providers } from '../../../../providers';
+import { useForm, useLoading, useNotifications } from '../../../common/composables'
 import { useUserStore } from '../../../../stores'
-import { useForm } from '../../../common/composables'
-import { useNotifications } from '../../../common/composables/useNotifications';
 
-const notifications = useNotifications()
-
+// COMPONENTES
 const Box = defineAsyncComponent(() => import('../../../common/components/Box.vue'))
+const Image = defineAsyncComponent(() => import('../../../common/components/Image.vue'))
 
+// STORES
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
-const formRef = ref(null);
-const image = ref("http://localhost:3000/image/" + user.value.avatar || user.value.avatar42);
+// PROVIDERS
+const { srvEditProfile } = providers();
 
-
+// COMPOSABLES
+const notifications = useNotifications()
 const { createImageFromInput } = useForm();
+const { isLoading } = useLoading();
+
+// VARIABLES
+const formRef = ref<HTMLInputElement>();
+const image = ref(user.value.avatar || user.value.avatar42);
+const file = ref<File>();
+const username = ref<string>(user.value.username || "")
+
+// FUNCIONES
+/**
+ * Envio del formulario
+ * @param e evento submit formulario
+ */
+const handleSubmit = async (e: Event): Promise<void> => {
+	try {
+		isLoading.value = true;
+		const formData = new FormData();
+		formData.append('username', username.value);
+		if (file.value)
+			formData.append('file', file.value);
+		const res = await srvEditProfile.update(formData);
+		user.value.username = username.value;
+		user.value.avatar = res?.avatar
+		notifications.success("Changes saved");
+	} catch (error) {
+		notifications.error("Can't save changes");
+
+	} finally {
+		isLoading.value = false;
+	}
+}
+
+/**
+ * Se guarda la imagen subida y se actualiza la imagen del usuario
+ * @param e evento change input file
+ */
 const handleChange = async (e: Event) => {
 
-	image.value = await createImageFromInput(e);
+	const element = e.target as HTMLInputElement;
 
+	if (element.files && element.files.length) {
+		file.value = element.files[0];
+		image.value = await createImageFromInput(e);
+	}
 }
 </script>
 <style lang='scss' scoped>

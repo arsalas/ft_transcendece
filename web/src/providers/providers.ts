@@ -1,5 +1,5 @@
 import { Http } from "../api"
-import { EditProfieService } from "../app/dashboard/services/EditProfile2";
+import { EditProfieService } from "../app/dashboard/services/EditProfileService";
 
 
 const http = new Http();
