@@ -36,7 +36,7 @@ services:
     expose:
       - "3000"
     volumes:
-      # - backend_volume:/app
+      - backend_volume:/app/node_modules
       - ./backend/:/app/
     networks:
       - transcendence
@@ -52,7 +52,7 @@ services:
     expose:
       - "5173"
     volumes:
-      # - web_volume:/app
+      - web_volume:/app/node_modules
       - ./web:/app
     networks:
       - transcendence
@@ -68,14 +68,14 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${PWD}/backend'
+      device: '${PWD}/backend/node_modules'
   web_volume:
     # external: false
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${PWD}/web'
+      device: '${PWD}/web/node_modules'
 
 networks:
   transcendence:

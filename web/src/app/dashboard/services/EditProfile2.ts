@@ -1,7 +1,7 @@
 
 import { HttpService } from '../../../api/http'
 
-export class editProfieService {
+export class EditProfieService {
     constructor(private http: HttpService) { }
 
 
