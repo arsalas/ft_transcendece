@@ -7,41 +7,65 @@ date.toDateString(); -->
     <div class="chat-container">
         <header>
             <div class="left">
-                <MediaObject avatar="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg" status="conectado" username="aramirez" />
-
+                <MediaObject avatar="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
+                    status="conectado" username="aramirez" />
             </div>
             <div class="right">
-
+                <button class="mybutton" @click="closeChat">CLOSE</button>
+                <button class="mybutton" @click="minimizeChat">ADD</button>
             </div>
         </header>
-        <div class="chat">
-            <div class="conversation-start">
-                <span>Today, 9:00 PM</span>
-            </div>
+    </div>
 
-            <div class="bubble" :class="chat.login == 'amurcia-' ? 'me' : 'other'" v-for="chat in chats">
-                <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div>
-                <!-- si el usuario no soy yo, printa el nombre del login  -->
-                {{ chat.message }}
-            </div>
-
-
-            <!-- <button @click="closeChat">CLOSE</button>
-            <button @click="addMsg">ADD</button>
- -->
+    <div class="chat" id="chat">
+        <div class="conversation-start">
+            <span>Today, 9:00 PM</span>
+        </div>
+        <div class="bubble" :class="chat.login == 'amurcia-' ? 'me' : 'other'" v-for="chat in chats">
+            <div v-if="chat.login != 'amurcia-'" class="username">{{ chat.login }}</div>
+            <!-- si el usuario no soy yo, printa el nombre del login  -->
+            {{ chat.message }}
             <!--    <form @submit.prevent="Send msg"></form>
             <input class="input" type="text"> -->
-
-            <!-- aqui -->
         </div>
-
         <footer>
             <form @submit.prevent="sendMsg()">
                 <input v-model.trim="message" type="text" placeHolder="Enviar mensaje" class="input">
+                <!-- <input v-model.trim="message" type="text" placeHolder="Enviar mensaje" class="input"> -->
             </form>
         </footer>
-
     </div>
+
+    <!-- <div class="dropdown is-active">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                <span>Dropdown button</span>
+                <span class="icon is-small">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+            </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+                <a href="#" class="dropdown-item">
+                    Dropdown item
+                </a>
+                <a class="dropdown-item">
+                    Other dropdown item
+                </a>
+                <a href="#" class="dropdown-item is-active">
+                    Active dropdown item
+                </a>
+                <a href="#" class="dropdown-item">
+                    Other dropdown item
+                </a>
+                <hr class="dropdown-divider">
+                <a href="#" class="dropdown-item">
+                    With a divider
+                </a>
+            </div>
+        </div>
+    </div> -->
 </template>
 
 <script lang='ts' setup>
@@ -51,6 +75,7 @@ import { computed, defineAsyncComponent, ref } from 'vue'
 const MediaObject = defineAsyncComponent(() => import('../../common/components/MediaObject.vue'))
 
 interface IChat {
+    minimized: boolean;
     open: boolean;
     login: string;
     message: string;
@@ -62,35 +87,33 @@ const message = ref<string>("");
 const sendMsg = () => {
     if (message.value.length > 0) {
         chats.value.push({
+            minimized: false,
             open: true,
             login: "amurcia-",
             message: message.value,
             date: "10.05.2023",
         })
-        message.value = ""
+        message.value = "";
+        setTimeout(scrollOk, 1);
+        // scrollOk();
     }
 }
-chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
 
-window.setInterval(function() {
-  var elem = document.getElementById('data');
-  elem.scrollTop = elem.scrollHeight;
-}, 5000);
-
-// var objDiv = document.getElementById("your_div");
-// objDiv.scrollTop = objDiv.scrollHeight;
-
-const closeChat = () => {
-    chats.value.push({
-        open: true,
-        login: "amurcia-",
-        message: "ADIOS!",
-        date: "10.05.2023",
-    })
+const scrollOk = () => {
+    var objDiv = document.getElementById("chat");
+    console.log(objDiv);
+    objDiv.scrollTop = objDiv.scrollHeight;
 }
 
-const addMsg = () => {
+const closeChat = () => {
+    while (chats.value.length > 0) {
+        chats.value.pop();
+    }
+}
+
+const minimizeChat = () => {
     chats.value.push({
+        minimized: false,
         open: true,
         login: "amurcia-",
         message: "Hola Alberto",
@@ -100,12 +123,14 @@ const addMsg = () => {
 
 const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
     {
+        minimized: false,
         open: true,
         login: "amurcia-",
         message: "Hola Alberto",
         date: "10.05.2023",
     },
     {
+        minimized: false,
         open: true,
         login: "aramirez",
         message: "Hola Alicia",
@@ -118,8 +143,6 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
 
 <style lang='scss' scoped>
 .chat-container {
-    // display: flex;
-    // height: 100vh;
     height: 100%;
     width: 100%;
     background-color: yellow;
@@ -131,12 +154,30 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
     & header {
         height: 50px;
         background-color: var(--color-bg-primary);
+        display: flex;
+        justify-content: space-between;
 
-        .left {
+        &>* {
+            border: solid green 5px;
+        }
+
+        & .left {
+            display: flex;
             height: 100%;
             padding: 0.2rem;
         }
 
+        & .right {
+            height: 100%;
+            padding: 0.2rem;
+            display: flex;
+            justify-content: flex endl;
+            d
+        }
+
+        & .mybutton {
+            margin-left: 1rem;
+        }
     }
 
     & footer {
@@ -151,11 +192,6 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
 
 
     & .chat {
-        // position: fixed;
-        // bottom: 1rem;
-        // left: 1rem;
-        // height: 50vh;
-        // width: calc((100vw) / 2);
         flex: 1;
         background: var(--color-bg-secondary);
         border: 1px solid #333;
@@ -187,6 +223,7 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
                 border-radius: 5px;
             }
         }
+
 
         & .bubble {
             font-size: 1rem;
@@ -232,8 +269,6 @@ const chats = ref<IChat[]>([// const y no let para que no pierda la reactividad
             background-color: var(--color-box-other);
             animation-name: slideFromLeft;
             box-shadow: -1px 2px 0px var(--color-bg-primary);
-
-
         }
 
         & .me {
