@@ -32,11 +32,12 @@ services:
       - database
     ports:
       - "${BACKEND_PORT}:3000"
+    command: sh -c "cd /app/ && yarn && yarn start:dev" 
     expose:
       - "3000"
     volumes:
-      - ./backend:/app
-      - backend_volume:/app/node_modules
+      # - backend_volume:/app
+      - ./backend/:/app/
     networks:
       - transcendence
 
@@ -47,11 +48,12 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_web
     ports:
       - "${WEB_PORT}:5173"
+    command: sh -c "cd /app/ && yarn && yarn dev"
     expose:
       - "5173"
     volumes:
+      # - web_volume:/app
       - ./web:/app
-      - web_volume:/app/node_modules
     networks:
       - transcendence
  
@@ -61,14 +63,19 @@ volumes:
   database_data_volume:
     external: false
   backend_volume:
-    external: false
+    # external: false
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}/backend'
   web_volume:
-    external: false
-    # driver: local
-    # driver_opts:
-    #   type: 'none'
-    #   o: 'bind'
-    #   device: './web/node_modules'
+    # external: false
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}/web'
 
 networks:
   transcendence:

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-import api from '../../../api'
+import api from '../../../api/axios'
 import { IUser } from '../../../interfaces';
 
 
