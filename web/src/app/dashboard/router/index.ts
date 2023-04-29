@@ -5,28 +5,41 @@ const routes: RouteRecordRaw[] =
 	[
 		{
 			path: '/',
-			name: 'home',
-			redirect: { name: 'contestDetails' },
-			// meta: { requiresAuth: true },
+			name: 'app',
+			redirect: { name: 'home' },
+			meta: { requiresAuth: true },
 			component: () => import(/* webpackChunkName: "account" */'../layouts/Dashboard.vue'),
 			children: [
 				{
-					path: 'profile',
+					path: '',
+					name: 'home',
+					meta: { title: 'Home' },
+					component: () => import(/* webpackChunkName: "create-contest" */'../pages/Home.vue'),
+				},
+				{
+					path: 'edit-profile',
 					name: 'profileLayout',
+					redirect: 'editProfile',
 					meta: { title: 'Profile' },
-					component: () => import(/* webpackChunkName: "create-contest" */'../layouts/Profile.vue'),
+					component: () => import(/* webpackChunkName: "create-contest" */'../layouts/EditProfile.vue'),
 					children: [
 						{
 							path: '',
-							name: 'profile',
-							meta: { title: 'Profile' },
-							component: () => import(/* webpackChunkName: "create-contest" */'../pages/profile/Profile.vue')
+							name: 'editProfile',
+							meta: { title: 'Edit Profile' },
+							component: () => import(/* webpackChunkName: "create-contest" */'../pages/editProfile/Profile.vue')
 						},
 						{
 							path: 'two-factor-auth',
 							meta: { title: 'Two-Factor Auth' },
 							name: 'twoFactorAuth',
-							component: () => import(/* webpackChunkName: "account" */'../pages/profile/TwoFactorAuth.vue'),
+							component: () => import(/* webpackChunkName: "account" */'../pages/editProfile/TwoFactorAuth.vue'),
+						},
+						{
+							path: 'blocking',
+							meta: { title: 'Blocking' },
+							name: 'blocking',
+							component: () => import(/* webpackChunkName: "account" */'../pages/editProfile/Blocking.vue'),
 						},
 					]
 				},

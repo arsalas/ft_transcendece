@@ -1,88 +1,153 @@
+import { Repository } from 'typeorm';
+
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios, { AxiosResponse } from 'axios';
-import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+
 import { User, Profile } from '../user/entities';
-import { IOauth, IUser42 } from './interfaces';
-import { JwtService } from '@nestjs/jwt'
+import { UserService } from 'src/user/user.service';
+import { Api42Service, TfaService } from 'src/common/services';
+import { ActivateTFADto, ConfirmTFADto } from './dto';
+
 
 @Injectable()
 export class AuthService {
-
 	constructor(
 		@InjectRepository(User) private userRepository: Repository<User>,
-		@InjectRepository(Profile) private profileRepository: Repository<Profile>,
-		private jwtService: JwtService
+		// @InjectRepository(Profile) private profileRepository: Repository<Profile>,
+		private jwtService: JwtService,
+		private userService: UserService,
+		private tfaService: TfaService,
+		private api42Service: Api42Service,
+
 	) { }
 
-	private async signIn42(code: string): Promise<IUser42> {
-		// 1 - Pedir a la api de 42 que identifique al usuario
+
+	/**
+	 * Genera una imagen QR con una clave para el usuario
+	 * @param user 
+	 * @param secret 
+	 * @returns 
+	 */
+	public async generateTFASecret(login: string): Promise<{ qr: string }> {
 		try {
-			const body = {
-				client_id: "u-s4t2ud-002f8307ed61fa03609f72d495d3a6e7efe6c446b08744c9b33e4ea27e613829",
-				grant_type: "authorization_code",
-				client_secret: "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",
-				code, // su valor va a ser el mismo que la variable
-				redirect_uri: "http://localhost:5173/auth/confirm"
-			}
-			console.log(body)
-
-			const response: AxiosResponse<IOauth> = await axios.post("https://api.intra.42.fr/oauth/token", body);
-			const data = response.data;
-			const resp: AxiosResponse<IUser42> = await axios.get("https://api.intra.42.fr/v2/me", { headers: { Authorization: "Bearer " + data.access_token } })
-
-			return resp.data;
-		}
-		catch (error) {
-			throw new HttpException('ERROR', 403)
+			const user = await this.userService.findUser(login);
+			if (!user)
+				throw new HttpException("User not found", 404)
+			if (user.twoFactorAuth)
+				throw new HttpException("Unauthorized", 400)
+			const { secret, qr } = await this.tfaService.generateSecret(login)
+			await this.userRepository.update({ login }, { secret })
+			return { qr };
+		} catch (error) {
+			throw new HttpException("Something is wrong", 500)
 		}
 	}
 
+	/**
+	 * Activa la autenticacion en 2 factores
+	 * @param user 
+	 * @param token 
+	 * @returns 
+	 */
+	public async activateTFASecret(login: string, token: string) {
+		try {
+			const user = await this.userService.findUser(login);
+			if (!user)
+				throw new HttpException("User not found", 403);
+			if (!this.tfaService.verify(user.secret, token))
+				throw new HttpException("Unauthorized", 401);
+			await this.userRepository.update({ login }, { twoFactorAuth: true })
+		} catch (error) {
+			throw new HttpException("Something is wrong", 500);
+		}
+	}
+
+
+
+	/**
+	 * Obtiene el usuario o lo crea si no existe
+	 * @param code 
+	 * @returns 
+	 */
 	async signIn(code: string) {
 		// Intentamos hacer el signIn
 		try {
-			const user42 = await this.signIn42(code);
-			let user: User = await this.userRepository.findOneBy({ login: user42.login });
-			// Si no existe el usuario, se indica y se crea
+			const user42 = await this.api42Service.signIn(code);
+			let user = await this.userService.findUser(user42.login)
+			// Si no existe el usuario se crea
 			if (!user) {
-				console.log("no existe usuario");
-				const userRepo = this.userRepository.create({
-					login: user42.login
-				})
-				const profileRepo = this.profileRepository.create({
-					login: user42.login,
-
-				})
-				user = await this.userRepository.save(userRepo);
-				const profile = await this.profileRepository.save(profileRepo);
+				try {
+					await this.userService.create(user42.login)
+				} catch (error) {
+					throw new HttpException("Something is wrong", 500)
+				}
+				user = this.userRepository.create({ login: user42.login })
 			}
-			// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
-			const payload = { name: user.login };
-			const token = this.jwtService.sign(payload);
-			const profile: Profile = await this.profileRepository.findOneBy({ login: user42.login });
-			return {
-				token,
-				user: {
+
+			// Comprobar si tiene TFA
+			if (user.twoFactorAuth) {
+				return {
+					twoFactorAuth: true,
 					login: user.login,
-					avatar42: user42.image.link,
-					username: profile.username,
-					avatar: profile.avatar,
-					twoFactorAuth: profile.twoFactorAuth,
-					status: profile.status
+					avatar42: user42.image.link
 				}
 			}
+			return this.getUserAuth(user, user42.image.link);
 		} catch (error) {
-			console.log("ERROR");
-			console.log(error);
-			console.log(error.response.data);
-			throw new HttpException('ERROR', 403) // TODO poner codigo correcto
+			console.log(error)
+			throw new HttpException('Something is wrong', 500);
 		}
-
-
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} user`;
+
+	async confirmTFA(confirmTFADTO: ConfirmTFADto) {
+		try {
+
+			const user: User = await this.userService.findUser(confirmTFADTO.login);
+
+			if (!this.tfaService.verify(user.secret, confirmTFADTO.token))
+				throw new HttpException('Unauthorized', 401);
+			return this.getUserAuth(user, confirmTFADTO.avatar42);
+		} catch (error) {
+			throw new HttpException('Unauthorized', 401);
+
+		}
+	}
+
+	async recoverSession(login: string, avatar42: string) {
+		const user = await this.userService.findUser(login);
+		if (!user) throw new HttpException("User not found", 404);
+		return await this.getUserAuth(user, avatar42)
+	}
+
+
+	private async getUserAuth(user: User, avatar42: string) {
+
+		const profile: Profile = await this.userService.findProfile(user.login);
+		if (!profile) throw new HttpException("User not found", 403)
+
+		// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
+		const payload = { login: user.login, avatar42 };
+
+		const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
+
+		// Comprobamos si tiene un avatar para unir el path de la url de la imagen
+		if (profile.avatar)
+			profile.avatar = 'http://localhost:3000/image/' + profile.avatar;
+
+
+		return {
+			token,
+			user: {
+				login: user.login,
+				avatar42: avatar42,
+				username: profile.username,
+				avatar: profile.avatar,
+				twoFactorAuth: user.twoFactorAuth,
+				status: profile.status,
+			},
+		}
 	}
 
 

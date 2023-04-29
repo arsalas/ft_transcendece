@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
+import { User } from "./user.entity";
 
 @Entity()
 export class Profile {
@@ -11,9 +12,6 @@ export class Profile {
 	@Column({ nullable: true })
 	avatar: string;
 
-	@Column({ default: false })
-	twoFactorAuth: boolean;
-
 	@Column({ nullable: true })
 	status: string;
 
@@ -22,4 +20,9 @@ export class Profile {
 
 	@UpdateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
 	public updated_at: Date;
+
+	// @OneToOne(() => User)
+	// @JoinColumn({ referencedColumnName: "login" })
+	// user: User;
+
 }

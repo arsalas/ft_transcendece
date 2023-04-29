@@ -1,26 +1,84 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
-import { Profile } from './entities';
+import { Profile, User } from './entities';
 
 @Injectable()
 export class UserService {
 
 	constructor(
-		@InjectRepository(User) private profileRepository: Repository<Profile>,
+		private dataSource: DataSource,
+		@InjectRepository(User) private userRepository: Repository<User>,
+		@InjectRepository(Profile) private profileRepository: Repository<Profile>,
 	) { }
-	findOne(id: number) {
-		return `This action returns a #${id} user`;
+
+
+	/**
+	 * Busca un usuario a partir del login de 42
+	 * @param login login42
+	 * @returns user
+	 */
+	async findUser(login: string): Promise<User> {
+		return await this.userRepository.findOneBy({ login });
+		// return await this.userRepository.findOne({
+		// 	where: {
+		// 		login,
+		// 	},
+		// 	relations: {
+		// 		profile: true
+		// 	},
+		// });
 	}
 
-	async updateUser(user42: string, updateUserDto: UpdateUserDto): Promise<Profile> {
-		let profile: Profile = await this.profileRepository.findOneBy({ login: user42 });
+	async findProfile(login: string): Promise<Profile> {
+		return await this.profileRepository.findOneBy({ login });
+	}
+
+	/**
+	 * Crea un nuevo usuario y su perfil
+	 * @param user login42
+	 */
+	async create(login: string) {
+
+		// Creamos una transaccion
+		const queryRunner = this.dataSource.createQueryRunner();
+
+		await queryRunner.startTransaction();
+		try {
+			const userRepo = this.userRepository.create({ login });
+			const profileRepo = this.profileRepository.create({ login });
+			// await this.userRepository.save(userRepo);
+			// await this.profileRepository.save(profileRepo);
+			await queryRunner.manager.save(userRepo);
+			await queryRunner.manager.save(profileRepo);
+			// Si todo ha ido bien aplicamos los cambios
+			await queryRunner.commitTransaction();
+		} catch (error) {
+			// Si ha fallado algo deshacemos los cambios
+			await queryRunner.rollbackTransaction();
+			throw new Error("Something is wrong");
+		} finally {
+			// Soltamos la conexion
+			await queryRunner.release();
+		}
+	}
+
+	async updateUser(login: string, updateUserDto: UpdateUserDto, file?: Express.Multer.File): Promise<Profile> {
+		console.log(login)
+		let profile: Profile = await this.profileRepository.findOneBy({ login });
 		if (!profile) throw new HttpException("User not found", 404);
 		try {
 			profile = { ...profile, ...updateUserDto };
-			return await this.profileRepository.save(profile);
+			if (file)
+				profile.avatar = file.filename;
+			const res = await this.profileRepository.update({ login }, { ...updateUserDto });
+			// "generatedMaps": [],
+			// "raw": [],
+			// "affected": 1
+			if (profile.avatar)
+				profile = { ...profile, avatar: 'http://localhost:3000/image/' + profile.avatar }
+			return profile;
 		} catch (error) {
 			console.log(error)
 			throw new HttpException("Something is wrong", 500);

@@ -5,7 +5,9 @@
 'themes/config';
 
 // Base stuff
-@import 'base/base';
+@import 'base/base',
+'base/fonts',
+'base/typography';
 
 // Layout-related sections
 // @import
@@ -15,6 +17,7 @@
 // Components
 @import 'components/buttons',
 'components/chat',
+'components/inputs',
 'components/loaders';
 
 // 6. Page-specific styles

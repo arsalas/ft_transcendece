@@ -1,29 +1,40 @@
-.button{
+.button {
 	font-weight: 500;
 	transition: 300ms;
 }
 
 .button.is-primary {
-	background-color: var(--color-bg-btn-primary-default);
+	background-color: var(--color-primary);
 	color: var(--color-text-btn);
 	transition: 300ms;
-	border-radius: var(--border-radius-btn);
-	
+	border-radius: var(--border-radius)!important;
+	font-family: var(--font-family);
+	font-weight: 800;
+
+
 	&:hover {
-		background-color: var(--color-bg-btn-primary-hover);
+		filter: grayscale(30%);
+		// background-color: rgba(var(--color-primary), 0.8);
 		color: var(--color-text-btn);
 	}
 	
 	&:active {
-		background-color: var(--color-bg-btn-primary-active);
+		background-color: var(--color-primary);
 		color: var(--color-text-btn);
 	}
 	
 	&:disabled {
-		background-color: var(--color-bg-btn-primary-disabled);
+		filter: grayscale(80%);
+		// background-color: rgba(var(--color-primary), 0.2);
 		color: var(--color-text-btn);
 	}
+
 	&:focus {
 		color: var(--color-text-btn);
 	}
+
+	&.is-outlined:hover{
+		filter: grayscale(0%);
+	}
 }
+

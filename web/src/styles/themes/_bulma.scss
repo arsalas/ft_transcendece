@@ -4,6 +4,8 @@
 
 // Import a Google Font
 
+$text: var(--color-text-primary);
+
 //COLORS
 $primary: #433967;
 $primary: #c252e1;
@@ -12,22 +14,26 @@ $secondary: #000000;
 $danger: #D51F06;
 
 //INPUTS
-$input-focus-border-color: $primary;
+$label-color: var(--color-text-primary);
+$input-focus-border-color: var(--color-primary);
 $input-focus-box-shadow-color: rgba($primary, 0.25);
-// $input-color: var(--text-color);
-// $input-background-color: var(--bg-color);
-// $input-border-color: var(--bg-color);
-// $input-hover-color: var(--text-secondary);
-// $input-hover-border-color: var(--text-secondary);
-// $input-icon-color: var(--text-secondary);
-// $input-icon-active-color: var(--text-color);
+
+$input-background-color: var(--bg-dark-0);
+$input-color: var(--color-text-primary);
+$input-border-color: var(--border-color);
+
+$input-hover-color: var(--color-primary);
+$input-hover-border-color: var(--color-primary);
+$input-icon-color: var(--color-text-primary);
+$input-icon-active-color: var(--color-text-primary);
 
 //TITLE
 $title-color: var(--text-color);
 $subtitle-color: var(--text-secondary);
 
 //LINK
-$link: $primary;
+$link: var(--color-text-link);
+$link-hover: var(--color-text-link-hover);
 
 
 // Import only what you need from Bulma
