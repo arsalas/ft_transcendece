@@ -15,10 +15,10 @@ import { CommonModule } from './common/common.module';
 		TypeOrmModule.forRoot({
 			type: 'postgres',
 			host: 'database',
-			port: 5432,
-			username: 'root',
-			password: 'trascendencepass',
-			database: 'transcendence',
+			port: Number(process.env.BBDD_PORT),
+			username: process.env.POSTGRES_USER,
+			password: process.env.POSTGRES_PASSWORD,
+			database: process.env.POSTGRES_DB,
 			entities: [__dirname + '/**/*.entity{.ts,.js}'],
 			synchronize: true
 		}),

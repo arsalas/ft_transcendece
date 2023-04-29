@@ -1,26 +1,16 @@
 import { Controller, Get, Post, Put, Body, Patch, Param, Delete, Req, Res, Next, UseGuards, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
-// import { JwtAuthGuard } from 'src/auth/jw-auth.guard';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/auth.guard';
-import { UpdateUserDto, CreateUserDto } from './dto';
+import { UpdateUserDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { createReadStream } from 'fs';
-import { join } from 'path';
+import { JwtPayload } from 'src/auth/interfaces';
+
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) { }
-
-
-	@Get()
-	findAll(@Request() req) {
-		console.log(req.user)
-		return req.user
-	}
-
-
 
 
 	@Put()
@@ -36,10 +26,8 @@ export class UserController {
 			})
 		}
 	))
-	async update(@Request() req, @Body() userDto: UpdateUserDto, @UploadedFile() file: Express.Multer.File) {
-		if (file)
-			console.log(file)
-		return await this.userService.updateUser(req.user.name, userDto, file)
+	async update(@Request() { user }: { user: JwtPayload }, @Body() userDto: UpdateUserDto, @UploadedFile() file: Express.Multer.File) {
+		return await this.userService.updateUser(user.login, userDto, file)
 	}
 
 }

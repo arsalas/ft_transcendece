@@ -37,7 +37,7 @@ export class AuthService {
 			if (user.twoFactorAuth)
 				throw new HttpException("Unauthorized", 400)
 			const { secret, qr } = await this.tfaService.generateSecret(login)
-			this.userRepository.update({ login }, { secret })
+			await this.userRepository.update({ login }, { secret })
 			return { qr };
 		} catch (error) {
 			throw new HttpException("Something is wrong", 500)
@@ -77,9 +77,8 @@ export class AuthService {
 			let user = await this.userService.findUser(user42.login)
 			// Si no existe el usuario se crea
 			if (!user) {
-				console.log('no existe usuario');
 				try {
-					this.userService.create(user42.login)
+					await this.userService.create(user42.login)
 				} catch (error) {
 					throw new HttpException("Something is wrong", 500)
 				}
@@ -97,7 +96,7 @@ export class AuthService {
 			return this.getUserAuth(user, user42.image.link);
 		} catch (error) {
 			console.log(error)
-			throw new HttpException('ERROR', 403);
+			throw new HttpException('Something is wrong', 500);
 		}
 	}
 
@@ -116,6 +115,12 @@ export class AuthService {
 		}
 	}
 
+	async recoverSession(login: string, avatar42: string) {
+		const user = await this.userService.findUser(login);
+		if (!user) throw new HttpException("User not found", 404);
+		return await this.getUserAuth(user, avatar42)
+	}
+
 
 	private async getUserAuth(user: User, avatar42: string) {
 
@@ -123,7 +128,7 @@ export class AuthService {
 		if (!profile) throw new HttpException("User not found", 403)
 
 		// Tanto si existe el usuario como si se ha creado de nuevo, creamos el payload y el token
-		const payload = { name: user.login };
+		const payload = { login: user.login, avatar42 };
 
 		const token = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
 
@@ -144,5 +149,6 @@ export class AuthService {
 			},
 		}
 	}
+
 
 }

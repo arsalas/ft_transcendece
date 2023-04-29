@@ -20,6 +20,14 @@ export class AuthService {
 	constructor(private http: HttpService) { }
 
 
+	async recoverSession() {
+		try {
+			return await this.http.get<ISignin>("/auth/recover-session")
+		} catch (error) {
+			throw new Error("error");
+		}
+	}
+
 	async signIn(code: string) {
 		try {
 			return await this.http.get<ISignin & ITwoFactorAuth>("/auth/signin/" + code)

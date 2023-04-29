@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, getConnection } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
 
@@ -43,6 +43,7 @@ export class UserService {
 
 		// Creamos una transaccion
 		const queryRunner = this.dataSource.createQueryRunner();
+
 		await queryRunner.startTransaction();
 		try {
 			const userRepo = this.userRepository.create({ login });
@@ -63,14 +64,15 @@ export class UserService {
 		}
 	}
 
-	async updateUser(user42: string, updateUserDto: UpdateUserDto, file?: Express.Multer.File): Promise<Profile> {
-		let profile: Profile = await this.profileRepository.findOneBy({ login: user42 });
+	async updateUser(login: string, updateUserDto: UpdateUserDto, file?: Express.Multer.File): Promise<Profile> {
+		console.log(login)
+		let profile: Profile = await this.profileRepository.findOneBy({ login });
 		if (!profile) throw new HttpException("User not found", 404);
 		try {
 			profile = { ...profile, ...updateUserDto };
 			if (file)
 				profile.avatar = file.filename;
-			const res = await this.profileRepository.update({ login: user42 }, profile);
+			const res = await this.profileRepository.update({ login }, { ...updateUserDto });
 			// "generatedMaps": [],
 			// "raw": [],
 			// "affected": 1

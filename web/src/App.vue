@@ -1,10 +1,40 @@
 <script setup lang="ts">
-// TODO asyncLoad
-import Notification from './app/common/components/Notification.vue';
-import { useNotifications } from './app/common/composables/useNotifications';
+import { defineAsyncComponent, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
+import { useNotifications } from './app/common/composables/useNotifications';
+import { providers } from './providers';
+import { useAuthStore, useUserStore } from './stores';
+
+// COMPONENTES
+const Notification = defineAsyncComponent(() => import('./app/common/components/Notification.vue'))
+
+// PROVIDERS
+const { authService } = providers()
+
+// STORES
+const authStore = useAuthStore();
+const userStore = useUserStore();
+const router = useRouter()
+
+// COMPOSABLES
 const { isOpen } = useNotifications();
 
+// FUNCTIONS
+onMounted(async () => {
+	try {
+		const authToken = authStore.token;
+		if (!authToken)
+			return;
+		const { token, user } = await authService.recoverSession();
+		authStore.signIn(token);
+		userStore.setUser(user);
+
+	} catch (error) {
+		authStore.logOut()
+		router.push({ name: 'signin' })
+	}
+})
 </script>
 
 <template>

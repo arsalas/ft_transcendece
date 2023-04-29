@@ -2,10 +2,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 const tokenPersist: string = sessionStorage.getItem('token') || '';
-
+const auth = tokenPersist ? true : false
 
 export const useAuthStore = defineStore('auth', () => {
-	const isAuth = ref<boolean>(false); // const y no let para que no pierda la reactividad
+	const isAuth = ref<boolean>(auth); // const y no let para que no pierda la reactividad
 	const token = ref<string>(tokenPersist);
 
 	const signIn = (authToken: string) => {

@@ -9,9 +9,6 @@ export class CreateUserDto {
 	@MinLength(4)
 	readonly username: string;
 
-	@IsBoolean()
-	readonly twoFactorAuth: boolean;
-
 	@IsString()
 	readonly avatar: string;
 

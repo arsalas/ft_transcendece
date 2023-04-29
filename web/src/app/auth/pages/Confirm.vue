@@ -1,6 +1,6 @@
 <template>
 	<Loader v-if="isLoading" :is-fullsize="true" />
-	<div class="confirm-container" v-else>
+	<div class="confirm-container" v-if="isTFA">
 		<Box>
 			<template v-slot:header>
 				Verify Your Identity
@@ -70,6 +70,7 @@ const notifications = useNotifications()
 const isLoadingTFA = ref<boolean>(false)
 const codeRef = ref<HTMLInputElement>();
 const code = ref<string>("");
+const isTFA = ref<boolean>(false);
 const tfaData = ref({ login: "", avatar42: "" });
 
 
@@ -81,8 +82,7 @@ const successAuth = (token: string, userAuth: IUser) => {
 	if (!user.value.username)
 		router.push({ name: 'editProfile' })
 	else
-		router.push({ name: 'editProfile' })
-	// TODO: redirigir al home si ya ha creado su perfil
+		router.push({ name: 'home' })
 }
 
 const activateTFA = (login: string, avatar42: string) => {
@@ -109,13 +109,14 @@ const signInApp = async (): Promise<void> => {
 	try {
 		isLoading.value = true;
 		const response = await authService.signIn(route.query.code as string);
-		isLoading.value = false;
 		if (response.twoFactorAuth) {
+			isTFA.value = true;
 			return activateTFA(response.login, response.avatar42);
 		}
 		successAuth(response.token, response.user);
 	} catch (error) {
 		notifications.error("Can't auth user")
+		router.push({ name: 'signin' })
 	} finally {
 		isLoading.value = false;
 	}

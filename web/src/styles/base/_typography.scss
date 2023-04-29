@@ -5,7 +5,19 @@
 		0.03rem 0.03rem 0 var(--color-primary);
 	color: var(--color-text-primary);
 	transition: 300ms;
+	font-size: 1rem;
+}
+
+.text.is-small {
 	font-size: 0.8rem;
+}
+
+.text.is-large {
+	font-size: 1.2rem;
+}
+
+.text.is-extra {
+	font-size: 1.6rem;
 }
 
 .is-text-bold {
