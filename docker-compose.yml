@@ -32,12 +32,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      TFA_SECRET: ${TFA_SECRET}
     depends_on:
       - database
     ports:
       - "${BACKEND_PORT}:3000"
-    command: sh -c "cd /app/ && yarn && yarn start:dev" 
+    # command: sh -c "cd /app/ && yarn && yarn start:dev" 
     expose:
       - "3000"
     volumes:
@@ -53,7 +52,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_web
     ports:
       - "${WEB_PORT}:5173"
-    command: sh -c "cd /app/ && yarn && yarn dev"
+    # command: sh -c "cd /app/ && yarn && yarn dev"
     expose:
       - "5173"
     volumes:
