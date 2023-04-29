@@ -28,6 +28,7 @@ services:
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
       JWT_SECRET: ${JWT_SECRET}
+      TFA_SECRET: ${TFA_SECRET}
     depends_on:
       - database
     ports:
@@ -63,19 +64,19 @@ volumes:
   database_data_volume:
     external: false
   backend_volume:
-    # external: false
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${PWD}/backend/node_modules'
+    external: false
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '${PWD}/backend/node_modules'
   web_volume:
-    # external: false
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${PWD}/web/node_modules'
+    external: false
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '${PWD}/web/node_modules'
 
 networks:
   transcendence:

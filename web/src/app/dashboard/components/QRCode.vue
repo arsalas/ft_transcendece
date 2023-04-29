@@ -4,7 +4,7 @@
 			<img :src="src" alt="">
 		</figure>
 
-		<div class="store-btn">
+		<div v-if="haveFooter" class="store-btn">
 
 			<span class="icon-text">
 				<span class="icon text">
@@ -23,11 +23,15 @@ const props = defineProps<{
 	image: string;
 	icon: string;
 	text: string;
+	haveFooter?: boolean;
+	isExternal?: boolean;
 }>()
 const src = ref<string>("");
 
 // Importacion dinamica
-import('../../../assets/' + props.image).then(data => src.value = data.default).catch(e => e)
+if (!props.isExternal)
+	import('../../../assets/' + props.image).then(data => src.value = data.default).catch(e => e)
+else src.value = props.image;
 
 </script>
 <style lang='scss' scoped>

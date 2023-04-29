@@ -53,7 +53,7 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 // PROVIDERS
-const { srvEditProfile } = providers();
+const { editProfileService } = providers();
 
 // COMPOSABLES
 const notifications = useNotifications()
@@ -78,7 +78,7 @@ const handleSubmit = async (e: Event): Promise<void> => {
 		formData.append('username', username.value);
 		if (file.value)
 			formData.append('file', file.value);
-		const res = await srvEditProfile.update(formData);
+		const res = await editProfileService.update(formData);
 		user.value.username = username.value;
 		user.value.avatar = res?.avatar
 		notifications.success("Changes saved");
