@@ -73,8 +73,8 @@ export class PongGame {
 	private readonly context: CanvasRenderingContext2D;
 
 	// Dimesiones juego
-	private readonly width: number;
-	private readonly height: number;
+	private width: number;
+	private height: number;
 
 	// Paddle
 	private readonly margins = 10;
@@ -459,5 +459,14 @@ export class PongGame {
 
 		if (this.paddlePosition.player > this.height - this.paddleHeight)
 			this.paddlePosition.player = this.height - this.paddleHeight;
+	}
+
+
+	public resizeWindows(width: number, height: number) {
+		this.canvas.width = width;
+		this.canvas.height = height;
+		this.width = width;
+		this.height = height;
+		this.renderCanvas()
 	}
 }

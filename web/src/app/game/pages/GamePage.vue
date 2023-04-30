@@ -84,7 +84,13 @@ onMounted(() => {
 onUnmounted(() => {
 	game.value?.destructor();
 	delete game.value
+	window.removeEventListener("resize", handleResize);
 })
+
+const handleResize = () => {
+	game.value?.resizeWindows(app.value!.clientWidth, app.value!.clientHeight);
+}
+window.addEventListener("resize", handleResize);
 
 
 </script>
