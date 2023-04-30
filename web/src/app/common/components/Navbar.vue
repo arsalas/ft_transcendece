@@ -13,12 +13,14 @@
 			<nav class="is-hidden-touch">
 				<ul>
 					<li>
-						<span class="icon-text text">
-							<span class="icon">
-								<i class="fa-solid fa-table-tennis-paddle-ball"></i>
+						<router-link :to="{ name: 'game' }">
+							<span class="icon-text text">
+								<span class="icon">
+									<i class="fa-solid fa-table-tennis-paddle-ball"></i>
+								</span>
+								<span>Play</span>
 							</span>
-							<span>Play</span>
-						</span>
+						</router-link>
 
 					</li>
 					<li>

@@ -1,18 +1,20 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 
-
 import authRoutes from '../app/auth/router'
 import dashboardRoutes from '../app/dashboard/router'
+import gameRoutes from '../app/game/router'
+
 import { isAuth } from '../guards';
 
 const routes: RouteRecordRaw[] = [
-    ...authRoutes,
-    ...dashboardRoutes,
+	...authRoutes,
+	...dashboardRoutes,
+	...gameRoutes
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes
+	history: createWebHistory(),
+	routes
 });
 
 

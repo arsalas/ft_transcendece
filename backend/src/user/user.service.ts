@@ -65,14 +65,13 @@ export class UserService {
 	}
 
 	async updateUser(login: string, updateUserDto: UpdateUserDto, file?: Express.Multer.File): Promise<Profile> {
-		console.log(login)
 		let profile: Profile = await this.profileRepository.findOneBy({ login });
 		if (!profile) throw new HttpException("User not found", 404);
 		try {
 			profile = { ...profile, ...updateUserDto };
 			if (file)
 				profile.avatar = file.filename;
-			const res = await this.profileRepository.update({ login }, { ...updateUserDto });
+			const res = await this.profileRepository.update({ login }, { ...updateUserDto, avatar: profile.avatar });
 			// "generatedMaps": [],
 			// "raw": [],
 			// "affected": 1
