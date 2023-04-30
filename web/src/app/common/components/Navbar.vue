@@ -2,15 +2,17 @@
 	<header class="navbar">
 		<div class="left">
 			<div class="brand">
+				<div class="menu mr-4 is-hidden-desktop">
+					<span class="icon text">
+						<i class="fa-solid fa-bars"></i>
+					</span>
+				</div>
 				<div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG
 				</div>
-				<!-- <img src="../../../assets/pong logo.png" alt=""> -->
 			</div>
-			<nav>
+			<nav class="is-hidden-touch">
 				<ul>
 					<li>
-
-
 						<span class="icon-text text">
 							<span class="icon">
 								<i class="fa-solid fa-table-tennis-paddle-ball"></i>
@@ -73,20 +75,21 @@
 
 				<Image class="avatar" :src="user.avatar!" :fallback="user.avatar42" />
 				<!-- <img class="avatar" :src="user.avatar || user.avatar42" alt=""> -->
-				<div class="media-text">
+				<div class="media-text is-hidden-mobile">
 					<div class="name text">
 						{{ user.username || user.login }}
 					</div>
-					<div class="status">
-						conectado
+					<div class="text online">
+						online
 					</div>
 				</div>
-				<router-link :to="{ name: 'editProfile' }">
+				<router-link :to="{ name: 'editProfile' }" class="is-hidden-mobile">
 					<span class="icon text" style="font-size: 1rem; margin-left: 1rem;">
 						<i class="fa-solid fa-gear"></i>
 					</span>
 				</router-link>
-				<span @click="logout" class="icon text is-clickable" style="font-size: 1rem; margin-left: 1rem;">
+				<span @click="logout" class="icon text is-clickable is-hidden-mobile"
+					style="font-size: 1rem; margin-left: 1rem;">
 					<i class="fa-solid fa-right-from-bracket"></i>
 				</span>
 			</div>
@@ -227,5 +230,6 @@ aside {
 	border-radius: 100%;
 	aspect-ratio: 1;
 	object-fit: cover;
+	border: 2px solid var(--color-online-0)
 }
 </style>

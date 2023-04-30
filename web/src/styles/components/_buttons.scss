@@ -7,24 +7,26 @@
 	background-color: var(--color-primary);
 	color: var(--color-text-btn);
 	transition: 300ms;
-	border-radius: var(--border-radius)!important;
+	border-radius: var(--border-radius) !important;
 	font-family: var(--font-family);
 	font-weight: 800;
 
 
 	&:hover {
-		filter: grayscale(30%);
+		// filter: grayscale(30%);
 		// background-color: rgba(var(--color-primary), 0.8);
+		background-color: var(--color-primary-hover);
 		color: var(--color-text-btn);
 	}
-	
+
 	&:active {
 		background-color: var(--color-primary);
 		color: var(--color-text-btn);
 	}
-	
+
 	&:disabled {
-		filter: grayscale(80%);
+		background-color: var(--color-primary-hover);
+		// filter: grayscale(80%);
 		// background-color: rgba(var(--color-primary), 0.2);
 		color: var(--color-text-btn);
 	}
@@ -33,8 +35,69 @@
 		color: var(--color-text-btn);
 	}
 
-	&.is-outlined:hover{
-		filter: grayscale(0%);
+	&.is-outlined {
+		border-color: var(--color-primary);
+		color: var(--color-primary);
+		// filter: grayscale(0%);
+	}
+
+	&.is-outlined:hover {
+		background-color: var(--color-primary);
+		border-color: var(--color-primary);
+		// filter: grayscale(0%);
+	}
+
+	&.is-outlined:focus {
+		background-color: var(--color-primary);
+		border-color: var(--color-primary);
+		// filter: grayscale(0%);
+	}
+
+	&.futuristic {
+
+		&.is-outlined {
+			border-color: var(--theme-futuristic);
+			color: var(--theme-futuristic);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:hover {
+			background-color: var(--theme-futuristic);
+			border-color: var(--theme-futuristic);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:focus {
+			background-color: var(--theme-futuristic);
+			border-color: var(--theme-futuristic);
+			// filter: grayscale(0%);
+		}
+
+		&:hover {
+			color: var(--color-text-btn);
+		}
+	}
+	&.calid {
+		&.is-outlined {
+			border-color: var(--theme-calid);
+			color: var(--theme-calid);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:hover {
+			background-color: var(--theme-calid);
+			border-color: var(--theme-calid);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:focus {
+			background-color: var(--theme-calid);
+			border-color: var(--theme-calid);
+			// filter: grayscale(0%);
+		}
+
+		&:hover {
+			color: var(--color-text-btn);
+		}
 	}
 }
-

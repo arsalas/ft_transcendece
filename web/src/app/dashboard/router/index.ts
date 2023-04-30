@@ -41,6 +41,12 @@ const routes: RouteRecordRaw[] =
 							name: 'blocking',
 							component: () => import(/* webpackChunkName: "account" */'../pages/editProfile/Blocking.vue'),
 						},
+						{
+							path: 'themes',
+							meta: { title: 'Themes' },
+							name: 'themes',
+							component: () => import(/* webpackChunkName: "account" */'../pages/editProfile/Themes.vue'),
+						},
 					]
 				},
 				{

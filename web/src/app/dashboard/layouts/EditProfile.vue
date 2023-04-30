@@ -15,11 +15,11 @@
 									Two-Factor Auth
 								</router-link>
 							</li>
-							<!-- <li class="text">
-								<router-link :to="{ name: 'profile' }">
+							<li class="text">
+								<router-link :to="{ name: 'themes' }">
 									Themes
 								</router-link>
-							</li> -->
+							</li>
 							<li class="text">
 								<router-link :to="{ name: 'blocking' }">
 									Blocking

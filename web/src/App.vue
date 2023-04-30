@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
 import { providers } from './providers';
-import { useAuthStore, useUserStore } from './stores';
+import { useAuthStore, useThemeStore, useUserStore } from './stores';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(() => import('./app/common/components/Notification.vue'))
@@ -15,6 +15,7 @@ const { authService } = providers()
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const themeStore = useThemeStore();
 const router = useRouter()
 
 // COMPOSABLES
@@ -23,6 +24,7 @@ const { isOpen } = useNotifications();
 // FUNCTIONS
 onMounted(async () => {
 	try {
+		themeStore.loadTheme();
 		const authToken = authStore.token;
 		if (!authToken)
 			return;
