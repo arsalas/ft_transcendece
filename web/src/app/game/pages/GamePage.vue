@@ -12,7 +12,7 @@
 						<i class="fa-solid fa-volume-xmark"></i>
 					</span>
 				</button>
-				
+
 				<button v-if="!isMuted" @click="mutedGame" class="button is-primary is-large">
 					<span class="icon is-small">
 						<i class="fa-solid fa-volume-high"></i>
@@ -40,8 +40,10 @@
 import { onMounted, ref, onUnmounted } from 'vue';
 import { PongGame } from '../helpers'
 import { useRouter } from 'vue-router';
+import { useGameStore } from '../../../stores/game';
 
 const router = useRouter();
+const gameStore = useGameStore()
 
 const isMuted = ref<boolean>(false);
 const isStart = ref<boolean>(false);
@@ -69,15 +71,13 @@ const exitGame = () => {
 }
 
 onMounted(() => {
-
-	console.log(getComputedStyle(document.documentElement)
-		.getPropertyValue('--color-primary'))
-
+	// console.log(getComputedStyle(document.documentElement)
+	// 	.getPropertyValue('--color-primary'))
 	canvas.height = app.value!.clientHeight - 1;
 	canvas.width = app.value!.clientWidth - 1;
 	document.querySelector('#game')!.appendChild(canvas)
 
-	game.value = new PongGame(canvas, canvas.width, canvas.height)
+	game.value = new PongGame(canvas, canvas.width, canvas.height, gameStore.mode)
 
 })
 

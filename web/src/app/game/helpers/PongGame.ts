@@ -43,12 +43,28 @@ class AudioController {
 	}
 }
 
+interface PlayerMovement {
+	isMovement: boolean;
+	direction: 'up' | 'down';
+}
+
+type GameMode = 'pvp' | 'pve' | 'online'
 type AudioPong = "paddle" | "point"
 
 export class PongGame {
 
 
-	private idAnimationFrame: number;
+	private idAnimationFrame: number = 0;
+
+	private playerPressKey = this.handlePressKeyPlayer.bind(this);
+	private playerReleaseKey = this.handleReleaseKeyPlayer.bind(this);
+
+	private rivalPressKey = this.handlePressKeyRival.bind(this);
+	private rivalReleaseKey = this.handleReleaseKeyRival.bind(this);
+	// private playerEventMouse = this.movePaddleMouse.bind(this);
+
+	private readonly gameMode: GameMode;
+
 	// Audio
 	private readonly audio = new AudioController;
 
@@ -63,7 +79,7 @@ export class PongGame {
 	// Paddle
 	private readonly margins = 10;
 	private readonly paddleWidth = 20
-	private readonly paddleHeight = 50
+	private readonly paddleHeight = 100
 	private paddlePosition: Players;
 	private paddleDiff = 25
 
@@ -72,15 +88,21 @@ export class PongGame {
 	private score: Players = { player: 0, rival: 0 }
 
 	private speed: Vector = { x: 5, y: 5 }
-	private computerSpeed = 5;
+	private rivalSpeed = 10;
+	private playerSpeed = 10;
 
 	private trayectory: Vector
+
+	private playerMovement: PlayerMovement = { isMovement: false, direction: 'down' }
+	private rivalMovement: PlayerMovement = { isMovement: false, direction: 'down' }
 
 	constructor(
 		canvas: HTMLCanvasElement,
 		width: number,
-		height: number
+		height: number,
+		gameMode: GameMode
 	) {
+		this.gameMode = gameMode;
 		this.canvas = canvas;
 		this.context = canvas.getContext('2d')!;
 		this.width = width;
@@ -98,10 +120,18 @@ export class PongGame {
 
 	destructor() {
 		window.cancelAnimationFrame(this.idAnimationFrame);
+		document.removeEventListener('keydown', this.playerPressKey);
+		document.removeEventListener('keyup', this.playerReleaseKey);
+		if (this.gameMode == 'pvp') {
+			document.removeEventListener('keydown', this.rivalPressKey);
+			document.removeEventListener('keyup', this.rivalReleaseKey);
+
+		}
 	}
 
-
-
+	/**
+	 * Renderiza la pista de juego
+	 */
 	private renderField() {
 		// Color del canvas
 		this.context.fillStyle = 'black';
@@ -109,22 +139,43 @@ export class PongGame {
 		this.context.fillRect(0, 0, this.width, this.height)
 	}
 
+	/**
+	 * Renderiza una pala
+	 * @param color color
+	 * @param x posicion x
+	 * @param y posicion y
+	 */
 	private renderPaddle(color: string, x: number, y: number) {
+
+		this.context.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary');
+		this.context.shadowBlur = 20;
+		this.context.shadowOffsetX = 0;
+		this.context.shadowOffsetY = 0;
+
 		this.context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary');
 		this.context.fillRect(x - 2, y - 2, this.paddleWidth + 4, this.paddleHeight + 4);
 		this.context.fillStyle = color;
 		this.context.fillRect(x, y, this.paddleWidth, this.paddleHeight);
 	}
 
+	/**
+	 * Renderiza al rival
+	 */
 	private renderRival() {
 		this.renderPaddle('white', this.width - this.margins - this.paddleWidth, this.paddlePosition.rival);
 	}
 
+	/**
+	 * Renderiza al jugador
+	 */
 	private renderPlayer() {
 		// getComputedStyle(document.documentElement).getPropertyValue('--color-primary')
 		this.renderPaddle('white', this.margins, this.paddlePosition.player);
 	}
 
+	/**
+	 * Renderiza la linea divisoria
+	 */
 	private renderDashLine() {
 		for (let index = 1; index < 5; index++) {
 			// Linea discontinua del centroDashed center
@@ -140,7 +191,17 @@ export class PongGame {
 
 	}
 
+	/**
+	 * Renderiza la pelota
+	 */
 	private renderBall() {
+
+		this.context.beginPath();
+		this.context.arc(this.ball.x, this.ball.y, this.ballRadius + 2, 2 * Math.PI, 0)
+		this.context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-primary');
+		this.context.fill();
+
+
 		this.context.beginPath();
 		this.context.arc(this.ball.x, this.ball.y, this.ballRadius, 2 * Math.PI, 0)
 		this.context.fillStyle = "white";
@@ -148,12 +209,18 @@ export class PongGame {
 		this.context.fill();
 	}
 
+	/**
+	 * Renderiza el marcador
+	 */
 	private renderScore() {
-		this.context.font = '50px Orbitron'
-		this.context.fillText(this.score.player.toString(), this.width / 2 - 50 - 25, 50)
-		this.context.fillText(this.score.rival.toString(), this.width / 2 + 50, 50)
+		this.context.font = `${0.1 * this.width}px Orbitron`
+		this.context.fillText(this.score.player.toString(), 0.2 * this.width, 0.1 * this.width)
+		this.context.fillText(this.score.rival.toString(), 0.7 * this.width, 0.1 * this.width)
 	}
 
+	/**
+	 * Renderiza todos los elementos del canvas
+	 */
 	private renderCanvas() {
 		this.renderField();
 		this.renderPlayer();
@@ -164,21 +231,63 @@ export class PongGame {
 	}
 
 
+	/**
+	 * Hace que la pelota tenga movimiento
+	 */
 	private ballMove() {
 		this.ball.x += this.speed.x;
 		this.ball.y += this.speed.y
 	}
 
-	private ballBoundaries() {
-		// Limites del campo
-		if (this.ball.y < 0 && this.speed.y < 0) {
-			this.speed.y = -this.speed.y
-		}
-		if (this.ball.y > this.height && this.speed.y > 0) {
-			this.speed.y = -this.speed.y
-		}
+	/**
+	 * Controla el movimiento del jugador
+	 */
+	private playerMove() {
+		if (!this.playerMovement.isMovement)
+			return;
+		if (this.playerMovement.direction == 'up')
+			this.paddlePosition.player -= this.playerSpeed;
+		if (this.playerMovement.direction == 'down')
+			this.paddlePosition.player += this.playerSpeed;
+		if (this.paddlePosition.player < 0)
+			this.paddlePosition.player = 0
 
-		// Choca con el rival
+		if (this.paddlePosition.player > this.height - this.paddleHeight)
+			this.paddlePosition.player = this.height - this.paddleHeight;
+	}
+
+	/**
+	 * Controla el movimiento del rival
+	 */
+	private rivalMove() {
+		if (!this.rivalMovement.isMovement)
+			return;
+		if (this.rivalMovement.direction == 'up')
+			this.paddlePosition.rival -= this.rivalSpeed;
+		if (this.rivalMovement.direction == 'down')
+			this.paddlePosition.rival += this.rivalSpeed;
+		if (this.paddlePosition.rival < 0)
+			this.paddlePosition.rival = 0
+
+		if (this.paddlePosition.rival > this.height - this.paddleHeight)
+			this.paddlePosition.rival = this.height - this.paddleHeight;
+	}
+
+
+	/**
+	 * Comprueba las colisiones con los limites de la pista
+	 */
+	private fieldBoundarie() {
+		if (this.ball.y < 0 && this.speed.y < 0)
+			this.speed.y = -this.speed.y
+		if (this.ball.y > this.height && this.speed.y > 0)
+			this.speed.y = -this.speed.y
+	}
+
+	/**
+	 * Comprueba las colisiones con la pala del rival
+	 */
+	private rivalBoundarie() {
 		if (this.ball.x > this.width - this.paddleDiff) {
 			if (this.ball.y > this.paddlePosition.rival && this.ball.y < this.paddlePosition.rival + this.paddleHeight) {
 				this.audio.play('paddle')
@@ -186,23 +295,27 @@ export class PongGame {
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.rival + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
+				// } else if (this.ball.x > this.width) {
 			} else if (this.ball.x > this.width) {
 				this.audio.play('point')
 				this.ballReset();
 				this.score.player++;
 			}
 		}
+	}
 
-
-		// Choca con el jugador
+	/**
+	 * Comprueba las colisiones con la pala del jugador
+	 */
+	private playerBoundarie() {
 		if (this.ball.x < this.paddleDiff) {
 			if (this.ball.y > this.paddlePosition.player && this.ball.y < this.paddlePosition.player + this.paddleHeight) {
 				this.audio.play('paddle')
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.player + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
-
-			} else if (this.ball.x < 0) {
+				// } else if (this.ball.x < 0) {
+			} else {
 				this.audio.play('point')
 				this.ballReset();
 				this.score.rival++;
@@ -210,17 +323,32 @@ export class PongGame {
 		}
 	}
 
+	/**
+	 * Comprueba las colisiones de la pelota
+	 */
+	private ballBoundaries() {
+		this.fieldBoundarie()
+		this.rivalBoundarie();
+		this.playerBoundarie();
+	}
+
+	/**
+	 * Ejecuta la IA para las partidas PVE
+	 */
 	private paddleIA() {
 		if (this.paddlePosition.rival + this.paddleDiff > Math.floor(this.ball.y) + 5 || this.paddlePosition.rival + this.paddleDiff < Math.floor(this.ball.y) - 5) {
 			if (this.paddlePosition.rival + this.paddleDiff < this.ball.y) {
-				this.paddlePosition.rival += this.computerSpeed
+				this.paddlePosition.rival += this.rivalSpeed
 			} else {
-				this.paddlePosition.rival -= this.computerSpeed;
+				this.paddlePosition.rival -= this.rivalSpeed;
 			}
 		}
 
 	}
 
+	/**
+	 * Resetea la posicion de la pelota en el medio de la pista
+	 */
 	private ballReset() {
 		this.ball.x = this.width / 2;
 		this.ball.y = this.height / 2;
@@ -230,36 +358,106 @@ export class PongGame {
 		this.ballBoundaries();
 		this.renderCanvas();
 		this.ballMove();
-		this.paddleIA();
+		this.playerMove();
+		if (this.gameMode == 'pvp')
+			this.rivalMove()
+		if (this.gameMode == 'pve')
+			this.paddleIA();
 		// Llama a la funcion animate en cada frame
 		this.idAnimationFrame = window.requestAnimationFrame(this.tick.bind(this))
 	}
 
+	/**
+	 * Inicia la partida
+	 */
 	public startGame() {
 		this.tick()
 		this.score.player = 0;
 		this.score.rival = 0;
 
-		this.canvas.addEventListener('mousemove', this.movePaddle.bind(this))
+		// this.canvas.addEventListener('mousemove', this.movePaddleMouse.bind(this))
+		document.addEventListener('keydown', this.playerPressKey);
+		document.addEventListener('keyup', this.playerReleaseKey);
+		if (this.gameMode == 'pvp') {
+			document.addEventListener('keydown', this.rivalPressKey);
+			document.addEventListener('keyup', this.rivalReleaseKey);
+
+		}
 	}
 
+	/**
+	 * Quita el sonido del juego
+	 */
 	public muted() {
 		this.audio.muted()
 	}
 
+	/**
+	 * Restablece el sonido del juego
+	 */
 	public unMuted() {
 		this.audio.unMuted();
 	}
 
-	public movePaddle(e: MouseEvent) {
-		this.paddlePosition.player = e.clientY - 96;
-		if (this.paddlePosition.player < this.paddleDiff) {
-			this.paddlePosition.player = 0
+	/**
+	 * Comprueba cuando el jugador ha pulsado una tecla
+	 * @param e evento
+	 */
+	public handlePressKeyPlayer(e: KeyboardEvent) {
+		if (e.key == 'w') {
+
+			this.playerMovement.isMovement = true;
+			this.playerMovement.direction = 'up';
 		}
-		if (this.paddlePosition.player > this.height - this.paddleHeight) {
-			this.paddlePosition.player = this.height - this.paddleHeight;
+		if (e.key == 's') {
+			this.playerMovement.isMovement = true;
+			this.playerMovement.direction = 'down';
 		}
 	}
 
+	/**
+	 * Comprueba cuando el jugador ha soltado una tecla
+	 * @param e evento
+	 */
+	public handleReleaseKeyPlayer(e: KeyboardEvent) {
+		this.playerMovement.isMovement = false;
+	}
 
+	/**
+	 * Comprueba cuando el rival ha pulsado una tecla
+	 * @param e evento
+	 */
+	public handlePressKeyRival(e: KeyboardEvent) {
+		if (e.key == 'ArrowUp') {
+			this.rivalMovement.isMovement = true;
+			this.rivalMovement.direction = 'up';
+		}
+		if (e.key == 'ArrowDown') {
+			this.rivalMovement.isMovement = true;
+			this.rivalMovement.direction = 'down';
+		}
+	}
+
+	/**
+	 * Comprueba cuando el rival ha soltado una tecla
+	 * @param e evento
+	 */
+	public handleReleaseKeyRival(e: KeyboardEvent) {
+		this.rivalMovement.isMovement = false;
+	}
+
+
+
+	/**
+	 * Mueve al jugador con el mouse
+	 * @param e evento
+	 */
+	public movePaddleMouse(e: MouseEvent) {
+		this.paddlePosition.player = e.clientY - 96;
+		if (this.paddlePosition.player < this.paddleDiff)
+			this.paddlePosition.player = 0
+
+		if (this.paddlePosition.player > this.height - this.paddleHeight)
+			this.paddlePosition.player = this.height - this.paddleHeight;
+	}
 }

@@ -13,7 +13,7 @@
 			<nav class="is-hidden-touch">
 				<ul>
 					<li>
-						<router-link :to="{ name: 'game' }">
+						<router-link :to="{ name: 'selectGame' }">
 							<span class="icon-text text">
 								<span class="icon">
 									<i class="fa-solid fa-table-tennis-paddle-ball"></i>

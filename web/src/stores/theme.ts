@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export type Theme = "futuristic" | "calid" | "cold";
+export type Theme = "purple" | "orange" | "blue" | "red" | "green";
 
 const themePersist = (localStorage.getItem('theme') || 'futuristic') as Theme;
 
@@ -9,7 +9,6 @@ export const useThemeStore = defineStore('theme', () => {
 	const theme = ref<Theme>(themePersist);
 
 	const loadTheme = () => {
-		console.log(theme.value)
 		document.documentElement.className = theme.value;
 	}
 

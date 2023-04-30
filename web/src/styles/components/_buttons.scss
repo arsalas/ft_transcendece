@@ -53,23 +53,23 @@
 		// filter: grayscale(0%);
 	}
 
-	&.futuristic {
+	&.purple {
 
 		&.is-outlined {
-			border-color: var(--theme-futuristic);
-			color: var(--theme-futuristic);
+			border-color: var(--theme-purple);
+			color: var(--theme-purple);
 			// filter: grayscale(0%);
 		}
 
 		&.is-outlined:hover {
-			background-color: var(--theme-futuristic);
-			border-color: var(--theme-futuristic);
+			background-color: var(--theme-purple);
+			border-color: var(--theme-purple);
 			// filter: grayscale(0%);
 		}
 
 		&.is-outlined:focus {
-			background-color: var(--theme-futuristic);
-			border-color: var(--theme-futuristic);
+			background-color: var(--theme-purple);
+			border-color: var(--theme-purple);
 			// filter: grayscale(0%);
 		}
 
@@ -77,22 +77,70 @@
 			color: var(--color-text-btn);
 		}
 	}
-	&.calid {
+	&.orange {
 		&.is-outlined {
-			border-color: var(--theme-calid);
-			color: var(--theme-calid);
+			border-color: var(--theme-orange);
+			color: var(--theme-orange);
 			// filter: grayscale(0%);
 		}
 
 		&.is-outlined:hover {
-			background-color: var(--theme-calid);
-			border-color: var(--theme-calid);
+			background-color: var(--theme-orange);
+			border-color: var(--theme-orange);
 			// filter: grayscale(0%);
 		}
 
 		&.is-outlined:focus {
-			background-color: var(--theme-calid);
-			border-color: var(--theme-calid);
+			background-color: var(--theme-orange);
+			border-color: var(--theme-orange);
+			// filter: grayscale(0%);
+		}
+
+		&:hover {
+			color: var(--color-text-btn);
+		}
+	}
+
+	&.red {
+		&.is-outlined {
+			border-color: var(--theme-red);
+			color: var(--theme-red);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:hover {
+			background-color: var(--theme-red);
+			border-color: var(--theme-red);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:focus {
+			background-color: var(--theme-red);
+			border-color: var(--theme-red);
+			// filter: grayscale(0%);
+		}
+
+		&:hover {
+			color: var(--color-text-btn);
+		}
+	}
+
+	&.green {
+		&.is-outlined {
+			border-color: var(--theme-green);
+			color: var(--theme-green);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:hover {
+			background-color: var(--theme-green);
+			border-color: var(--theme-green);
+			// filter: grayscale(0%);
+		}
+
+		&.is-outlined:focus {
+			background-color: var(--theme-green);
+			border-color: var(--theme-green);
 			// filter: grayscale(0%);
 		}
 
