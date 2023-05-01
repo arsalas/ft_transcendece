@@ -55,6 +55,12 @@ const routes: RouteRecordRaw[] =
 					name: 'chat',
 					component: () => import(/* webpackChunkName: "account" */'../pages/Chats.vue'),
 				},
+				{
+					path: 'select-game',
+					meta: { title: 'Select Game' },
+					name: 'selectGame',
+					component: () => import(/* webpackChunkName: "account" */'../pages/SelectGamePage.vue'),
+				},
 			]
 		},
 	]

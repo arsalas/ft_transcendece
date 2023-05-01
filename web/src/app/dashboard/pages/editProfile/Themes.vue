@@ -9,7 +9,7 @@
 				Select theme for app:
 			</p>
 			<br>
-			<div class="columns">
+			<div class="columns is-multiline is-centered">
 
 				<div v-for="th in themes" class="column is-4">
 					<button class="button is-primary is-fullwidth" :class="[theme != th && 'is-outlined', th]"
@@ -35,7 +35,7 @@ const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
 
 // VARIABLES
-const themes: Theme[] = ['futuristic', 'calid', 'cold']
+const themes: Theme[] = ['purple', 'orange', 'blue', 'red', 'green']
 
 // FUNCIONES
 const changeTheme = (newTheme: Theme) => {

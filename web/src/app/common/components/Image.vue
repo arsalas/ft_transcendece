@@ -2,12 +2,23 @@
 	<img loading="lazy" :src="src ? src : fallback" @error="handleError">
 </template>
 <script lang='ts' setup>
+import { ref } from 'vue';
+
 
 const props = defineProps<{
 	src?: string;
 	fallback?: string;
 	isRounded?: boolean;
+	isExternal?: boolean;
 }>()
+
+const img = ref<string>('')
+
+// Importacion dinamica
+if (!props.isExternal)
+	import('../../../assets/' + props.src!).then(data => img.value = data.default).catch(e => e)
+else img.value = props.src!;
+
 
 
 const handleError = (event: Event) => {

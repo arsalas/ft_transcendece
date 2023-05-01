@@ -71,7 +71,7 @@ export class UserService {
 			profile = { ...profile, ...updateUserDto };
 			if (file)
 				profile.avatar = file.filename;
-			const res = await this.profileRepository.update({ login }, { ...updateUserDto });
+			const res = await this.profileRepository.update({ login }, { ...updateUserDto, avatar: profile.avatar });
 			// "generatedMaps": [],
 			// "raw": [],
 			// "affected": 1
