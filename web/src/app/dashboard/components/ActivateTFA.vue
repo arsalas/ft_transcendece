@@ -13,7 +13,6 @@
 			<p class="text field mt-4"> Insert the app code to confirm</p>
 			<form @submit.prevent="handleSubmit">
 				<div class="field">
-
 					<div class="control">
 						<input ref="codeRef" v-model.trim="code" class="input" placeholder="code" />
 					</div>

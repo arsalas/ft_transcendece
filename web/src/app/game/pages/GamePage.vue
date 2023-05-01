@@ -101,7 +101,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-	game.value?.destructor();
+	game.value!.destructor();
 	delete game.value
 	window.removeEventListener("resize", handleResize);
 })
