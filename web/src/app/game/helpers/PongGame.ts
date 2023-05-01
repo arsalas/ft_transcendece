@@ -295,8 +295,7 @@ export class PongGame {
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.rival + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
-				// } else if (this.ball.x > this.width) {
-			} else if (this.ball.x > this.width) {
+			} else if (this.ball.x >= this.width) {
 				this.audio.play('point')
 				this.ballReset();
 				this.score.player++;
@@ -314,8 +313,7 @@ export class PongGame {
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.player + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
-				// } else if (this.ball.x < 0) {
-			} else {
+			} else if (this.ball.x <= 0) {
 				this.audio.play('point')
 				this.ballReset();
 				this.score.rival++;
@@ -352,6 +350,14 @@ export class PongGame {
 	private ballReset() {
 		this.ball.x = this.width / 2;
 		this.ball.y = this.height / 2;
+		if (this.speed.x < 0)
+			this.speed.x = -5;
+		else
+			this.speed.x = 5;
+		if (this.speed.y < 0)
+			this.speed.y = -5;
+		else
+			this.speed.y = 5;
 	}
 
 	private tick() {

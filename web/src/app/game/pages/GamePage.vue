@@ -39,7 +39,7 @@
 					{{ user.username }}
 				</div>
 				<div class="player text is-large">
-					<Image src="../../../assets/favicon.png" :fallback="user.avatar42" />
+					<Image src="favicon.png" :fallback="user.avatar42" is-external />
 					CPU
 				</div>
 			</div>
