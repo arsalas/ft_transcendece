@@ -27,7 +27,7 @@
 			<button v-if="!user.twoFactorAuth" @click="handleClick" class="button is-primary mt-4 is-outlined">
 				Genetate QR code
 			</button>
-			<div v-else class="button is-primary mt-4">Actived</div>
+			<button v-else @click="open" class="button is-primary mt-4">Desactivate</button>
 
 			<div class="columns mt-2">
 				<div class="column">
@@ -44,7 +44,8 @@
 		</template>
 	</Box>
 	<Modal v-if="isOpen">
-		<ActivateTFA :qr="qrImg" />
+		<DesactivateTFA v-if="user.twoFactorAuth" />
+		<ActivateTFA v-else :qr="qrImg" />
 	</Modal>
 </template>
 <script lang='ts' setup>
@@ -59,6 +60,7 @@ import { providers } from '../../../../providers';
 const Box = defineAsyncComponent(() => import('../../../common/components/Box.vue'))
 const QRCode = defineAsyncComponent(() => import('../../components/QRCode.vue'))
 const ActivateTFA = defineAsyncComponent(() => import('../../components/ActivateTFA.vue'))
+const DesactivateTFA = defineAsyncComponent(() => import('../../components/DesactivateTFA.vue'))
 const Modal = defineAsyncComponent(() => import('../../../common/components/Modal.vue'))
 
 // STORES
@@ -91,6 +93,7 @@ const handleClick = async (e: Event): Promise<void> => {
 		isLoading.value = false;
 	}
 }
+
 
 </script>
 <style lang='scss' scoped>

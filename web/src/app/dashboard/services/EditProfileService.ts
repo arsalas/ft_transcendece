@@ -30,4 +30,12 @@ export class EditProfieService {
 			throw new Error(error as string);
 		}
 	}
+
+	async desactivateTFA(token: string) {
+		try {
+			return await this.http.post<{ qr: string }>('/auth/desactivate-tfa', { token })
+		} catch (error) {
+			throw new Error(error as string);
+		}
+	}
 }

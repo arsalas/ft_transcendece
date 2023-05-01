@@ -63,6 +63,25 @@ export class AuthService {
 		}
 	}
 
+	/**
+	 * Desactiva la autenticacion en 2 factores
+	 * @param user 
+	 * @param token 
+	 * @returns 
+	 */
+	public async desactivateTFASecret(login: string, token: string) {
+		try {
+			const user = await this.userService.findUser(login);
+			if (!user)
+				throw new HttpException("User not found", 403);
+			if (!this.tfaService.verify(user.secret, token))
+				throw new HttpException("Unauthorized", 401);
+			await this.userRepository.update({ login }, { twoFactorAuth: false })
+		} catch (error) {
+			throw new HttpException("Something is wrong", 500);
+		}
+	}
+
 
 
 	/**

@@ -36,4 +36,10 @@ export class AuthController {
 	async activateTFASecret(@Request() { user }: { user: JwtPayload }, @Body() activateTFADto: ActivateTFADto) {
 		return this.authService.activateTFASecret(user.login, activateTFADto.token);
 	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post("desactivate-tfa")
+	async desactivateTFASecret(@Request() { user }: { user: JwtPayload }, @Body() activateTFADto: ActivateTFADto) {
+		return this.authService.desactivateTFASecret(user.login, activateTFADto.token);
+	}
 }
