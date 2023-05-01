@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export type Theme = "purple" | "orange" | "blue" | "red" | "green";
 
-const themePersist = (localStorage.getItem('theme') || 'futuristic') as Theme;
+const themePersist = (localStorage.getItem('theme') || 'purple') as Theme;
 
 export const useThemeStore = defineStore('theme', () => {
 	const theme = ref<Theme>(themePersist);
