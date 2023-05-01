@@ -12,6 +12,9 @@ export class Profile {
 	@Column({ nullable: true })
 	avatar: string;
 
+	@Column()
+	avatar42: string;
+
 	@Column({ nullable: true })
 	status: string;
 

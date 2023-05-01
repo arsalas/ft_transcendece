@@ -39,7 +39,7 @@ export class UserService {
 	 * Crea un nuevo usuario y su perfil
 	 * @param user login42
 	 */
-	async create(login: string) {
+	async create(login: string, avatar42:string) {
 
 		// Creamos una transaccion
 		const queryRunner = this.dataSource.createQueryRunner();
@@ -47,7 +47,7 @@ export class UserService {
 		await queryRunner.startTransaction();
 		try {
 			const userRepo = this.userRepository.create({ login });
-			const profileRepo = this.profileRepository.create({ login });
+			const profileRepo = this.profileRepository.create({ login, avatar42 });
 			// await this.userRepository.save(userRepo);
 			// await this.profileRepository.save(profileRepo);
 			await queryRunner.manager.save(userRepo);
@@ -65,7 +65,6 @@ export class UserService {
 	}
 
 	async updateUser(login: string, updateUserDto: UpdateUserDto, file?: Express.Multer.File): Promise<Profile> {
-		console.log(login)
 		let profile: Profile = await this.profileRepository.findOneBy({ login });
 		if (!profile) throw new HttpException("User not found", 404);
 		try {

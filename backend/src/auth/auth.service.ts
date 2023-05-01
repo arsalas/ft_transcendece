@@ -78,7 +78,7 @@ export class AuthService {
 			// Si no existe el usuario se crea
 			if (!user) {
 				try {
-					await this.userService.create(user42.login)
+					await this.userService.create(user42.login, user42.image.link)
 				} catch (error) {
 					throw new HttpException("Something is wrong", 500)
 				}
@@ -141,7 +141,7 @@ export class AuthService {
 			token,
 			user: {
 				login: user.login,
-				avatar42: avatar42,
+				avatar42: profile.avatar42,
 				username: profile.username,
 				avatar: profile.avatar,
 				twoFactorAuth: user.twoFactorAuth,
