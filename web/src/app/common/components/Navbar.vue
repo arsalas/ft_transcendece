@@ -55,17 +55,18 @@
 
 					</li>
 					<li>
-						<!-- <router-link :to="{ name: 'profile' }"> -->
+						<router-link :to="{ name: 'profileUser' }">
 
-						<span class="icon-text text">
-							<span class="icon">
-								<i class="fa-solid fa-user"></i>
+							<span class="icon-text text">
+								<span class="icon">
+									<i class="fa-solid fa-user"></i>
+								</span>
+								<span>Profile</span>
 							</span>
-							<span>Profile</span>
-						</span>
 
 
-						<!-- </router-link> -->
+
+						</router-link>
 					</li>
 				</ul>
 			</nav>

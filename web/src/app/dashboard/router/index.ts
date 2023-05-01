@@ -61,6 +61,21 @@ const routes: RouteRecordRaw[] =
 					name: 'selectGame',
 					component: () => import(/* webpackChunkName: "account" */'../pages/SelectGamePage.vue'),
 				},
+				{
+					path: 'profile',
+					name: 'profileUser',
+					redirect: 'overview',
+					meta: { title: 'Profile' },
+					component: () => import(/* webpackChunkName: "create-contest" */'../layouts/ProfileLayout.vue'),
+					children: [
+						{
+							path: '',
+							name: 'overview',
+							meta: { title: 'Profile' },
+							component: () => import(/* webpackChunkName: "create-contest" */'../pages/profile/OverviewPage.vue')
+						},
+					]
+				},
 			]
 		},
 	]
