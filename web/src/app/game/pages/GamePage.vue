@@ -31,6 +31,19 @@
 
 			</div>
 		</div>
+		<header>
+
+			<div class="info-players">
+				<div class="player text is-large">
+					<Image :src="user.avatar" :fallback="user.avatar42" />
+					{{ user.username }}
+				</div>
+				<div class="player text is-large">
+					<Image src="../../../assets/favicon.png" :fallback="user.avatar42" />
+					CPU
+				</div>
+			</div>
+		</header>
 		<div class="game-container">
 			<div id="game" ref="app"></div>
 		</div>
@@ -41,9 +54,14 @@ import { onMounted, ref, onUnmounted } from 'vue';
 import { PongGame } from '../helpers'
 import { useRouter } from 'vue-router';
 import { useGameStore } from '../../../stores/game';
+import { useUserStore } from '../../../stores';
+import { storeToRefs } from 'pinia';
+import Image from '../../common/components/Image.vue';
 
 const router = useRouter();
 const gameStore = useGameStore()
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 
 const isMuted = ref<boolean>(false);
 const isStart = ref<boolean>(false);
@@ -125,6 +143,43 @@ window.addEventListener("resize", handleResize);
 	width: 100%;
 	background-color: var(--bg-dark-0);
 	border-bottom: var(--border);
+}
+
+header {
+	height: 3rem;
+	background-color: var(--bg-dark-1);
+	border-bottom: var(--border);
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.info-players {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 80%;
+	height: 100%;
+
+	& .player {
+		flex: 1;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		& img {
+			height: 80%;
+			border-radius: 50%;
+			aspect-ratio: 1;
+			object-fit: cover;
+			object-position: denter;
+			margin-right: 1rem;
+			border: var(--border);
+		}
+
+		// text-align: center;
+	}
 }
 
 #game {
