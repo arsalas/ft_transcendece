@@ -88,22 +88,21 @@ export class AuthService {
       // Si no existe el usuario se crea
       if (!user) {
         try {
-          await this.userService.create(user42.login, user42.image.link);
+          await this.userService.create(user42);
         } catch (error) {
           throw new HttpException('Something is wrong', 500);
         }
         user = this.userRepository.create({ login: user42.login });
       }
-
       // Comprobar si tiene TFA
       if (user.twoFactorAuth) {
         return {
           twoFactorAuth: true,
           login: user.login,
-          avatar42: user42.image.link,
+          avatar42: user42.avatar42,
         };
       }
-      return this.getUserAuth(user, user42.image.link);
+      return this.getUserAuth(user, user42.avatar42);
     } catch (error) {
       console.log(error);
       throw new HttpException('Something is wrong', 500);

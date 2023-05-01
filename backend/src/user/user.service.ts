@@ -3,13 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
+import { IAuth42 } from 'src/common/interfaces';
 
 @Injectable()
 export class UserService {
   constructor(
     private dataSource: DataSource,
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Profile) private profileRepository: Repository<Profile>,
+    @InjectRepository(Profile)
+    private profileRepository: Repository<Profile>,
   ) {}
 
   /**
@@ -37,14 +39,16 @@ export class UserService {
    * Crea un nuevo usuario y su perfil
    * @param user login42
    */
-  async create(login: string, avatar42: string) {
+  async create(user42: IAuth42) {
     // Creamos una transaccion
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.startTransaction();
     try {
-      const userRepo = this.userRepository.create({ login });
-      const profileRepo = this.profileRepository.create({ login, avatar42 });
+      const userRepo = this.userRepository.create({
+        login: user42.login,
+      });
+      const profileRepo = this.profileRepository.create({ ...user42 });
       // await this.userRepository.save(userRepo);
       // await this.profileRepository.save(profileRepo);
       await queryRunner.manager.save(userRepo);
@@ -66,7 +70,9 @@ export class UserService {
     updateUserDto: UpdateUserDto,
     file?: Express.Multer.File,
   ): Promise<Profile> {
-    let profile: Profile = await this.profileRepository.findOneBy({ login });
+    let profile: Profile = await this.profileRepository.findOneBy({
+      login,
+    });
     if (!profile) throw new HttpException('User not found', 404);
     try {
       profile = { ...profile, ...updateUserDto };
@@ -85,7 +91,6 @@ export class UserService {
         };
       return profile;
     } catch (error) {
-      console.log(error);
       throw new HttpException('Something is wrong', 500);
     }
   }
