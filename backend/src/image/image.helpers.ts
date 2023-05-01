@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { toDataUR } from 'qrcode';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class ImageHelpers {
