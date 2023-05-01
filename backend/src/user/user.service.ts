@@ -21,14 +21,6 @@ export class UserService {
    */
   async findUser(login: string): Promise<User> {
     return await this.userRepository.findOneBy({ login });
-    // return await this.userRepository.findOne({
-    // 	where: {
-    // 		login,
-    // 	},
-    // 	relations: {
-    // 		profile: true
-    // 	},
-    // });
   }
 
   async findProfile(login: string): Promise<Profile> {

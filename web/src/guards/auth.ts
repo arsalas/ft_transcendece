@@ -1,6 +1,6 @@
-import { useAuthStore } from "../stores";
+import { useAuthStore } from '../stores';
 
 export const isAuth = (): boolean => {
-	const authStore = useAuthStore();
-	return authStore.isAuth;
-}
+  const authStore = useAuthStore();
+  return authStore.isAuth;
+};

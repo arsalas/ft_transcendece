@@ -11,22 +11,23 @@ import { ImageHelpers } from './image/image.helpers';
 import { CommonModule } from './common/common.module';
 
 @Module({
-	imports: [
-		TypeOrmModule.forRoot({
-			type: 'postgres',
-			host: 'database',
-			port: Number(process.env.BBDD_PORT),
-			username: process.env.POSTGRES_USER,
-			password: process.env.POSTGRES_PASSWORD,
-			database: process.env.POSTGRES_DB,
-			entities: [__dirname + '/**/*.entity{.ts,.js}'],
-			synchronize: true
-		}),
-		HttpModule,
-		UserModule, AuthModule, CommonModule
-	],
-	controllers: [AppController, ImageController],
-	providers: [AppService, ImageHelpers],
-
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'database',
+      port: Number(process.env.BBDD_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,
+    }),
+    HttpModule,
+    UserModule,
+    AuthModule,
+    CommonModule,
+  ],
+  controllers: [AppController, ImageController],
+  providers: [AppService, ImageHelpers],
 })
-export class AppModule { }
+export class AppModule {}

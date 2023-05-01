@@ -3,36 +3,33 @@
 // }
 
 html {
-	font-size: var(--font-size);
-	background-color: var(--bg-dark-0);
+  font-size: var(--font-size);
+  background-color: var(--bg-dark-0);
 }
 
 body {
-	font-family: var(--font-family);
-	font-size: 1rem;
+  font-family: var(--font-family);
+  font-size: 1rem;
 
-
-	min-height: 100vh;
-	background-color: var(--bg-dark-0);
-
-
+  min-height: 100vh;
+  background-color: var(--bg-dark-0);
 }
 
 // SELECCION DE TEXTO
 * {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 // ARRASTRAR IMAGENES
 img {
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	-webkit-user-drag: none;
-	user-drag: none;
-	-webkit-touch-callout: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
 }
