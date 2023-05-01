@@ -1,3 +1,4 @@
+import { Router } from 'vue-router';
 import audioPaddle from '../../../assets/audio/pong1.mp3'
 import audioPoint from '../../../assets/audio/pong_defeat.mp3'
 
@@ -96,11 +97,16 @@ export class PongGame {
 	private playerMovement: PlayerMovement = { isMovement: false, direction: 'down' }
 	private rivalMovement: PlayerMovement = { isMovement: false, direction: 'down' }
 
+	private readonly limitPoints = 10;
+
+	private isPaused = false;
+
 	constructor(
 		canvas: HTMLCanvasElement,
 		width: number,
 		height: number,
-		gameMode: GameMode
+		gameMode: GameMode,
+		private router: Router
 	) {
 		this.gameMode = gameMode;
 		this.canvas = canvas;
@@ -295,10 +301,10 @@ export class PongGame {
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.rival + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
-			} else if (this.ball.x >= this.width) {
+			} else if (this.ball.x >= this.width - this.paddleDiff / 2) {
 				this.audio.play('point')
-				this.ballReset();
 				this.score.player++;
+				this.ballReset();
 			}
 		}
 	}
@@ -313,10 +319,10 @@ export class PongGame {
 				this.speed.x = -this.speed.x;
 				this.trayectory.y = this.ball.y - (this.paddlePosition.player + this.paddleDiff)
 				this.speed.y = this.trayectory.y * 0.3
-			} else if (this.ball.x <= 0) {
+			} else if (this.ball.x <= this.paddleDiff / 2) {
 				this.audio.play('point')
-				this.ballReset();
 				this.score.rival++;
+				this.ballReset();
 			}
 		}
 	}
@@ -348,6 +354,10 @@ export class PongGame {
 	 * Resetea la posicion de la pelota en el medio de la pista
 	 */
 	private ballReset() {
+		if (this.score.player == this.limitPoints || this.score.rival == this.limitPoints)
+			// this.router.push({ name: 'home' });
+			this.isPaused = true
+
 		this.ball.x = this.width / 2;
 		this.ball.y = this.height / 2;
 		if (this.speed.x < 0)
@@ -361,6 +371,8 @@ export class PongGame {
 	}
 
 	private tick() {
+		if (this.isPaused)
+			return;
 		this.ballBoundaries();
 		this.renderCanvas();
 		this.ballMove();

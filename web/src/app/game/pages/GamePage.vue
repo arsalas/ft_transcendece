@@ -69,6 +69,7 @@ const app = ref<HTMLDivElement>()
 const game = ref<PongGame>()
 const canvas = document.createElement('canvas');
 
+
 const mutedGame = () => {
 	isMuted.value = true;
 	game.value?.muted()
@@ -95,7 +96,7 @@ onMounted(() => {
 	canvas.width = app.value!.clientWidth - 1;
 	document.querySelector('#game')!.appendChild(canvas)
 
-	game.value = new PongGame(canvas, canvas.width, canvas.height, gameStore.mode)
+	game.value = new PongGame(canvas, canvas.width, canvas.height, gameStore.mode, router)
 
 })
 
