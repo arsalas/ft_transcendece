@@ -5,6 +5,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
+import { IHistory, IStadistics, IUserProfile } from './interfaces';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,15 @@ export class UserService {
 
   async findProfile(login: string): Promise<Profile> {
     return await this.profileRepository.findOneBy({ login });
+  }
+
+  async findProfileByUsername(username: string): Promise<IUserProfile> {
+    const profile = await this.profileRepository.findOneBy({ username });
+    const history: IHistory[] = [
+      { date: new Date().toDateString(), player: 'aramirez' },
+    ];
+    const stadistics: IStadistics = { lost: 4, played: 8, win: 4 };
+    return { profile, history, stadistics };
   }
 
   /**

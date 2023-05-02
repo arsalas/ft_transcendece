@@ -27,6 +27,11 @@ import { JwtPayload } from 'src/auth/interfaces';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get(':username')
+  async getUser(@Param('username') username: string) {
+    return await this.userService.findProfileByUsername(username);
+  }
+
   @Put()
   @UseInterceptors(
     FileInterceptor(
