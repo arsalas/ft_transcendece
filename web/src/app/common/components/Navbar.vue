@@ -55,7 +55,7 @@
 
 					</li>
 					<li>
-						<router-link :to="{ name: 'profileUser', params:{username: user.username} }">
+						<router-link :to="{ name: 'profileUser', params:{username: user.username || user.login} }">
 
 							<span class="icon-text text">
 								<span class="icon">

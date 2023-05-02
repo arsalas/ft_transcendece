@@ -7,30 +7,7 @@
             <div class="control">
                 <input ref="userRef" v-model.trim="user" class="input" placeholder="user" />
             </div>
-            <div class="columns">
-                <div class="column is-10">
-                    <div class="overview">
-                        <!-- v-for='HOLA' -->
-                        <ul>
-                            <li class="text">
-                                Username:
-                            </li>
-                            <li class="text">
-                                42-username:
-                            </li>
-                            <li class="text">
-                                Stadistics
-                            <li class="text">
-                                Winned:
-                            </li>
-                            <li class="text">
-                                Losed:
-                            </li>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
     LAYOUT
