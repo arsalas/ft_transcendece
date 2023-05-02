@@ -62,7 +62,7 @@ const routes: RouteRecordRaw[] =
 					component: () => import(/* webpackChunkName: "account" */'../pages/SelectGamePage.vue'),
 				},
 				{
-					path: 'profile',
+					path: 'profile/:username',
 					name: 'profileUser',
 					redirect: 'overview',
 					meta: { title: 'Profile' },
