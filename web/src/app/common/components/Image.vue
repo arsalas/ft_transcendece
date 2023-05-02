@@ -14,11 +14,11 @@ const props = defineProps<{
 const img = ref<string>('');
 
 // Importacion dinamica
-if (!props.isExternal)
+if (!props.isExternal && props.src)
   import('../../../assets/' + props.src!)
     .then((data) => (img.value = data.default))
     .catch((e) => e);
-else img.value = props.src!;
+else img.value = props.src || props.fallback || '';
 
 const handleError = (event: Event) => {
   const img = event.target as HTMLImageElement;

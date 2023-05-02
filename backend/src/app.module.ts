@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 
 import { AppController } from './app.controller';
@@ -9,9 +10,14 @@ import { AuthModule } from './auth/auth.module';
 import { ImageController } from './image/image.controller';
 import { ImageHelpers } from './image/image.helpers';
 import { CommonModule } from './common/common.module';
+import { EnvConfiguration, JoiValidationSchema } from './config';
 
 @Module({
   imports: [
+	ConfigModule.forRoot({
+		load: [EnvConfiguration],
+		validationSchema: JoiValidationSchema
+	}),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'database',

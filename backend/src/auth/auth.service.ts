@@ -8,6 +8,7 @@ import { User, Profile } from '../user/entities';
 import { UserService } from 'src/user/user.service';
 import { Api42Service, TfaService } from 'src/common/services';
 import { ConfirmTFADto } from './dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private userService: UserService,
     private tfaService: TfaService,
     private api42Service: Api42Service,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -140,7 +142,8 @@ export class AuthService {
 
     // Comprobamos si tiene un avatar para unir el path de la url de la imagen
     if (profile.avatar)
-      profile.avatar = 'http://localhost:3000/image/' + profile.avatar;
+      profile.avatar =
+        this.configService.get<string>('webURL') + '/image/' + profile.avatar;
 
     return {
       token,

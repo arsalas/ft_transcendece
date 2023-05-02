@@ -1,4 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
@@ -12,6 +13,7 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -79,7 +81,10 @@ export class UserService {
       if (profile.avatar)
         profile = {
           ...profile,
-          avatar: 'http://localhost:3000/image/' + profile.avatar,
+          avatar:
+            this.configService.get<string>('webURL') +
+            '/image/' +
+            profile.avatar,
         };
       return profile;
     } catch (error) {

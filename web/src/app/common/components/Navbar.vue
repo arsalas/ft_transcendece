@@ -170,7 +170,7 @@ nav {
         transition: 300ms;
 
         &:hover {
-          color: var(--color-primary);
+          color: var(--color-primary-hover);
         }
       }
 
