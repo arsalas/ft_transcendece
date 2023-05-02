@@ -41,9 +41,7 @@ onMounted(async () => {
 
 <template>
   <div class="app">
-    <Transition
-      name="custom-classes"
-      enter-active-class="animate__animated animate__slideInRight animate__faster"
+    <Transition name="custom-classes" enter-active-class="animate__animated animate__slideInRight animate__faster"
       leave-active-class="animate__animated animate__slideOutRight animate__faster">
       <Notification v-if="isOpen" message="Holasfdad" />
     </Transition>
@@ -53,11 +51,9 @@ onMounted(async () => {
 
 <style scoped>
 .app {
-  background-image: linear-gradient(
-      rgba(0, 0, 0, 1),
+  background-image: linear-gradient(rgba(0, 0, 0, 1),
       rgba(0, 0, 0, 0.7),
-      rgba(0, 0, 0, 1)
-    ),
+      rgba(0, 0, 0, 1)),
     url('./assets/bg_spash.jpg');
   background-position: center;
   background-size: cover;
