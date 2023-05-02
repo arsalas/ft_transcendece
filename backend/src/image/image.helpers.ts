@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { toDataUR } from 'qrcode';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class ImageHelpers {
@@ -9,7 +9,9 @@ export class ImageHelpers {
    * @returns imagen QR
    */
   async generateQRCode(url: string): Promise<string> {
+
     return new Promise((resolve, reject) => {
+    
       toDataURL(url, (err: Error, imageUrl: string) => {
         if (err) reject(err);
         resolve(imageUrl);
