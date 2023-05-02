@@ -1,1 +1,1 @@
-export * from './EditProfile2'
+export * from './EditProfileService';

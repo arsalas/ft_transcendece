@@ -12,6 +12,7 @@ import { ImageHelpers } from 'src/image/image.helpers';
 import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from 'src/common/common.module';
 import { Api42Service, TfaService } from 'src/common/services';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Api42Service, TfaService } from 'src/common/services';
     }),
     UserModule,
     CommonModule,
+    ConfigModule,
   ],
   controllers: [AuthController],
   providers: [

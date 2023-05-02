@@ -24,6 +24,18 @@ export class Profile {
   @Column()
   avatar42: string;
 
+  @Column()
+  coallition: string;
+
+  @Column()
+  icon: string;
+
+  @Column()
+  background: string;
+
+  @Column()
+  color: string;
+
   @Column({ nullable: true })
   status: string;
 

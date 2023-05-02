@@ -1,2 +1,2 @@
-export * from './tfa.service'
-export * from './api42.service'
+export * from './tfa.service';
+export * from './api42.service';

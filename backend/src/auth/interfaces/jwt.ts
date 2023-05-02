@@ -1,4 +1,4 @@
 export interface JwtPayload {
-	login: string;
-	avatar42: string;
+  login: string;
+  avatar42: string;
 }
