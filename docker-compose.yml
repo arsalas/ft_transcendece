@@ -9,8 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - database_volume:/var/lib/postgresql
-      - database_data_volume:/var/lib/postgresql/data
+      - database_volume:/var/lib/postgresql/data
     ports:
       - "${BBDD_PORT}:5432"
     expose:
@@ -63,8 +62,6 @@ services:
  
 volumes:
   database_volume:
-    external: false
-  database_data_volume:
     external: false
   backend_volume:
     external: false

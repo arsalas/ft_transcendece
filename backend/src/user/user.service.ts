@@ -1,4 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -8,6 +14,8 @@ import { IAuth42 } from 'src/common/interfaces';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger('UserService');
+
   constructor(
     private dataSource: DataSource,
     @InjectRepository(User) private userRepository: Repository<User>,
@@ -36,15 +44,13 @@ export class UserService {
   async create(user42: IAuth42) {
     // Creamos una transaccion
     const queryRunner = this.dataSource.createQueryRunner();
-
+    await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       const userRepo = this.userRepository.create({
         login: user42.login,
       });
       const profileRepo = this.profileRepository.create({ ...user42 });
-      // await this.userRepository.save(userRepo);
-      // await this.profileRepository.save(profileRepo);
       await queryRunner.manager.save(userRepo);
       await queryRunner.manager.save(profileRepo);
       // Si todo ha ido bien aplicamos los cambios
@@ -90,5 +96,11 @@ export class UserService {
     } catch (error) {
       throw new HttpException('Something is wrong', 500);
     }
+  }
+
+  private handleDBExceptions(error: any) {
+    if (error.code == '23505') throw new BadRequestException(error.detail);
+    this.logger.error(error);
+    throw new InternalServerErrorException('Unexpected error');
   }
 }
