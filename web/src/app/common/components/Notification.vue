@@ -29,7 +29,7 @@ onMounted(() => {
   padding: 1rem 2rem;
   min-width: 16rem;
   border: var(--border);
-  z-index: 2;
+  z-index: 41;
   border-left: 5px solid var(--border-color);
 }
 

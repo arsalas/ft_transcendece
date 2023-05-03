@@ -1,0 +1,18 @@
+.tag:not(body).is-primary {
+  background-color: var(--color-primary);
+}
+
+.badge {
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.badge.is-primary {
+  background-color: var(--color-primary);
+  padding: 0.2rem;
+  aspect-ratio: 1;
+  width: 1.5rem;
+}
