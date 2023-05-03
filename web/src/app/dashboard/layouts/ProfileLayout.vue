@@ -2,21 +2,41 @@
   <!-- Necesita tener un RouterView por ser un layout
     Lo que este en routerview es lo que se mantiene -->
   <!-- aqui solo la barrita de arriba -->
-  <div class="container">
-    <div class="section">
+  <header class="sub-header">
+    <nav>
+      <ul class="nav-items">
+        <li class="text">
+          <router-link
+            :to="{
+              name: 'overview',
+              params: { username: route.params.username },
+            }">
+            OVERVIEW
+          </router-link>
+        </li>
+        <li class="text">
+          <router-link
+            :to="{
+              name: 'history',
+              params: { username: route.params.username },
+            }">
+            HISTORY
+          </router-link>
+        </li>
+        <li class="text">STADISTICS</li>
+      </ul>
+    </nav>
+    <div class="actions">
       <div class="control">
-        <input
-          ref="userRef"
-          v-model.trim="user"
-          class="input"
-          placeholder="user" />
+        <input ref="userRef" class="input" placeholder="Find user" />
       </div>
     </div>
-  </div>
-  <img v-if="profile" :src="profile.profile.icon" alt="">
-  <img v-if="profile" :src="profile.profile.background" alt="">
-  {{ profile }}
-  <RouterView />
+  </header>
+  <!-- <img v-if="profile" :src="profile.profile.icon" alt="" />
+      <img v-if="profile" :src="profile.profile.background" alt="" /> -->
+  <!-- {{ profile }} -->
+  <RouterView v-if="profile" />
+  <!-- TODO PONER DESPUES v-model.trim="user" -->
 </template>
 
 <script lang="ts" setup>
@@ -75,11 +95,22 @@ onMounted(async () => {
     }
   }
 }
-.container {
+.sub-header {
   display: flex;
-& .input {
-  justify-content: left;
-}
-}
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  height: 50px;
+  background-color: var(--bg-dark-1);
+  border-bottom: var(--border);
+  .nav-items {
+    display: flex;
+    justify-content: center;
+  }
 
+  .nav-items li {
+    margin-right: 2rem;
+    font-weight: bold;
+  }
+}
 </style>

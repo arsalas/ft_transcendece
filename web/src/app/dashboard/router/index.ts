@@ -103,6 +103,15 @@ const routes: RouteRecordRaw[] = [
                 /* webpackChunkName: "create-contest" */ '../pages/profile/OverviewPage.vue'
               ),
           },
+          {
+            path: 'history',
+            name: 'history',
+            meta: { title: 'Profile' },
+            component: () =>
+              import(
+                /* webpackChunkName: "create-contest" */ '../pages/profile/HistoryPage.vue'
+              ),
+          },
         ],
       },
     ],
