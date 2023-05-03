@@ -9,7 +9,10 @@
       rgba(0, 0, 0, 1)
     ),
     url(${profile!.profile.background});
- `"></header>
+ `">
+ 
+<Flag/>
+</header>
     <div class="overview-content"></div>
   </div>
 </template>
@@ -17,6 +20,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { useProfileStore } from '../../../../stores';
+import Flag from '../../../common/components/Flag.vue';
 
 const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore); // extraemos una variable reactiva de un store
