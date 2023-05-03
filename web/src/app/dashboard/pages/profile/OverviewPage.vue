@@ -1,5 +1,4 @@
 <template>
-  <!-- aqui: nombre nombre42 -->
   <div class="overview-container">
     <header
       class="overview-header"
@@ -13,8 +12,14 @@
  
 <Flag/>
 </header>
-    <div class="overview-content"></div>
-  </div>
+    <div class="overview-content">
+      <ul class="stadistics">STADISTICS
+        <li class="name">Total game</li>
+        <li class="name">Win</li>
+        <li class="name">Lost</li>
+¡        </ul>
+      </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -33,7 +38,6 @@ console.log(profile);
   flex-direction: column;
   height: calc(100vh - 59px - 50px);
   width: 100vw;
-  background-color: yellow;
 }
 
 .overview-header {
@@ -41,11 +45,19 @@ console.log(profile);
   width: 100%;
   background-position: center;
   background-size: contain;
-  //   background-attachment: fixed;
   background-repeat: repeat-x;
 }
 .overview-content {
   flex: 1;
+  flex-direction: column;
+  align-items: center;
   background-color: rgb(136, 5, 27);
+  & .stadistics {
+    size: 5rem;
+  }
+
+  & .name {
+    size: 3rem;
+  }
 }
 </style>

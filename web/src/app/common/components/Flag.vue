@@ -1,12 +1,21 @@
 <template>
     <ul>
+        <!-- <li style="--accent-color:profile.profile."></li> -->
         <li style="--accent-color:#6fc848">
             <img class="p-4" src="https://cdn.intra.42.fr/coalition/image/206/invader_white.svg" alt="">
         </li>
     </ul>
 </template>
+
 <script lang='ts' setup>
+import { storeToRefs } from 'pinia';
+import { useProfileStore } from '../../../stores';
+
+const profileStore = useProfileStore();
+const { profile } = storeToRefs(profileStore); 
+
 </script>
+
 <style lang='scss' scoped>
 ul {
     --col-gap: 2rem;
