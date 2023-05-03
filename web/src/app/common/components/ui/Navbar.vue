@@ -95,8 +95,8 @@
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import { useUserStore, useAuthStore } from '../../../stores';
-import Image from './Image.vue';
+import { useUserStore, useAuthStore } from '../../../../stores';
+import Image from '../images/Image.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();

@@ -1,12 +1,48 @@
 .online {
   color: var(--color-online-0);
+  text-shadow: -0.05rem -0.05rem 0 var(--color-online-1),
+  0.05rem -0.05rem 0 var(--color-online-1),
+  -0.05rem 0.05rem 0 var(--color-online-1),
+  0.05rem 0.05rem 0 var(--color-online-1);
+
 }
 
 .offline {
+  color: var(--color-offline-0);
+  text-shadow: -0.05rem -0.05rem 0 var(--color-offline-1),
+  0.05rem -0.05rem 0 var(--color-offline-1),
+  -0.05rem 0.05rem 0 var(--color-offline-1),
+  0.05rem 0.05rem 0 var(--color-offline-1);
+
 }
 
 .out {
+  color: var(--color-out-0); 
+   text-shadow: -0.05rem -0.05rem 0 var(--color-out-1),
+  0.05rem -0.05rem 0 var(--color-out-1),
+  -0.05rem 0.05rem 0 var(--color-out-1),
+  0.05rem 0.05rem 0 var(--color-out-1);
+
 }
 
 .game {
+  color: var(--color-game-0);
+  text-shadow: -0.05rem -0.05rem 0 var(--color-game-1),
+  0.05rem -0.05rem 0 var(--color-game-1),
+  -0.05rem 0.05rem 0 var(--color-game-1),
+  0.05rem 0.05rem 0 var(--color-game-1);
+
+}
+
+.avatar.online{
+  border: 2px solid var(--color-online-0);
+}
+.avatar.offline{
+  border: 2px solid var(--color-offline-0);
+}
+.avatar.out{
+  border: 2px solid var(--color-out-0);
+}
+.avatar.game{
+  border: 2px solid var(--color-game-0);
 }

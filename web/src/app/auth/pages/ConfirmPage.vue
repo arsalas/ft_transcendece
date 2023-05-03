@@ -56,7 +56,7 @@ import { IUser } from '../../../interfaces';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../common/components/Box.vue'),
+  () => import('../../common/components/ui/Box.vue'),
 );
 const Loader = defineAsyncComponent(
   () => import('../../common/components/Loader.vue'),

@@ -80,7 +80,7 @@ import { providers } from '../../../../providers';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../../common/components/Box.vue'),
+  () => import('../../../common/components/ui/Box.vue'),
 );
 const QRCode = defineAsyncComponent(
   () => import('../../components/QRCode.vue'),
@@ -92,7 +92,7 @@ const DesactivateTFA = defineAsyncComponent(
   () => import('../../components/DesactivateTFA.vue'),
 );
 const Modal = defineAsyncComponent(
-  () => import('../../../common/components/Modal.vue'),
+  () => import('../../../common/components/ui/Modal.vue'),
 );
 
 // STORES

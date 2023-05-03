@@ -44,7 +44,7 @@ import { storeToRefs } from 'pinia';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../common/components/Box.vue'),
+  () => import('../../common/components/ui/Box.vue'),
 );
 const QRCode = defineAsyncComponent(() => import('./QRCode.vue'));
 

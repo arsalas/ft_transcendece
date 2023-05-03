@@ -25,7 +25,7 @@ import { useThemeStore, Theme } from '../../../../stores';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../../common/components/Box.vue'),
+  () => import('../../../common/components/ui/Box.vue'),
 );
 
 // STORES

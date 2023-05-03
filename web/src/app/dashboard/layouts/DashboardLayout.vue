@@ -11,7 +11,7 @@
 import { defineAsyncComponent } from 'vue';
 
 const Navbar = defineAsyncComponent(
-  () => import('../../common/components/Navbar.vue'),
+  () => import('../../common/components/ui/Navbar.vue'),
 );
 const FriendsAside = defineAsyncComponent(
   () => import('../../common/components/friends/FriendsAside.vue'),

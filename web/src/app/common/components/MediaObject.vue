@@ -1,9 +1,9 @@
 <template>
   <div class="media-object">
-    <Avatar :src="image" :fallback="imageFallback" :width="width" />
+    <Avatar :class="status" :src="image" :fallback="imageFallback" :width="width" />
     <div>
       <div class="text">{{ name }}</div>
-      <div class="text is-small">{{ status }}</div>
+      <div class="text is-small" :class="[status]">{{ status }}</div>
     </div>
   </div>
 </template>
@@ -25,11 +25,10 @@ const props = defineProps<{
 .media-object {
   display: flex;
   align-items: center;
-//   padding: 0.25rem 0.5rem;
+  //   padding: 0.25rem 0.5rem;
 
   & img {
     margin-right: 1rem;
-    border: 2px solid var(--color-online-0);
   }
 }
 </style>

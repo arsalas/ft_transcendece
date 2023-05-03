@@ -8,7 +8,7 @@ import { useAuthStore, useThemeStore, useUserStore } from './stores';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
-  () => import('./app/common/components/Notification.vue'),
+  () => import('./app/common/components/ui/Notification.vue'),
 );
 
 // PROVIDERS
@@ -40,6 +40,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- <img src="./assets/red-pennant-flags-set_107791-5495.png" alt=""> -->
   <div class="app">
     <Transition name="custom-classes" enter-active-class="animate__animated animate__slideInRight animate__faster"
       leave-active-class="animate__animated animate__slideOutRight animate__faster">

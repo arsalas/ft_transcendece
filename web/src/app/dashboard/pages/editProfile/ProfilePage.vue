@@ -45,8 +45,8 @@ import { useForm, useLoading, useNotifications } from '../../../common/composabl
 import { useUserStore } from '../../../../stores'
 
 // COMPONENTES
-const Box = defineAsyncComponent(() => import('../../../common/components/Box.vue'))
-const Image = defineAsyncComponent(() => import('../../../common/components/Image.vue'))
+const Box = defineAsyncComponent(() => import('../../../common/components/ui/Box.vue'))
+const Image = defineAsyncComponent(() => import('../../../common/components/images/Image.vue'))
 
 // STORES
 const userStore = useUserStore();

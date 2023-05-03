@@ -31,8 +31,8 @@
             width="2.5rem"
             :image="friends.avatar"
             :image-fallback="friends.avatar"
-            :name="friends.name"
-            :status="'online'" />
+            :name="friends.name + i"
+            :status="'game'" />
           <div class="actions">
             <div class="badge is-primary">
               <span class="text is-small"> 1 </span>
@@ -51,8 +51,8 @@ import { defineAsyncComponent, ref } from 'vue';
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const friends = {
-  name: 'test',
-  avatar: 'https://i.pravatar.cc/300',
+  name: 'user',
+  avatar: 'https://i.pravatar.cc/40',
   status: 'online',
 };
 
@@ -83,6 +83,7 @@ aside {
   background-color: var(--bg-dark-2);
   position: sticky;
   top: 0px;
+  cursor: pointer;
 }
 
 .actions {
