@@ -75,4 +75,11 @@ onMounted(async () => {
     }
   }
 }
+.container {
+  display: flex;
+& .input {
+  justify-content: left;
+}
+}
+
 </style>
