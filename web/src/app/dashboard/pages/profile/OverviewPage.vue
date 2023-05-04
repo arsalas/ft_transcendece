@@ -9,17 +9,35 @@
     ),
     url(${profile!.profile.background});
  `">
- 
-<Flag/>
-</header>
-    <div class="overview-content">
-      <ul class="stadistics">STADISTICS
-        <li class="name">Total game</li>
-        <li class="name">Win</li>
-        <li class="name">Lost</li>
-¡        </ul>
+      <div class="container details">
+        <div class="user-details">
+          <img
+            class="photo"
+            :src="profile?.profile.avatar || profile?.profile.avatar42"
+            alt="" />
+          <div>
+            <div class="text is-extra">{{ profile!.profile.username }}</div>
+            <div class="text is-large">{{ profile!.profile.login }}</div>
+          </div>
+        </div>
+
+        <Flag
+          :color="profile!.profile.color"
+          :image="profile!.profile.icon"
+          width="10rem" />
       </div>
+    </header>
+    <div class="overview-content">
+      <ul class="stadistics">
+        <li class="head text">STADISTICS</li>
+        <li class="name text">
+          Total played: {{ profile?.stadistics.played }}
+        </li>
+        <li class="name text">Win: {{ profile?.stadistics.win }}</li>
+        <li class="name text">Lost: {{ profile?.stadistics.lost }}</li>
+      </ul>
     </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -40,24 +58,59 @@ console.log(profile);
   width: 100vw;
 }
 
+.details {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 30%;
+}
+
+.photo {
+  width: 15rem;
+  border-radius: 100%;
+  border: var(--border);
+  margin-right: 3rem;
+}
+
 .overview-header {
   height: calc(100vh - 59px - 50px - 60%);
   width: 100%;
   background-position: center;
   background-size: contain;
-  background-repeat: repeat-x;
+  font-size: 1.5rem;
+  // background-repeat: repeat-x;
 }
 .overview-content {
+  display: flex;
   flex: 1;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  background-color: rgb(136, 5, 27);
-  & .stadistics {
-    size: 5rem;
-  }
 
-  & .name {
-    size: 3rem;
+  & .head {
+    font-size: 3rem;
+    border-bottom: var(--border);
+    padding: 0.35rem 0.5rem;
+    font-weight: 700;
   }
+  & .name {
+    font-size: 2rem;
+    border-bottom: var(--border);
+    padding: 0.35rem 0.5rem;
+    font-weight: 700;
+  }
+}
+.stadistics {
+  width: 50%;
+  text-align: center;
+  border: var(--border);
+  background-color: var(--bg-dark-2);
 }
 </style>

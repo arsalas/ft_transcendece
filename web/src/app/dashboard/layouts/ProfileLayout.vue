@@ -23,33 +23,71 @@
             HISTORY
           </router-link>
         </li>
-        <li class="text">STADISTICS</li>
+        <li class="text">FRIENDS</li>
       </ul>
     </nav>
     <div class="actions">
       <div class="control">
-        <input ref="userRef" class="input" placeholder="Find user" />
+        <form @submit.prevent="handleSubmit">
+          <input
+            class="input"
+            v-model.trim="userSearch"
+            placeholder="Search user..." />
+        </form>
       </div>
     </div>
   </header>
-  <!-- <img v-if="profile" :src="profile.profile.icon" alt="" />
-      <img v-if="profile" :src="profile.profile.background" alt="" /> -->
-  <!-- {{ profile }} -->
-  <RouterView v-if="profile" />
+  <Loader v-if="isLoading" is-fullsize />
+  <RouterView v-else />
   <!-- TODO PONER DESPUES v-model.trim="user" -->
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+// prevent para que no se recargue la pagina
+import { defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useProfileStore } from '../../../stores';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { providers } from '../../../providers';
+import { useLoading } from '../../common/composables';
 
+const userSearch = ref<string>('');
+
+const handleSubmit = () => {
+  router.push({ name: 'profileUser', params: { username: userSearch.value } }); // vamos a index.ts de dashboard/router para saber donde hay que ir (string)
+};
+
+const Loader = defineAsyncComponent(
+  () => import('../../common/components/Loader.vue'),
+);
+
+const { isLoading } = useLoading();
 const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore);
 
+isLoading.value = true;
+
 const route = useRoute();
+const router = useRouter();
+
+const loadProfileUser = async () => {
+  // Pedir la informacion del usuario
+  isLoading.value = true;
+  try {
+    profile.value = await profileService.get(route.params.username as string); // indicamos que lo trate como un string
+  } catch (error) {
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watch(
+  () => route.params.username,
+  (newValue) => {
+    userSearch.value = '';
+    loadProfileUser();
+  },
+);
 
 // PROVIDERS
 const { profileService } = providers();
@@ -59,9 +97,7 @@ const { profileService } = providers();
 // Pedir informacion al backend y guardarla en el store
 
 onMounted(async () => {
-  console.log(route.params.username);
-  // Pedir la informacion del usuario
-  profile.value = await profileService.get(route.params.username as string); // indicamos que lo trate como un string
+  loadProfileUser();
 });
 </script>
 

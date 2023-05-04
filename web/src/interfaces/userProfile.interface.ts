@@ -1,4 +1,4 @@
-import { Profile } from '../entities';
+import { IProfile } from "./user";
 
 export interface IStadistics {
   win: number;
@@ -12,7 +12,7 @@ export interface IHistory {
 }
 
 export interface IUserProfile {
-  profile: Profile;
+  profile: IProfile;
   stadistics: IStadistics;
   history: IHistory[];
 }

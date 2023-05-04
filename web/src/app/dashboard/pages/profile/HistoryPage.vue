@@ -1,9 +1,12 @@
 <template>
   <div class="overview-container">
+    <div class="text is-huge">GAMES</div>
     <div v-for="i in 5" class="user">
       <div class="media">
         <img
-          src="https://cdnb.artstation.com/p/users/avatars/000/272/313/medium/947dd2575788d5366e38f91fc1deed59.jpg?1681406726" />
+          class="avatar"
+          :src="profile?.profile.avatar || profile?.profile.avatar42"
+          alt="" />
         <div class="username-rival">aramirez</div>
       </div>
     </div>
@@ -11,19 +14,25 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia';
+import { useProfileStore } from '../../../../stores';
+
+const profileStore = useProfileStore();
+const { profile } = storeToRefs(profileStore);
 </script>
 
 <style lang="scss" scoped>
 .overview-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: calc(100vh - 59px - 50px);
-  width: 100vw;
- // background-color: yellow;
+  width: 100%;
 }
 
+.avatar
 .media {
-  margin: 1rem;
+  padding: 1rem;
 }
-
 </style>

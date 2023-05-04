@@ -5,6 +5,9 @@ export interface IProfile {
   avatar: string | undefined;
   twoFactorAuth: boolean;
   status: string;
+  color: string;
+  icon: string;
+  background:string;
 }
 
 export interface IUser extends IProfile {
