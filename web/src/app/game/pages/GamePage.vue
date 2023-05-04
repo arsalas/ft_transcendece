@@ -5,35 +5,23 @@
         <div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
       </div>
       <div class="action-buttons buttons">
-        <button
-          v-if="isMuted"
-          @click="unmutedGame"
-          class="button is-primary is-large is-outlined">
+        <button v-if="isMuted" @click="unmutedGame" class="button is-primary is-large is-outlined">
           <span class="icon is-small">
             <i class="fa-solid fa-volume-xmark"></i>
           </span>
         </button>
 
-        <button
-          v-if="!isMuted"
-          @click="mutedGame"
-          class="button is-primary is-large">
+        <button v-if="!isMuted" @click="mutedGame" class="button is-primary is-large">
           <span class="icon is-small">
             <i class="fa-solid fa-volume-high"></i>
           </span>
         </button>
-        <button
-          v-if="!isStart"
-          @click="startGame"
-          class="button is-primary is-large">
+        <button v-if="!isStart" @click="startGame" class="button is-primary is-large">
           <span class="icon is-small">
             <i class="fa-solid fa-play"></i>
           </span>
         </button>
-        <button
-          v-if="isStart"
-          @click="exitGame"
-          class="button is-primary is-large">
+        <button v-if="isStart" @click="exitGame" class="button is-primary is-large">
           <span class="icon is-small">
             <i class="fa-solid fa-person-running"></i>
           </span>
@@ -193,6 +181,10 @@ header {
   height: 80%;
   border: var(--border);
   border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
   overflow: hidden;
   -webkit-box-shadow: 0px 0px 38px 5px rgba(var(--color-primary-rgb), 0.75);
   -moz-box-shadow: 0px 0px 38px 5px rgba(var(--color-primary-rgb), 0.75);

@@ -27,7 +27,7 @@ class AudioController {
     try {
       if (this.isMuted) return;
       await this.traks[name].play();
-    } catch (error) {}
+    } catch (error) { }
   }
 
   muted() {
@@ -67,8 +67,8 @@ export class PongGame {
   private readonly context: CanvasRenderingContext2D;
 
   // Dimesiones juego
-  private width: number;
-  private height: number;
+  private width: number = 0;
+  private height: number = 0;
 
   // Paddle
   private readonly margins = 10;
@@ -110,8 +110,7 @@ export class PongGame {
     this.gameMode = gameMode;
     this.canvas = canvas;
     this.context = canvas.getContext('2d')!;
-    this.width = width;
-    this.height = height;
+    this.calcDimensionsScreen(width, height)
     this.ball = {
       x: width / 2,
       y: height / 2,
@@ -131,6 +130,20 @@ export class PongGame {
       document.removeEventListener('keydown', this.rivalPressKey);
       document.removeEventListener('keyup', this.rivalReleaseKey);
     }
+  }
+
+  private calcDimensionsScreen(width: number, height: number) {
+    console.log('calc')
+    // DIMENSIONES 16/9
+    if (width > height) {
+      this.height = height;
+      this.width = height * (16 / 9);
+    } else {
+      this.width = width;
+      this.height = width * (16 / 9)
+    }
+
+
   }
 
   /**
@@ -366,7 +379,7 @@ export class PongGame {
   private paddleIA() {
     if (
       this.paddlePosition.rival + this.paddleDiff >
-        Math.floor(this.ball.y) + 5 ||
+      Math.floor(this.ball.y) + 5 ||
       this.paddlePosition.rival + this.paddleDiff < Math.floor(this.ball.y) - 5
     ) {
       if (this.paddlePosition.rival + this.paddleDiff < this.ball.y) {
@@ -499,10 +512,10 @@ export class PongGame {
   }
 
   public resizeWindows(width: number, height: number) {
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.width = width;
-    this.height = height;
+    this.calcDimensionsScreen(width, height)
+    console.log(this.width, this.height);
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
     this.renderCanvas();
   }
 }
