@@ -7,7 +7,10 @@
           class="avatar"
           :src="profile?.profile.avatar || profile?.profile.avatar42"
           alt="" />
-        <div class="text is-large">aramirez</div>
+        <div class="text data">
+          <div class="text is-large">aramirez</div>
+          <div class="text win-lost">Win</div>
+        </div>
       </li>
     </ul>
   </div>
@@ -41,7 +44,7 @@ const { profile } = storeToRefs(profileStore);
 }
 
 .avatar {
-  width: 8rem;
+  width: 9rem;
   border-radius: 100%;
   border: var(--border);
   margin-right: 3rem;
@@ -54,5 +57,9 @@ const { profile } = storeToRefs(profileStore);
   border-bottom: var(--border);
   padding: 0.35rem 0.5rem;
   font-weight: 700;
+}
+
+.text-data {
+  display: flex;
 }
 </style>
