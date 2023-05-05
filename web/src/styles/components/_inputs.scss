@@ -1,0 +1,13 @@
+.input {
+  font-family: var(--font-family);
+  border-radius: var(--border-radius);
+  text-shadow: -0.03rem -0.03rem 0 var(--color-primary),
+    0.03rem -0.03rem 0 var(--color-primary),
+    -0.03rem 0.03rem 0 var(--color-primary),
+    0.03rem 0.03rem 0 var(--color-primary);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.125em rgba(var(--color-primary), 0.25);
+}

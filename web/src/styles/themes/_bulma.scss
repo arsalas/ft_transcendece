@@ -1,43 +1,47 @@
 @charset "utf-8";
-@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css";
-
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css';
 
 // Import a Google Font
 
+$text: var(--color-text-primary);
+
 //COLORS
-$primary: #433967;
-$primary: #c252e1;
+// $primary: #433967;
+// $primary: #c252e1;
 
 $secondary: #000000;
-$danger: #D51F06;
+$danger: #d51f06;
 
 //INPUTS
-$input-focus-border-color: $primary;
-$input-focus-box-shadow-color: rgba($primary, 0.25);
-// $input-color: var(--text-color);
-// $input-background-color: var(--bg-color);
-// $input-border-color: var(--bg-color);
-// $input-hover-color: var(--text-secondary);
-// $input-hover-border-color: var(--text-secondary);
-// $input-icon-color: var(--text-secondary);
-// $input-icon-active-color: var(--text-color);
+$label-color: var(--color-text-primary);
+$input-focus-border-color: var(--color-primary);
+// $input-focus-box-shadow-color: rgba($primary, 0.25);
+
+$input-background-color: var(--bg-dark-0);
+$input-color: var(--color-text-primary);
+$input-border-color: var(--border-color);
+
+$input-hover-color: var(--color-primary);
+$input-hover-border-color: var(--color-primary);
+$input-icon-color: var(--color-text-primary);
+$input-icon-active-color: var(--color-text-primary);
 
 //TITLE
 $title-color: var(--text-color);
 $subtitle-color: var(--text-secondary);
 
 //LINK
-$link: $primary;
-
+$link: var(--color-text-link);
+$link-hover: var(--color-text-link-hover);
 
 // Import only what you need from Bulma
-@import "../node_modules/bulma/sass/utilities/_all.sass";
-@import "../node_modules/bulma/sass/base/_all.sass";
-@import "../node_modules/bulma/sass/elements/button.sass";
-@import "../node_modules/bulma/sass/elements/container.sass";
-@import "../node_modules/bulma/sass/elements/title.sass";
-@import "../node_modules/bulma/sass/form/_all.sass";
-@import "../node_modules/bulma/sass/components/navbar.sass";
-@import "../node_modules/bulma/sass/layout/hero.sass";
-@import "../node_modules/bulma/sass/layout/section.sass";
-@import "bulma/bulma.sass";
+@import '../node_modules/bulma/sass/utilities/_all.sass';
+@import '../node_modules/bulma/sass/base/_all.sass';
+@import '../node_modules/bulma/sass/elements/button.sass';
+@import '../node_modules/bulma/sass/elements/container.sass';
+@import '../node_modules/bulma/sass/elements/title.sass';
+@import '../node_modules/bulma/sass/form/_all.sass';
+@import '../node_modules/bulma/sass/components/navbar.sass';
+@import '../node_modules/bulma/sass/layout/hero.sass';
+@import '../node_modules/bulma/sass/layout/section.sass';
+@import 'bulma/bulma.sass';

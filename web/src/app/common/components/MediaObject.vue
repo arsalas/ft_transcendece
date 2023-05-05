@@ -18,40 +18,7 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent } from 'vue';
 
-const props = defineProps<{
-    avatar: string;
-    status: string;
-    username: string;
-}>()
-console.log("ALBERTO");
+const props = defineProps({ task: Object });
 </script>
 
-<style lang="scss" scoped>
-    .media-object {
-        height: 100%;
-        display: flex;
-
-        & .avatar {
-            height: 100%;
-            aspect-ratio: 1;
-            border-radius: 50%;
-        }
-    }
-
-    .status {
-        color: white;
-    }
-
-    // .name { // este name hace referencia al html, que conectado con Chat.vue irá conectado a props
-    //     color: black;
-
-    // }
-
-    .media-text { // esto es una clase, no una variable
-        display: flex;
-        padding-left: 1rem;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-</style>
+<script lang="scss" scoped></script>

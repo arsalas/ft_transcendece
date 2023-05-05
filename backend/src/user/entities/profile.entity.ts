@@ -1,25 +1,58 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Profile {
-	@PrimaryColumn()
-	login: string;
+  @PrimaryColumn()
+  login: string;
 
-	@Column({ unique: true, nullable: true })
-	username: string;
+  @Column({ unique: true, nullable: true })
+  username: string;
 
-	@Column({ nullable: true })
-	avatar: string;
+  @Column({ nullable: true })
+  avatar: string;
 
-	@Column({ default: false })
-	twoFactorAuth: boolean;
+  @Column()
+  avatar42: string;
 
-	@Column({ nullable: true })
-	status: string;
+  @Column()
+  coallition: string;
 
-	@CreateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP(6)" })
-	public created_at: Date;
+  @Column()
+  icon: string;
 
-	@UpdateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
-	public updated_at: Date;
+  @Column()
+  background: string;
+
+  @Column()
+  color: string;
+
+  @Column({ nullable: true })
+  status: string;
+
+  @CreateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  public created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  public updated_at: Date;
+
+  // @OneToOne(() => User)
+  // @JoinColumn({ referencedColumnName: "login" })
+  // user: User;
 }

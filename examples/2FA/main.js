@@ -36,8 +36,7 @@ try {
 	}
 
 	// generateQRCode(1, secret);
-
-	const res = authenticator.verify({secret, token:"882563"})
+	const res = authenticator.verify({secret, token:"642177"})
 	console.log({res});
 } catch (error) {
 	console.log(error)
