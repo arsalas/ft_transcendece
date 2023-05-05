@@ -12,13 +12,14 @@ import { ImageHelpers } from './image/image.helpers';
 import { CommonModule } from './common/common.module';
 import { EnvConfiguration, JoiValidationSchema } from './config';
 import { FriendsModule } from './friends/friends.module';
+import { MessagesWsModule } from './messages-ws/messages-ws.module';
 
 @Module({
   imports: [
-	ConfigModule.forRoot({
-		load: [EnvConfiguration],
-		validationSchema: JoiValidationSchema
-	}),
+    ConfigModule.forRoot({
+      load: [EnvConfiguration],
+      validationSchema: JoiValidationSchema,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'database',
@@ -34,8 +35,9 @@ import { FriendsModule } from './friends/friends.module';
     AuthModule,
     CommonModule,
     FriendsModule,
+    MessagesWsModule,
   ],
   controllers: [AppController, ImageController],
   providers: [AppService, ImageHelpers],
 })
-export class AppModule {}
+export class AppModule { }

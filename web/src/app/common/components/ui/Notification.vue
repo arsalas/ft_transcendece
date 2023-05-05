@@ -10,7 +10,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue';
-import { useNotifications } from '../composables';
+import { useNotifications } from '../../composables';
 
 const { close, message, type } = useNotifications();
 

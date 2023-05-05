@@ -22,7 +22,7 @@ export class UserService {
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Busca un usuario a partir del login de 42
@@ -39,7 +39,7 @@ export class UserService {
 
   /**
    * Crea un nuevo usuario y su perfil
-   * @param user login42
+   * @param user42 login42
    */
   async create(user42: IAuth42) {
     // Creamos una transaccion
@@ -50,7 +50,10 @@ export class UserService {
       const userRepo = this.userRepository.create({
         login: user42.login,
       });
-      const profileRepo = this.profileRepository.create({ ...user42 });
+      const profileRepo = this.profileRepository.create({
+        ...user42,
+        status: 'online',
+      });
       await queryRunner.manager.save(userRepo);
       await queryRunner.manager.save(profileRepo);
       // Si todo ha ido bien aplicamos los cambios

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
 import { providers } from './providers';
+import { connectToServer } from './socket-client';
 import {
   useAuthStore,
   useFriendsStore,
@@ -29,6 +30,9 @@ const router = useRouter();
 // COMPOSABLES
 const { isOpen } = useNotifications();
 
+
+
+
 // FUNCTIONS
 onMounted(async () => {
   try {
@@ -39,6 +43,10 @@ onMounted(async () => {
     authStore.signIn(token);
     userStore.setUser(user);
     friendsStore.friends = await friendsService.get();
+
+    connectToServer()
+
+
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });
