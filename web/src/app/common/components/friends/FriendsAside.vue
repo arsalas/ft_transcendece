@@ -2,71 +2,91 @@
   <aside>
     <header class="friends-header">
       <div class="text">SOCIAL</div>
-      <span class="icon text">
+      <span class="icon text" @click="open">
         <i class="fa-solid fa-user-plus"></i>
       </span>
     </header>
 
-    <header class="friends-header" @click="isOnline = !isOnline">
-      <div class="text">
-        <span class="icon text">
-          <i
-            class="fa-solid"
-            :class="{
-              'fa-angle-right': !isOnline,
-              'fa-angle-down': isOnline,
-            }"></i>
-        </span>
-        ONLINE (5/5)
-      </div>
-    </header>
-
-    <Transition
-      name="custom-classes"
-      enter-active-class="animate__animated animate__slideInDown"
-      leave-active-class="animate__animated animate__slideOutUp">
-      <div v-if="isOnline" style="z-index: -1; position: absolute; width: 100%">
-        <div v-for="i in 5" class="container-user">
-          <MediaObject
-            width="2.5rem"
-            :image="friends.avatar"
-            :image-fallback="friends.avatar"
-            :name="friends.name + i"
-            :status="'game'" />
-          <div class="actions">
-            <div class="badge is-primary">
-              <span class="text is-small"> 1 </span>
+    <AgrupedFriends
+      :total="pending.length"
+      :friends="pending"
+      title="FRIENDS REQUESTS" />
+    <AgrupedFriends :total="friends.length" :friends="online" title="ONLINE" />
+    <AgrupedFriends
+      :total="friends.length"
+      :friends="offline"
+      title="OFFLINE" />
+  </aside>
+  <Modal v-if="isOpen">
+    <Box>
+      <template v-slot:header> ADD FRIENDS </template>
+      <template v-slot:body>
+        <p class="text">
+          Already know your friend's username?Send them a friend request!
+        </p>
+        <form @submit.prevent="handleSubmit" class="mt-4">
+          <div class="field">
+            <div class="control">
+              <input
+                v-model.trim="sendUser"
+                class="input"
+                type="text"
+                placeholder="Your friend username" />
             </div>
-            <button class="ml-2 action-button text">
-              <i class="fas fa-ellipsis-v"></i>
-            </button>
+          </div>
+        </form>
+
+        <div class="text mt-4">SENT FRIEND REQUEST</div>
+        <div style="max-height: 40vh">
+          <div class="columns is-multiline mt-2">
+            <div class="column is-4" v-for="fr in sending">
+              <MediaObject
+                width="2.5rem"
+                :image="fr.profile.avatar"
+                :image-fallback="fr.profile.avatar42"
+                :name="fr.profile.username"
+                :status="fr.profile.status" />
+            </div>
           </div>
         </div>
-      </div>
-    </Transition>
-  </aside>
+
+        <footer class="mt-4" style="display: flex; justify-content: center">
+          <button class="button is-primary">DONE</button>
+        </footer>
+      </template>
+    </Box>
+  </Modal>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, provide, ref } from 'vue';
+import { useModal } from '../../composables';
+import { useFriendsStore } from '../../../../stores';
+import { storeToRefs } from 'pinia';
+import { providers } from '../../../../providers';
+
+// COMPONENTS
+const AgrupedFriends = defineAsyncComponent(
+  () => import('./AgrupedFriends.vue'),
+);
+const Modal = defineAsyncComponent(() => import('../ui/Modal.vue'));
+const Box = defineAsyncComponent(() => import('../ui/Box.vue'));
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
-const friends = {
-  name: 'user',
-  avatar: 'https://i.pravatar.cc/40',
-  status: 'online',
-};
+// COMPOSABLES
+const { isOpen, open } = useModal();
 
-const isOnline = ref<boolean>(true);
+const friendsStore = useFriendsStore();
+const { offline, online, friends, pending, sending } =
+  storeToRefs(friendsStore);
+
+const { friendsService } = providers();
+const sendUser = ref<string>('');
+const handleSubmit = async () => {
+  const newFriend = await friendsService.sendRequest(sendUser.value);
+  friends.value.push(newFriend);
+};
 </script>
 <style lang="scss" scoped>
-.container-user {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0.25rem 0.5rem;
-}
-
 aside {
   width: 18rem;
   height: calc(100vh - 59px);
@@ -84,20 +104,5 @@ aside {
   position: sticky;
   top: 0px;
   cursor: pointer;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.action-button {
-  background-color: inherit;
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem;
-  aspect-ratio: 1;
 }
 </style>

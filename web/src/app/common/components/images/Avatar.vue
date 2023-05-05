@@ -1,5 +1,9 @@
 <template>
-  <Image class="avatar" :src="src" :fallback="fallback" is-external />
+  <Image
+    class="avatar"
+    :src="src || fallback"
+    :fallback="fallback"
+    is-external />
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue';
@@ -7,7 +11,7 @@ import { defineAsyncComponent } from 'vue';
 const Image = defineAsyncComponent(() => import('./Image.vue'));
 
 const props = defineProps<{
-  src: string;
+  src: string | null;
   width: string;
   fallback?: string;
 }>();

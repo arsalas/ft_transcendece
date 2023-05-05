@@ -15,7 +15,8 @@
     "bulma": "^0.9.4",
     "pinia": "^2.0.35",
     "vue": "^3.2.47",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vue3-click-away": "^1.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",

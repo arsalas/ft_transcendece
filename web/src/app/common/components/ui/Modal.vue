@@ -16,7 +16,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useModal } from '../composables';
+import { useModal } from '../../composables';
 
 const { isOpenContent, close } = useModal();
 </script>

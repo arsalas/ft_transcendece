@@ -13,7 +13,7 @@ import { defineAsyncComponent } from 'vue';
 const Avatar = defineAsyncComponent(() => import('./images/Avatar.vue'));
 
 const props = defineProps<{
-  image: string;
+  image: string | null;
   imageFallback: string;
   name: string;
   status?: string;

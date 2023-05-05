@@ -4,7 +4,12 @@ import { useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
 import { providers } from './providers';
-import { useAuthStore, useThemeStore, useUserStore } from './stores';
+import {
+  useAuthStore,
+  useFriendsStore,
+  useThemeStore,
+  useUserStore,
+} from './stores';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
@@ -12,11 +17,12 @@ const Notification = defineAsyncComponent(
 );
 
 // PROVIDERS
-const { authService } = providers();
+const { authService, friendsService } = providers();
 
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const friendsStore = useFriendsStore();
 const themeStore = useThemeStore();
 const router = useRouter();
 
@@ -32,6 +38,7 @@ onMounted(async () => {
     const { token, user } = await authService.recoverSession();
     authStore.signIn(token);
     userStore.setUser(user);
+    friendsStore.friends = await friendsService.get();
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });
@@ -42,7 +49,9 @@ onMounted(async () => {
 <template>
   <!-- <img src="./assets/red-pennant-flags-set_107791-5495.png" alt=""> -->
   <div class="app">
-    <Transition name="custom-classes" enter-active-class="animate__animated animate__slideInRight animate__faster"
+    <Transition
+      name="custom-classes"
+      enter-active-class="animate__animated animate__slideInRight animate__faster"
       leave-active-class="animate__animated animate__slideOutRight animate__faster">
       <Notification v-if="isOpen" message="Holasfdad" />
     </Transition>
@@ -52,9 +61,11 @@ onMounted(async () => {
 
 <style scoped>
 .app {
-  background-image: linear-gradient(rgba(0, 0, 0, 1),
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 1),
       rgba(0, 0, 0, 0.7),
-      rgba(0, 0, 0, 1)),
+      rgba(0, 0, 0, 1)
+    ),
     url('./assets/bg_spash.jpg');
   background-position: center;
   background-size: cover;

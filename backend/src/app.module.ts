@@ -11,6 +11,7 @@ import { ImageController } from './image/image.controller';
 import { ImageHelpers } from './image/image.helpers';
 import { CommonModule } from './common/common.module';
 import { EnvConfiguration, JoiValidationSchema } from './config';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EnvConfiguration, JoiValidationSchema } from './config';
     UserModule,
     AuthModule,
     CommonModule,
+    FriendsModule,
   ],
   controllers: [AppController, ImageController],
   providers: [AppService, ImageHelpers],
