@@ -30,6 +30,7 @@
 
   // BORDERS
   --border-size: 1px;
+  --border-size-big: 3px;
   --border-radius: 0px;
 
   //BUTTONS
@@ -70,6 +71,7 @@
   --border-color: var(--color-primary);
   --border-color-active: var(--color-primary);
   --border: var(--border-size) solid var(--border-color);
+  --border-big: var(--border-size-big) solid var(--border-color);
 
   //BUTTONS
   --color-text-btn: var(--color-text-primary);
@@ -197,6 +199,7 @@
   --border-color: var(--color-primary);
   --border-color-active: var(--color-primary);
   --border: var(--border-size) solid var(--border-color);
+  --border-big: var(--border-size-big) var(--border-color);
 
   //BUTTONS
   --color-text-btn: var(--color-text-primary);
