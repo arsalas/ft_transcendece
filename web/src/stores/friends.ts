@@ -10,7 +10,7 @@ export const useFriendsStore = defineStore('friends', () => {
   );
 
   const offline = computed<IFriend[]>(() =>
-    friends.value.filter((f) => f.activedAt && f.profile.status == 'out'),
+    friends.value.filter((f) => f.activedAt && f.profile.status == 'offline'),
   );
 
   const pending = computed<IFriend[]>(() =>

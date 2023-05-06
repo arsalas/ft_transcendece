@@ -63,6 +63,7 @@ import { useModal } from '../../composables';
 import { useFriendsStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { providers } from '../../../../providers';
+import { useSockets } from '../../../../sockets';
 
 // COMPONENTS
 const AgrupedFriends = defineAsyncComponent(
@@ -79,11 +80,16 @@ const friendsStore = useFriendsStore();
 const { offline, online, friends, pending, sending } =
   storeToRefs(friendsStore);
 
+
+const {socketNotifications} = useSockets()
+
 const { friendsService } = providers();
 const sendUser = ref<string>('');
 const handleSubmit = async () => {
-  const newFriend = await friendsService.sendRequest(sendUser.value);
-  friends.value.push(newFriend);
+
+	socketNotifications.emit('send-request', sendUser.value)
+//   const newFriend = await friendsService.sendRequest(sendUser.value);
+//   friends.value.push(newFriend);
 };
 </script>
 <style lang="scss" scoped>

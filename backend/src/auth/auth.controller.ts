@@ -17,9 +17,15 @@ import { JwtPayload } from './interfaces';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  //TODO: solo para testear no olvidar BORRAR
+  @Get('jwt/:login')
+  async getToken(@Param('login') login: string) {
+    return this.authService.genertateToken(login, '');
+  }
+
   @Get('signin/:code')
-  async signIn(@Param('code') code: string) {
-    return await this.authService.signIn(code);
+  signIn(@Param('code') code: string) {
+    return this.authService.signIn(code);
   }
 
   @Post('confirm-tfa')

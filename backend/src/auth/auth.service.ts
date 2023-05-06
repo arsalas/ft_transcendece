@@ -22,6 +22,15 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  public async genertateToken(login: string, avatar42: string) {
+    const payload = { login, avatar42 };
+
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+    });
+    return { token };
+  }
+
   /**
    * Genera una imagen QR con una clave para el usuario
    * @param user

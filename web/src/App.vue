@@ -4,13 +4,13 @@ import { useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
 import { providers } from './providers';
-import { connectToServer } from './socket-client';
 import {
   useAuthStore,
   useFriendsStore,
   useThemeStore,
   useUserStore,
 } from './stores';
+import { useSockets } from './sockets';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
@@ -30,8 +30,7 @@ const router = useRouter();
 // COMPOSABLES
 const { isOpen } = useNotifications();
 
-
-
+const { connectToServerNotifications } = useSockets();
 
 // FUNCTIONS
 onMounted(async () => {
@@ -43,10 +42,7 @@ onMounted(async () => {
     authStore.signIn(token);
     userStore.setUser(user);
     friendsStore.friends = await friendsService.get();
-
-    connectToServer()
-
-
+	connectToServerNotifications()
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });

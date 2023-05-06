@@ -13,6 +13,7 @@ import { CommonModule } from './common/common.module';
 import { EnvConfiguration, JoiValidationSchema } from './config';
 import { FriendsModule } from './friends/friends.module';
 import { MessagesWsModule } from './messages-ws/messages-ws.module';
+import { NotificationsWsModule } from './notifications-ws/notifications-ws.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MessagesWsModule } from './messages-ws/messages-ws.module';
     CommonModule,
     FriendsModule,
     MessagesWsModule,
+    NotificationsWsModule,
   ],
   controllers: [AppController, ImageController],
   providers: [AppService, ImageHelpers],
