@@ -174,8 +174,9 @@ const chats = ref<IChat[]>([
 
   & .chat {
     display: flex;
-    height: calc(100% - 50px);
     flex-direction: column;
+    align-items: flex-start;
+    height: calc(100% - 50px);
     align-items: end;
     background: rgb(193, 255, 250);
     border: 1px solid #333;
@@ -192,6 +193,7 @@ const chats = ref<IChat[]>([
       width: 100%;
       margin-bottom: 2rem;
       text-align: center;
+      width: 100%;
 
       span {
         display: flex;
@@ -205,55 +207,57 @@ const chats = ref<IChat[]>([
       }
     }
 
-    .conversation-msg {
+    & .conversation-msg {
       width: 100%;
+      list-style-type: none;
       display: flex;
-      // position: relative;
-      border: #3835e9 1px solid;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
     }
 
-    .bubble {
+    ul {
+      width: 100%;
+      list-style-type: none;
       display: flex;
-      font-size: 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    // .conversation-msg {
+    //   width: 100%;
+    //   display: flex;
+    //   flex-direction: column;
+    //   border: #3835e9 1px solid;
+    // }
+
+    & .bubble {
+      max-width: 75%;
+      margin-bottom: 10px;
       padding: 0.2rem 0.5rem;
       border-radius: 1rem;
+      // display: flex;
+      // flex-direction: column;
+      // align-self: flex-start;
 
       & .username {
         font-size: 0.8rem;
         font-weight: bold;
       }
     }
-    .at-right {
-      justify-content: right;
-    }
-    .at-left {
-      justify-content: left;
-    }
 
-    // #message-input {
-    //   height: 3rem;
-    //   width: 70%;
-    //   border: 1px solid #8e8888;
-    //   border-radius: 0.5rem;
-    //   padding: 0.5rem;
-    //   margin-right: 1rem;
-    // }
-
-    & .other {
-      display: flex;
-      // align-items: center;
+    .bubble.other {
+      align-self: flex-start;
       color: rgba(0, 0, 128, 0.931);
       background-color: rgb(4, 223, 223);
-      animation-name: slideFromLeft;
       box-shadow: -1px 2px 0px rgba(0, 0, 128, 0.931);
     }
 
-    & .me {
-      display: flex;
-      align-items: end;
+    .bubble.me {
+      align-self: flex-end;
       color: rgb(115, 8, 115);
       background-color: rgb(255, 158, 255);
-      animation-name: slideFromRight;
       box-shadow: -1px 2px 0px rgb(115, 8, 115);
     }
   }
