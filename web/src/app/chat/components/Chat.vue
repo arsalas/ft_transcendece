@@ -1,8 +1,3 @@
-<!-- To cast a string to Date
-const str = '2024-07-21';
-const date = new Date(str);
-date.toDateString(); -->
-
 <template>
   <div class="chat-container">
     <header>
@@ -12,6 +7,34 @@ date.toDateString(); -->
           class="avatar"
           :src="profile?.profile.avatar || profile?.profile.avatar42"
           alt="" /> -->
+          
+          <div class="dropdown is-right is-active" @click="isOpen = true">
+      <div class="dropdown-trigger">
+        <button class="ml-2 action-button text">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>
+      <Transition
+        name="custom-classes"
+        enter-active-class="animate__animated animate__fadeIn animate__faster"
+        leave-active-class="animate__animated animate__fadeOut animate__faster">
+        <div
+          v-if="isOpen"
+          v-click-away="onClickAway"
+          class="dropdown-menu"
+          role="menu">
+          <div class="dropdown-content">
+            <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
+            <a href="#" class="dropdown-item text is-small"> Send Message </a>
+            <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
+            <a href="#" class="dropdown-item text is-small"> View Profile </a>
+            <a href="#" class="dropdown-item text is-small"> Unfriend </a>
+            <a href="#" class="dropdown-item text is-small"> Block </a>
+          </div>
+        </div>
+      </Transition>
+    </div>
+
           <img
             class="avatar"
             src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
@@ -45,11 +68,6 @@ date.toDateString(); -->
       </div>
     </div>
 
-    <!-- <button @click="closeChat">CLOSE</button>
-            <button @click="addMsg">ADD</button>
- -->
-    <!--    <form @submit.prevent="Send msg"></form>
-            <input class="input" type="text"> -->
 
     <footer>
       <form @submit.prevent="sendMsg()">
@@ -88,22 +106,9 @@ const sendMsg = () => {
   }
 };
 
-const closeChat = () => {
-  chats.value.push({
-    open: true,
-    login: 'amurcia-',
-    message: 'ADIOS!',
-    date: '10.05.2023',
-  });
-};
-
-const addMsg = () => {
-  chats.value.push({
-    open: true,
-    login: 'amurcia-',
-    message: 'Hola Alberto',
-    date: '10.05.2023',
-  });
+const isOpen = ref<boolean>(false);
+const onClickAway = (event: any) => {
+  isOpen.value = false;
 };
 
 const chats = ref<IChat[]>([
@@ -262,4 +267,14 @@ const chats = ref<IChat[]>([
     }
   }
 }
+
+.action-button {
+  background-color: inherit;
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  aspect-ratio: 1;
+}
+
 </style>
