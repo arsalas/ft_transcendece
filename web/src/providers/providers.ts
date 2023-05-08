@@ -1,6 +1,6 @@
 import { Http } from '../api';
 import { AuthService } from '../app/auth/services/authService';
-import { EditProfieService, ProfileService,FriendsService } from '../app/dashboard/services';
+import { EditProfieService, ProfileService, FriendsService } from '../app/dashboard/services';
 
 const http = new Http();
 
