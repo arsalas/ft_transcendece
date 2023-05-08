@@ -61,7 +61,7 @@
       </div>
     </template>
   </Box>
-  <Modal v-if="isOpen">
+  <Modal v-if="isOpen" @close="close" :isOpenContent="isOpenContent">
     <DesactivateTFA v-if="user.twoFactorAuth" />
     <ActivateTFA v-else :qr="qrImg" />
   </Modal>
@@ -80,7 +80,7 @@ import { providers } from '../../../../providers';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../../common/components/Box.vue'),
+  () => import('../../../common/components/ui/Box.vue'),
 );
 const QRCode = defineAsyncComponent(
   () => import('../../components/QRCode.vue'),
@@ -92,7 +92,7 @@ const DesactivateTFA = defineAsyncComponent(
   () => import('../../components/DesactivateTFA.vue'),
 );
 const Modal = defineAsyncComponent(
-  () => import('../../../common/components/Modal.vue'),
+  () => import('../../../common/components/ui/Modal.vue'),
 );
 
 // STORES
@@ -105,7 +105,7 @@ const { editProfileService } = providers();
 // COMPOSABLES
 const notifications = useNotifications();
 const { isLoading } = useLoading();
-const { open, isOpen, close } = useModal();
+const { open, isOpen, close, isOpenContent } = useModal();
 
 // VARIABLES
 const qrImg = ref<string>('');

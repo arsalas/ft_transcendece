@@ -16,8 +16,8 @@
   --color-online-0: #02ff00;
   --color-online-1: #30af03;
 
-  --color-offline-0: #b6f4f7;
-  --color-offline-1: #b5c5f2;
+  --color-offline-0: #888;
+  --color-offline-1: #333;
 
   --color-out-0: #fd033f;
   --color-out-1: #a50141;
@@ -30,6 +30,7 @@
 
   // BORDERS
   --border-size: 1px;
+  --border-size-big: 3px;
   --border-radius: 0px;
 
   //BUTTONS
@@ -58,7 +59,8 @@
 
   --color-primary: var(--theme-purple);
   --color-primary-rgb: #{hexToRGB(#c252e1)};
-  --color-primary-hover: #9940b2;
+  //   --color-primary-hover: #9940b2;
+  --color-primary-hover: rgba(var(--color-primary-rgb), 0.5);
 
   --color-bg-dark: #01012b;
   --color-bg-primary: #2a2356;
@@ -70,6 +72,7 @@
   --border-color: var(--color-primary);
   --border-color-active: var(--color-primary);
   --border: var(--border-size) solid var(--border-color);
+  --border-big: var(--border-size-big) solid var(--border-color);
 
   //BUTTONS
   --color-text-btn: var(--color-text-primary);
@@ -91,6 +94,8 @@
   --color-primary: var(--theme-orange);
   --color-primary-rgb: #{hexToRGB(#ff9900)};
   --color-primary-hover: #b1834b;
+  --color-primary-hover: rgba(var(--color-primary-rgb), 0.5);
+
 
   --color-bg-dark: #01012b;
   --color-bg-primary: #2a2356;
@@ -113,6 +118,7 @@
   --color-text-link: var(--color-text-primary);
   --color-text-link-active: #44b9c6;
   --color-text-link-hover: #ecaefd;
+  
   --color-text-btn: #fff;
 
   // COLORS
@@ -123,6 +129,8 @@
   --color-primary: var(--theme-blue);
   --color-primary-rgb: #{hexToRGB(#23a0ed)};
   --color-primary-hover: #1e80bd;
+  --color-primary-hover: rgba(var(--color-primary-rgb), 0.5);
+
 
   --color-bg-dark: #01012b;
   --color-bg-primary: #2a2356;
@@ -155,6 +163,8 @@
   --color-primary: var(--theme-red);
   --color-primary-rgb: #{hexToRGB(#730302)};
   --color-primary-hover: #cd313d;
+  --color-primary-hover: rgba(var(--color-primary-rgb), 0.5);
+
 
   --color-bg-dark: #01012b;
   --color-bg-primary: #2a2356;
@@ -186,6 +196,8 @@
   --color-primary: var(--theme-green);
   --color-primary-rgb: #{hexToRGB(#029645)};
   --color-primary-hover: #00a868;
+  --color-primary-hover: rgba(var(--color-primary-rgb), 0.5);
+
 
   --color-bg-dark: #01012b;
   --color-bg-primary: #2a2356;
@@ -197,6 +209,7 @@
   --border-color: var(--color-primary);
   --border-color-active: var(--color-primary);
   --border: var(--border-size) solid var(--border-color);
+  --border-big: var(--border-size-big) var(--border-color);
 
   //BUTTONS
   --color-text-btn: var(--color-text-primary);

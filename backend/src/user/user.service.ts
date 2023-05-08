@@ -1,20 +1,29 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
+import { IHistory, IStadistics, IUserProfile } from './interfaces';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger('UserService');
+
   constructor(
     private dataSource: DataSource,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Busca un usuario a partir del login de 42
@@ -29,22 +38,32 @@ export class UserService {
     return await this.profileRepository.findOneBy({ login });
   }
 
+  async findProfileByUsername(username: string): Promise<IUserProfile> {
+    const profile = await this.profileRepository.findOneBy({ username });
+    const history: IHistory[] = [
+      { date: new Date().toDateString(), player: 'aramirez' },
+    ];
+    const stadistics: IStadistics = { lost: 4, played: 8, win: 4 };
+    return { profile, history, stadistics };
+  }
+
   /**
    * Crea un nuevo usuario y su perfil
-   * @param user login42
+   * @param user42 login42
    */
   async create(user42: IAuth42) {
     // Creamos una transaccion
     const queryRunner = this.dataSource.createQueryRunner();
-
+    await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       const userRepo = this.userRepository.create({
         login: user42.login,
       });
-      const profileRepo = this.profileRepository.create({ ...user42 });
-      // await this.userRepository.save(userRepo);
-      // await this.profileRepository.save(profileRepo);
+      const profileRepo = this.profileRepository.create({
+        ...user42,
+        status: 'online',
+      });
       await queryRunner.manager.save(userRepo);
       await queryRunner.manager.save(profileRepo);
       // Si todo ha ido bien aplicamos los cambios
@@ -90,5 +109,11 @@ export class UserService {
     } catch (error) {
       throw new HttpException('Something is wrong', 500);
     }
+  }
+
+  private handleDBExceptions(error: any) {
+    if (error.code == '23505') throw new BadRequestException(error.detail);
+    this.logger.error(error);
+    throw new InternalServerErrorException('Unexpected error');
   }
 }

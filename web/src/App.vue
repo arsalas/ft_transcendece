@@ -1,37 +1,34 @@
 <script setup lang="ts">
 import { defineAsyncComponent, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
-import { providers } from './providers';
-import { useAuthStore, useThemeStore, useUserStore } from './stores';
+import { useAuthStore, useUserStore } from './stores';
+import { storeToRefs } from 'pinia';
+import { useStart } from './composables';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
-  () => import('./app/common/components/Notification.vue'),
+  () => import('./app/common/components/ui/Notification.vue'),
 );
-
-// PROVIDERS
-const { authService } = providers();
 
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();
-const themeStore = useThemeStore();
 const router = useRouter();
+const route = useRoute();
+
+const { user } = storeToRefs(userStore);
 
 // COMPOSABLES
 const { isOpen } = useNotifications();
+const { startApp } = useStart();
 
 // FUNCTIONS
 onMounted(async () => {
   try {
-    themeStore.loadTheme();
-    const authToken = authStore.token;
-    if (!authToken) return;
-    const { token, user } = await authService.recoverSession();
-    authStore.signIn(token);
-    userStore.setUser(user);
+    await startApp();
+    if (authStore.isAuth && !user.value.username) router.push({ name: 'editProfile' });
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });

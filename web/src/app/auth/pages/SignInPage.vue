@@ -12,7 +12,7 @@
 				</a>
 			</div>
 			<footer class="text">
-				Ft transendence by -amurcia & aramirez
+				ft_trancendence by -amurcia & aramirez
 			</footer>
 
 		</div>
