@@ -1,48 +1,34 @@
 <script setup lang="ts">
 import { defineAsyncComponent, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
-import { providers } from './providers';
-import {
-  useAuthStore,
-  useFriendsStore,
-  useThemeStore,
-  useUserStore,
-} from './stores';
-import { useSockets } from './sockets';
+import { useAuthStore, useUserStore } from './stores';
+import { storeToRefs } from 'pinia';
+import { useStart } from './composables';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
   () => import('./app/common/components/ui/Notification.vue'),
 );
 
-// PROVIDERS
-const { authService, friendsService } = providers();
-
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();
-const friendsStore = useFriendsStore();
-const themeStore = useThemeStore();
 const router = useRouter();
+const route = useRoute();
+
+const { user } = storeToRefs(userStore);
 
 // COMPOSABLES
 const { isOpen } = useNotifications();
-
-const { connectToServerNotifications } = useSockets();
+const { startApp } = useStart();
 
 // FUNCTIONS
 onMounted(async () => {
   try {
-    themeStore.loadTheme();
-    const authToken = authStore.token;
-    if (!authToken) return;
-    const { token, user } = await authService.recoverSession();
-    authStore.signIn(token);
-    userStore.setUser(user);
-    friendsStore.friends = await friendsService.get();
-	connectToServerNotifications()
+    await startApp();
+    if (authStore.isAuth && !user.value.username) router.push({ name: 'editProfile' });
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });
@@ -51,7 +37,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <img src="./assets/red-pennant-flags-set_107791-5495.png" alt=""> -->
   <div class="app">
     <Transition
       name="custom-classes"

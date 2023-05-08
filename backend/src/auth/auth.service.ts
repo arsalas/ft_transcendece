@@ -162,7 +162,7 @@ export class AuthService {
         username: profile.username,
         avatar: profile.avatar,
         twoFactorAuth: user.twoFactorAuth,
-        status: profile.status,
+        status: 'online',
       },
     };
   }

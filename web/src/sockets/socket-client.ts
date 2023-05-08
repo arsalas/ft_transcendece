@@ -6,8 +6,6 @@ import { providers } from '../providers';
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
 
-// const authStore = useAuthStore()\
-
 const manager = new Manager('http://localhost:3000/socket.io/socket.io.js', {
   extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
 });

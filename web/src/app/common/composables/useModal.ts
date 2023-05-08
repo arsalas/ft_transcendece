@@ -1,10 +1,11 @@
 import { ref } from 'vue';
 
-const isOpen = ref<boolean>(false);
-const isOpenContent = ref<boolean>(false);
 const timeOut = 100;
 
 export const useModal = () => {
+  const isOpen = ref<boolean>(false);
+  const isOpenContent = ref<boolean>(false);
+
   const open = () => {
     isOpen.value = true;
     setTimeout(() => {

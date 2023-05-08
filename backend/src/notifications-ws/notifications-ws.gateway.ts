@@ -21,7 +21,7 @@ export class NotificationsWsGateway
     private readonly jwtService: JwtService,
   ) {}
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const token = client.handshake.headers.authentication as string;
     let payload: JwtPayload;
 
@@ -34,29 +34,63 @@ export class NotificationsWsGateway
       return;
     }
 
-    this.notificationsWsService.registerClient(client, payload.login);
+    await this.notificationsWsService.registerClient(client, payload.login);
 
     // client.broadcast.emit('user-connected', { user: client.id });
     this.wss.emit('clients-connect', { userId: payload.login });
+    this.wss.emit('refresh-friends');
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     const userId = this.notificationsWsService.getUserIdByClient(client.id);
-    this.notificationsWsService.removeClient(client.id);
+    await this.notificationsWsService.removeClient(client.id);
     this.wss.emit('clients-disconect', { userId });
+    this.wss.emit('refresh-friends');
   }
 
   @SubscribeMessage('send-request')
   async handleMessageFromClient(client: Socket, username: string) {
-    console.log('send-request')
-	const newFriend = await this.notificationsWsService.sendRequest(
+    console.log('send-request');
+    const newFriend = await this.notificationsWsService.sendRequest(
       client.id,
       username,
     );
     const userId = this.notificationsWsService.getUserIdByClient(client.id);
-	this.wss
-      .to(userId)
-      .emit('request-recived', newFriend);
-	  this.wss.to(newFriend.profile.login).emit('refresh-friends');
+    this.wss.to(userId).emit('request-recived', newFriend);
+    this.wss.to(newFriend.profile.login).emit('refresh-friends');
+  }
+
+  @SubscribeMessage('accept-request')
+  async handlAcceptRequest(client: Socket, username: string) {
+    // const newFriend = await this.notificationsWsService.sendRequest(
+    //   client.id,
+    //   username,
+    // );
+    // const userId = this.notificationsWsService.getUserIdByClient(client.id);
+    console.log(username);
+    this.wss.to(username).emit('refresh-friends');
+  }
+
+  @SubscribeMessage('refuse-request')
+  async handlRefuseRequest(client: Socket, username: string) {
+    // const newFriend = await this.notificationsWsService.sendRequest(
+    //   client.id,
+    //   username,
+    // );
+    // const userId = this.notificationsWsService.getUserIdByClient(client.id);
+    this.wss.to(username).emit('refresh-friends');
+  }
+
+  @SubscribeMessage('change-status')
+  async handlChangeStatus(client: Socket, status: string) {
+    if (
+      status != 'online' &&
+      status != 'offline' &&
+      status != 'out' &&
+      status != 'game'
+    )
+      return;
+    await this.notificationsWsService.changeStatus(client.id, status);
+    this.wss.emit('refresh-friends');
   }
 }

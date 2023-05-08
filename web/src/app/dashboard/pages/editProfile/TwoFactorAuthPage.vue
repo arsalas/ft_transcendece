@@ -61,7 +61,7 @@
       </div>
     </template>
   </Box>
-  <Modal v-if="isOpen">
+  <Modal v-if="isOpen" @close="close" :isOpenContent="isOpenContent">
     <DesactivateTFA v-if="user.twoFactorAuth" />
     <ActivateTFA v-else :qr="qrImg" />
   </Modal>
@@ -105,7 +105,7 @@ const { editProfileService } = providers();
 // COMPOSABLES
 const notifications = useNotifications();
 const { isLoading } = useLoading();
-const { open, isOpen, close } = useModal();
+const { open, isOpen, close, isOpenContent } = useModal();
 
 // VARIABLES
 const qrImg = ref<string>('');

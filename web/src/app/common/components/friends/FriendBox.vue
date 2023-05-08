@@ -30,7 +30,7 @@
             <a href="#" class="dropdown-item text is-small"> Send Message </a>
             <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
             <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a href="#" class="dropdown-item text is-small"> Unfriend </a>
+            <a @click="refuseFriend" class="dropdown-item text is-small"> Unfriend </a>
             <a href="#" class="dropdown-item text is-small"> Block </a>
           </div>
         </div>
@@ -52,15 +52,19 @@ import { IFriend } from '../../../../interfaces/friends';
 import { providers } from '../../../../providers';
 import { useFriendsStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
+import { useSockets } from '../../../../sockets';
+
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
   friend: IFriend;
 }>();
 
+const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
 const { friends } = storeToRefs(firendsStore);
 const { friendsService } = providers();
+
 const isOpen = ref<boolean>(false);
 const onClickAway = (event: any) => {
   isOpen.value = false;
@@ -70,6 +74,7 @@ const acceptFriend = async () => {
   try {
     await friendsService.acceptRequest(props.friend.profile.login);
     props.friend.activedAt = new Date().toDateString();
+    socketNotifications.emit('accept-request', props.friend.profile.login);
   } catch (error) {}
 };
 const refuseFriend = async () => {
@@ -79,8 +84,11 @@ const refuseFriend = async () => {
       (f) => f.profile.login == props.friend.profile.login,
     );
     friends.value.splice(i, 1);
+    socketNotifications.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
+
+
 </script>
 <style lang="scss" scoped>
 .actions {

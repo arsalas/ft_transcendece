@@ -53,6 +53,7 @@ import { providers } from '../../../providers';
 import { useAuthStore, useUserStore } from '../../../stores';
 import { useLoading, useNotifications } from '../../common/composables';
 import { IUser } from '../../../interfaces';
+import { useStart } from '../../../composables';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
@@ -75,6 +76,7 @@ const route = useRoute();
 const router = useRouter();
 const { isLoading } = useLoading();
 const notifications = useNotifications();
+const { startApp } = useStart();
 
 // VARIABLES
 const isLoadingTFA = ref<boolean>(false);
@@ -85,9 +87,10 @@ const tfaData = ref({ login: '', avatar42: '' });
 
 // FUNCIONES
 
-const successAuth = (token: string, userAuth: IUser) => {
+const successAuth = async (token: string, userAuth: IUser) => {
   authStore.signIn(token);
   userStore.setUser(userAuth);
+  await startApp();
   if (!user.value.username) router.push({ name: 'editProfile' });
   else router.push({ name: 'home' });
 };

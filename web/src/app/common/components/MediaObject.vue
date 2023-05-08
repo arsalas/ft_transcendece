@@ -1,9 +1,18 @@
 <template>
   <div class="media-object">
-    <Avatar :class="status" :src="image" :fallback="imageFallback" :width="width" />
+    <Avatar
+      :class="status"
+      :src="image"
+      :fallback="imageFallback"
+      :width="width" />
     <div>
       <div class="text">{{ name }}</div>
-      <div class="text is-small" :class="[status]">{{ status }}</div>
+      <div
+        @click="click"
+        class="text is-small"
+        :class="[status, click ? 'is-clickable' : '']">
+        {{ status }}
+      </div>
     </div>
   </div>
 </template>
@@ -12,12 +21,13 @@
 import { defineAsyncComponent } from 'vue';
 const Avatar = defineAsyncComponent(() => import('./images/Avatar.vue'));
 
-const props = defineProps<{
+defineProps<{
   image: string | null;
   imageFallback: string;
   name: string;
   status?: string;
   width: string;
+  click?: () => void;
 }>();
 </script>
 

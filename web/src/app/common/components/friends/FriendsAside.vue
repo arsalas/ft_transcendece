@@ -17,7 +17,7 @@
       :friends="offline"
       title="OFFLINE" />
   </aside>
-  <Modal v-if="isOpen">
+  <Modal v-if="isOpen" :is-open-content="isOpenContent" @close="close">
     <Box>
       <template v-slot:header> ADD FRIENDS </template>
       <template v-slot:body>
@@ -51,7 +51,7 @@
         </div>
 
         <footer class="mt-4" style="display: flex; justify-content: center">
-          <button class="button is-primary">DONE</button>
+          <button @click="close" class="button is-primary">DONE</button>
         </footer>
       </template>
     </Box>
@@ -74,22 +74,20 @@ const Box = defineAsyncComponent(() => import('../ui/Box.vue'));
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 // COMPOSABLES
-const { isOpen, open } = useModal();
+const { isOpen, isOpenContent, close, open } = useModal();
 
 const friendsStore = useFriendsStore();
 const { offline, online, friends, pending, sending } =
   storeToRefs(friendsStore);
 
-
-const {socketNotifications} = useSockets()
+const { socketNotifications } = useSockets();
 
 const { friendsService } = providers();
 const sendUser = ref<string>('');
 const handleSubmit = async () => {
-
-	socketNotifications.emit('send-request', sendUser.value)
-//   const newFriend = await friendsService.sendRequest(sendUser.value);
-//   friends.value.push(newFriend);
+  socketNotifications.emit('send-request', sendUser.value);
+  //   const newFriend = await friendsService.sendRequest(sendUser.value);
+  //   friends.value.push(newFriend);
 };
 </script>
 <style lang="scss" scoped>

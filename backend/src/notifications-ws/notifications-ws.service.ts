@@ -23,25 +23,21 @@ export class NotificationsWsService {
   ) {}
 
   getUserIdByClient(clientId: string) {
+    console.log({ clientId });
     return this.connectedClients[clientId].userId;
   }
 
   async registerClient(client: Socket, userId: string) {
     this.checkUserConnection(userId);
-
-    await this.profileRepository.save({ login: userId, status: 'online' });
-
     this.connectedClients[client.id] = {
       socket: client,
       userId,
     };
+    await this.changeStatus(client.id, 'online');
   }
 
   async removeClient(clientId: string) {
-    await this.profileRepository.save({
-      login: this.connectedClients[clientId].userId,
-      status: 'offline',
-    });
+    await this.changeStatus(clientId, 'offline');
     delete this.connectedClients[clientId];
   }
 
@@ -54,6 +50,11 @@ export class NotificationsWsService {
     return await this.friendsService.sendRequest(userId, {
       reciverId: username,
     });
+  }
+
+  async changeStatus(clientId: string, status: string) {
+    const userId = this.getUserIdByClient(clientId);
+    await this.profileRepository.save({ login: userId, status });
   }
 
   private checkUserConnection(userId: string) {
