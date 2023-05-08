@@ -14,6 +14,7 @@ import { EnvConfiguration, JoiValidationSchema } from './config';
 import { FriendsModule } from './friends/friends.module';
 import { MessagesWsModule } from './messages-ws/messages-ws.module';
 import { NotificationsWsModule } from './notifications-ws/notifications-ws.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { NotificationsWsModule } from './notifications-ws/notifications-ws.modul
     FriendsModule,
     MessagesWsModule,
     NotificationsWsModule,
+    ChatModule,
   ],
   controllers: [AppController, ImageController],
   providers: [AppService, ImageHelpers],
