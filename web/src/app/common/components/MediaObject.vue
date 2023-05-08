@@ -1,24 +1,44 @@
 <template>
-    <div class="media-object">
-        
-        <img class="avatar" src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
-            alt="">
-        <div class="media-text">
-            <div class="name">
-                aramirez
-            </div>
-            <div class="status">
-                conectado
-            </div>
-        </div>
+  <div class="media-object">
+    <Avatar
+      :class="status"
+      :src="image"
+      :fallback="imageFallback"
+      :width="width" />
+    <div>
+      <div class="text">{{ name }}</div>
+      <div
+        @click="click"
+        class="text is-small"
+        :class="[status, click ? 'is-clickable' : '']">
+        {{ status }}
+      </div>
     </div>
-
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from 'vue';
+const Avatar = defineAsyncComponent(() => import('./images/Avatar.vue'));
 
-const props = defineProps({ task: Object });
+defineProps<{
+  image: string | null;
+  imageFallback: string;
+  name: string;
+  status?: string;
+  width: string;
+  click?: () => void;
+}>();
 </script>
 
-<script lang="scss" scoped></script>
+<style lang="scss" scoped>
+.media-object {
+  display: flex;
+  align-items: center;
+  //   padding: 0.25rem 0.5rem;
+
+  & img {
+    margin-right: 1rem;
+  }
+}
+</style>

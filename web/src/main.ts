@@ -1,6 +1,8 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
+import VueClickAway from "vue3-click-away";
+
 import App from './App.vue';
 import router from './router';
 
@@ -11,4 +13,4 @@ import './styles/main.scss';
 
 const pinia = createPinia();
 
-createApp(App).use(pinia).use(router).mount('#app');
+createApp(App).use(pinia).use(router).use(VueClickAway).mount('#app');

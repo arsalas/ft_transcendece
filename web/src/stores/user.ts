@@ -11,6 +11,9 @@ export const useUserStore = defineStore('user', () => {
     status: '',
     twoFactorAuth: false,
     username: undefined,
+    color: '',
+    icon: '',
+    background: '',
   });
 
   const setUser = (userData: IUser): void => {

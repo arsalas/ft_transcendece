@@ -49,7 +49,7 @@ import { useUserStore } from '../../../../stores';
 import { useForm } from '../../../common/composables';
 
 const Box = defineAsyncComponent(
-  () => import('../../../common/components/Box.vue'),
+  () => import('../../../common/components/ui/Box.vue'),
 );
 
 const userStore = useUserStore();

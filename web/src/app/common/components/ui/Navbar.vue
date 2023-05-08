@@ -48,32 +48,51 @@
             </span>
           </li>
           <li>
-            <!-- <router-link :to="{ name: 'profile' }"> -->
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-table"></i>
+							</span>
+							<span>Ladder</span>
+						</span>
 
-            <span class="icon-text text">
-              <span class="icon">
-                <i class="fa-solid fa-user"></i>
-              </span>
-              <span>Profile</span>
-            </span>
+					</li>
+					<li>
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-trophy"></i>
+							</span>
+							<span>Achivements</span>
+						</span>
 
-            <!-- </router-link> -->
-          </li>
-        </ul>
-      </nav>
-      <!-- </div>
+					</li>
+					<li>
+						<router-link :to="{ name: 'profileUser', params:{username: user.username || user.login} }">
+
+							<span class="icon-text text">
+								<span class="icon">
+									<i class="fa-solid fa-user"></i>
+								</span>
+								<span>Profile</span>
+							</span>
+
+
+
+						</router-link>
+					</li>
+				</ul>
+			</nav>
+			<!-- </div>
 		<aside class="right"> -->
       <!-- <div class="right"> -->
 
       <div class="media-object right">
-        <Image class="avatar" :src="user.avatar!" :fallback="user.avatar42" />
-        <!-- <img class="avatar" :src="user.avatar || user.avatar42" alt=""> -->
-        <div class="media-text is-hidden-mobile">
-          <div class="name text">
-            {{ user.username || user.login }}
-          </div>
-          <div class="text online">online</div>
-        </div>
+        <MediaObject
+          :click="changeStatus"
+          :image="user.avatar!"
+          :image-fallback="user.avatar42!"
+          :name="user.username || user.login"
+          :status="user.status"
+          width="2.7rem" />
         <router-link :to="{ name: 'editProfile' }" class="is-hidden-mobile">
           <span class="icon text" style="font-size: 1rem; margin-left: 1rem">
             <i class="fa-solid fa-gear"></i>
@@ -95,14 +114,22 @@
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import { useUserStore, useAuthStore } from '../../../stores';
-import Image from './Image.vue';
+import { useUserStore, useAuthStore } from '../../../../stores';
+import Image from '../images/Image.vue';
+import { useSockets } from '../../../../sockets';
+import MediaObject from '../MediaObject.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+const { socketNotifications } = useSockets();
 
+const changeStatus = () => {
+  if (user.value.status == 'online') user.value.status = 'out';
+  else user.value.status = 'online';
+  socketNotifications.emit('change-status', user.value.status);
+};
 const logout = () => {
   authStore.logOut();
   router.push({ name: 'signin' });

@@ -16,8 +16,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useModal } from '../composables';
 
-const { isOpenContent, close } = useModal();
+defineProps<{
+  isOpenContent: boolean;
+}>();
+
+const emits = defineEmits(['close']);
+
+const close = () => {
+  emits('close');
+};
 </script>
 <style lang="scss" scoped></style>

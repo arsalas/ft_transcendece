@@ -64,7 +64,7 @@ import { useRouter } from 'vue-router';
 import { useGameStore } from '../../../stores/game';
 import { useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
-import Image from '../../common/components/Image.vue';
+import Image from '../../common/components/images/Image.vue';
 
 const router = useRouter();
 const gameStore = useGameStore();

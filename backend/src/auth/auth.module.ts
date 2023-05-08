@@ -13,6 +13,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from 'src/common/common.module';
 import { Api42Service, TfaService } from 'src/common/services';
 import { ConfigModule } from '@nestjs/config';
+// import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -40,5 +41,6 @@ import { ConfigModule } from '@nestjs/config';
     JwtStrategy,
     ImageHelpers,
   ],
+  exports: [JwtModule, JwtStrategy, TypeOrmModule],
 })
 export class AuthModule {}
