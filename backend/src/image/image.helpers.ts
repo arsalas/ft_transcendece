@@ -9,6 +9,7 @@ export class ImageHelpers {
    * @returns imagen QR
    */
   async generateQRCode(url: string): Promise<string> {
+
     return new Promise((resolve, reject) => {
       toDataURL(url, (err: Error, imageUrl: string) => {
         if (err) reject(err);

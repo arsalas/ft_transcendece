@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Profile' },
         component: () =>
           import(
-            /* webpackChunkName: "create-contest" */ '../layouts/EditProfileLayout.vue'
+            /* webpackChunkName: "create-contest" */ '../layouts/EditProfile.vue'
           ),
         children: [
           {
@@ -83,6 +83,36 @@ const routes: RouteRecordRaw[] = [
           import(
             /* webpackChunkName: "account" */ '../pages/SelectGamePage.vue'
           ),
+      },
+      {
+        path: 'profile/:username',
+        name: 'profileUser',
+        redirect: { name: 'overview' },
+        meta: { title: 'Profile' },
+        component: () =>
+          import(
+            /* webpackChunkName: "create-contest" */ '../layouts/ProfileLayout.vue'
+          ),
+        children: [
+          {
+            path: '',
+            name: 'overview',
+            meta: { title: 'Profile' },
+            component: () =>
+              import(
+                /* webpackChunkName: "create-contest" */ '../pages/profile/OverviewPage.vue'
+              ),
+          },
+          {
+            path: 'history',
+            name: 'history',
+            meta: { title: 'Profile' },
+            component: () =>
+              import(
+                /* webpackChunkName: "create-contest" */ '../pages/profile/HistoryPage.vue'
+              ),
+          },
+        ],
       },
     ],
   },

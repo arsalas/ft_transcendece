@@ -48,19 +48,42 @@
             </span>
           </li>
           <li>
-            <!-- <router-link :to="{ name: 'profile' }"> -->
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-table"></i>
+							</span>
+							<span>Ladder</span>
+						</span>
 
-            <span class="icon-text text">
-              <span class="icon">
-                <i class="fa-solid fa-user"></i>
-              </span>
-              <span>Profile</span>
-            </span>
+					</li>
+					<li>
+						<span class="icon-text text">
+							<span class="icon">
+								<i class="fa-solid fa-trophy"></i>
+							</span>
+							<span>Achivements</span>
+						</span>
 
-            <!-- </router-link> -->
-          </li>
-        </ul>
-      </nav>
+					</li>
+					<li>
+						<router-link :to="{ name: 'profileUser', params:{username: user.username || user.login} }">
+
+							<span class="icon-text text">
+								<span class="icon">
+									<i class="fa-solid fa-user"></i>
+								</span>
+								<span>Profile</span>
+							</span>
+
+
+
+						</router-link>
+					</li>
+				</ul>
+			</nav>
+			<!-- </div>
+		<aside class="right"> -->
+      <!-- <div class="right"> -->
 
       <div class="media-object right">
         <MediaObject
