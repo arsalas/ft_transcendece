@@ -7,34 +7,6 @@
           class="avatar"
           :src="profile?.profile.avatar || profile?.profile.avatar42"
           alt="" /> -->
-          
-          <div class="dropdown is-right is-active" @click="isOpen = true">
-      <div class="dropdown-trigger">
-        <button class="ml-2 action-button text">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-      <Transition
-        name="custom-classes"
-        enter-active-class="animate__animated animate__fadeIn animate__faster"
-        leave-active-class="animate__animated animate__fadeOut animate__faster">
-        <div
-          v-if="isOpen"
-          v-click-away="onClickAway"
-          class="dropdown-menu"
-          role="menu">
-          <div class="dropdown-content">
-            <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
-            <a href="#" class="dropdown-item text is-small"> Send Message </a>
-            <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
-            <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a href="#" class="dropdown-item text is-small"> Unfriend </a>
-            <a href="#" class="dropdown-item text is-small"> Block </a>
-          </div>
-        </div>
-      </Transition>
-    </div>
-
           <img
             class="avatar"
             src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
@@ -43,6 +15,40 @@
             <div class="text is-large name">aramirez</div>
             <div class="text is-small status">conectado</div>
           </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="dropdown is-right is-active" @click="isOpen = true">
+          <div class="dropdown-trigger">
+            <button class="ml-2 action-button text">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <Transition
+            name="custom-classes"
+            enter-active-class="animate__animated animate__fadeIn animate__faster"
+            leave-active-class="animate__animated animate__fadeOut animate__faster">
+            <div
+              v-if="isOpen"
+              v-click-away="onClickAway"
+              class="dropdown-menu"
+              role="menu">
+              <div class="dropdown-content">
+                <a href="#" class="dropdown-item text is-small">
+                  Invite to group
+                </a>
+                <a href="#" class="dropdown-item text is-small">
+                  Send Message
+                </a>
+                <a href="#" class="dropdown-item text is-small">
+                  View Profile
+                </a>
+                <a href="#" class="dropdown-item text is-small"> Unfriend </a>
+                <a href="#" class="dropdown-item text is-small"> Block </a>
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
     </header>
@@ -67,7 +73,6 @@
         </ul>
       </div>
     </div>
-
 
     <footer>
       <form @submit.prevent="sendMsg()">
@@ -135,16 +140,21 @@ const chats = ref<IChat[]>([
   justify-content: center;
   flex-direction: column;
   background-color: var(--color-primary-rgb);
+  border: solid 1px var(--color-primary);
 
   & header {
     height: 50px;
     display: flex;
-
-    background-color: var(--color-bg-dark);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 1rem;
+    background-color: var(--color-bg-primary);
+    border-bottom: solid 1px var(--color-primary);
 
     .left {
       height: 100%;
-      padding: 0.2rem;
+      display: flex;
+      align-items: center;
 
       & .media-object {
         height: 100%;
@@ -161,19 +171,24 @@ const chats = ref<IChat[]>([
         display: flex;
         flex-direction: column;
         padding-left: 1rem;
-        // flex-direction: column;
-        // justify-content: center;
       }
+    }
+
+    .right {
+      height: 100%;
+      display: flex;
+      align-items: center;
     }
   }
 
   & footer {
     height: 70px;
-    background-color: pink;
 
     & form,
     input {
       height: 100%;
+      border: none;
+      border-top: solid 0.5px var(--color-primary);
     }
   }
 
@@ -183,14 +198,14 @@ const chats = ref<IChat[]>([
     align-items: flex-start;
     height: calc(100% - 50px);
     align-items: end;
-    background: rgb(193, 255, 250);
-    border: 1px solid #333;
+    background: rgb(0, 0, 0);
     overflow: auto;
     padding: 0.5rem;
 
     & .input {
       align-items: center;
       vertical-align: bottom;
+      border: none;
     }
 
     & .conversation-start {
@@ -206,8 +221,7 @@ const chats = ref<IChat[]>([
         padding: 0.5rem 2rem;
         display: inline-block;
         background: white;
-        color: black;
-        border: 1px black;
+        color: var(--color-bg-primary);
         border-radius: 5px;
       }
     }
@@ -230,21 +244,11 @@ const chats = ref<IChat[]>([
       justify-content: flex-start;
     }
 
-    // .conversation-msg {
-    //   width: 100%;
-    //   display: flex;
-    //   flex-direction: column;
-    //   border: #3835e9 1px solid;
-    // }
-
     & .bubble {
       max-width: 75%;
       margin-bottom: 10px;
       padding: 0.2rem 0.5rem;
       border-radius: 1rem;
-      // display: flex;
-      // flex-direction: column;
-      // align-self: flex-start;
 
       & .username {
         font-size: 0.8rem;
@@ -257,6 +261,8 @@ const chats = ref<IChat[]>([
       color: rgba(0, 0, 128, 0.931);
       background-color: rgb(4, 223, 223);
       box-shadow: -1px 2px 0px rgba(0, 0, 128, 0.931);
+      border-radius: 0px var(--border-radius-chat) var(--border-radius-chat)
+        var(--border-radius-chat);
     }
 
     .bubble.me {
@@ -264,17 +270,17 @@ const chats = ref<IChat[]>([
       color: rgb(115, 8, 115);
       background-color: rgb(255, 158, 255);
       box-shadow: -1px 2px 0px rgb(115, 8, 115);
+      border-radius: var(--border-radius-chat) 0px var(--border-radius-chat)
+        var(--border-radius-chat);
     }
   }
 }
-
 .action-button {
+  height: 100%;
   background-color: inherit;
   color: var(--text-color);
   border: none;
   cursor: pointer;
-  padding: 0.4rem;
   aspect-ratio: 1;
 }
-
 </style>
