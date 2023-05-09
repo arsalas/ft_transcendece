@@ -1,88 +1,94 @@
 <template>
-  <div class="chat-container">
-    <header>
-      <div class="left">
-        <div class="media-object">
-          <!-- <img
+  <div v-if="isOpenChat" class="chat-container">
+    <div class="chat-container">
+      <header>
+        <div class="left">
+          <div class="media-object">
+            <!-- <img
           class="avatar"
           :src="profile?.profile.avatar || profile?.profile.avatar42"
           alt="" /> -->
-          <img
-            class="avatar"
-            src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
-            alt="" />
-          <div class="media-text">
-            <div class="text is-large name">aramirez</div>
-            <div class="text is-small status">conectado</div>
+            <img
+              class="avatar"
+              src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
+              alt="" />
+            <div class="media-text">
+              <div class="text is-large name">aramirez</div>
+              <div class="text is-small status">conectado</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="right">
-        <div class="dropdown is-right is-active" @click="isOpen = true">
-          <div class="dropdown-trigger">
-            <button class="ml-2 action-button text">
-              <i class="fas fa-ellipsis-v"></i>
-            </button>
-          </div>
-          <Transition
-            name="custom-classes"
-            enter-active-class="animate__animated animate__fadeIn animate__faster"
-            leave-active-class="animate__animated animate__fadeOut animate__faster">
-            <div
-              v-if="isOpen"
-              v-click-away="onClickAway"
-              class="dropdown-menu"
-              role="menu">
-              <div class="dropdown-content">
-                <a href="#" class="dropdown-item text is-small">
-                  Invite to group
-                </a>
-                <a href="#" class="dropdown-item text is-small">
-                  Send Message
-                </a>
-                <a href="#" class="dropdown-item text is-small">
-                  View Profile
-                </a>
-                <a href="#" class="dropdown-item text is-small"> Unfriend </a>
-                <a href="#" class="dropdown-item text is-small"> Block </a>
+        <div class="right">
+          <button @click="closeChat" class="close-chat button is-primary">
+            X
+          </button>
+          <div class="dropdown is-right is-active" @click="isOpen = true">
+            <div class="dropdown-trigger">
+              <button class="ml-2 action-button text">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+            </div>
+
+            <Transition
+              name="custom-classes"
+              enter-active-class="animate__animated animate__fadeIn animate__faster"
+              leave-active-class="animate__animated animate__fadeOut animate__faster">
+              <div
+                v-if="isOpen"
+                v-click-away="onClickAway"
+                class="dropdown-menu"
+                role="menu">
+                <div class="dropdown-content">
+                  <a href="#" class="dropdown-item text is-small">
+                    Invite to group
+                  </a>
+                  <a href="#" class="dropdown-item text is-small">
+                    Send Message
+                  </a>
+                  <a href="#" class="dropdown-item text is-small">
+                    View Profile
+                  </a>
+                  <a href="#" class="dropdown-item text is-small"> Unfriend </a>
+                  <a href="#" class="dropdown-item text is-small"> Block </a>
+                </div>
               </div>
-            </div>
-          </Transition>
+            </Transition>
+          </div>
+        </div>
+      </header>
+
+      <div class="chat">
+        <div class="conversation-start">
+          <span>Today, 9:00 PM</span>
+        </div>
+
+        <div class="conversation-msg">
+          <ul>
+            <li
+              class="bubble"
+              :class="chat.login == 'amurcia-' ? 'me' : 'other'"
+              v-for="chat in chats">
+              <div v-if="chat.login != 'amurcia-'" class="username">
+                {{ chat.login }}
+              </div>
+              <!-- si el usuario no soy yo, printa el nombre del login  -->
+              {{ chat.message }}
+            </li>
+          </ul>
         </div>
       </div>
-    </header>
 
-    <div class="chat">
-      <div class="conversation-start">
-        <span>Today, 9:00 PM</span>
-      </div>
-
-      <div class="conversation-msg">
-        <ul>
-          <li
-            class="bubble"
-            :class="chat.login == 'amurcia-' ? 'me' : 'other'"
-            v-for="chat in chats">
-            <div v-if="chat.login != 'amurcia-'" class="username">
-              {{ chat.login }}
-            </div>
-            <!-- si el usuario no soy yo, printa el nombre del login  -->
-            {{ chat.message }}
-          </li>
-        </ul>
-      </div>
+      <footer>
+        <form @submit.prevent="sendMsg()">
+          <input
+            v-model.trim="message"
+            type="text"
+            placeHolder="Enviar mensaje"
+            class="input" />
+        </form>
+      </footer>
     </div>
-
-    <footer>
-      <form @submit.prevent="sendMsg()">
-        <input
-          v-model.trim="message"
-          type="text"
-          placeHolder="Enviar mensaje"
-          class="input" />
-      </form>
-    </footer>
   </div>
 </template>
 
@@ -111,6 +117,7 @@ const sendMsg = () => {
   }
 };
 
+const isOpenChat = ref<boolean>(true);
 const isOpen = ref<boolean>(false);
 const onClickAway = (event: any) => {
   isOpen.value = false;
@@ -131,6 +138,34 @@ const chats = ref<IChat[]>([
     date: '11.05.2023',
   },
 ]);
+
+const emits = defineEmits(['close']);
+
+const close = () => {
+  emits('close');
+};
+
+const closeChat = () => {
+  isOpenChat.value = false;
+};
+
+const chatContainer = document.getElementById('chat-container');
+const closeButton = document.getElementById('close-chat');
+
+// Listen for a click event on the page
+document.addEventListener('click', (event: MouseEvent) => {
+  // Check if the clicked element is the chat box or its child elements
+  if ((event.target as HTMLElement).closest('#chat-container')) {
+    return;
+  }
+  chatContainer!.style.display = 'none'; // Hide the chat box
+});
+
+// Listen for a click event on the close button
+closeButton?.addEventListener('click', () => {
+  // Hide the chat box
+  chatContainer!.style.display = 'none';
+});
 </script>
 
 <style lang="scss" scoped>
