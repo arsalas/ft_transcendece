@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+  <div class="main-container" v-if="!isLoading">
     <div class="actions">
       <div class="brand">
         <div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
@@ -43,12 +43,26 @@
     <header>
       <div class="info-players">
         <div class="player text is-large">
-          <Image :src="user.avatar" :fallback="user.avatar42" />
-          {{ user.username }}
+          <Image
+            :src="gameData?.players[0].avatar"
+            :fallback="gameData?.players[0].avatar42" />
+          {{ gameData?.players[0].username }}
+          <img
+            class="ml-4"
+            :style="{backgroundColor: gameData!.players[0].color}"
+            :src="gameData!.players[0].icon"
+            alt="" />
         </div>
         <div class="player text is-large">
-          <Image src="favicon.png" :fallback="user.avatar42" is-external />
-          CPU
+          <Image
+            :src="gameData?.players[1].avatar"
+            :fallback="gameData?.players[1].avatar42" />
+          {{ gameData?.players[1].username }}
+          <img
+            class="ml-4"
+            :style="{backgroundColor: gameData!.players[1].color}"
+            :src="gameData!.players[1].icon"
+            alt="" />
         </div>
       </div>
     </header>
@@ -58,24 +72,37 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted } from 'vue';
+import { onMounted, ref, onUnmounted, provide } from 'vue';
 import { PongGame } from '../helpers';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useGameStore } from '../../../stores/game';
 import { useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
 import Image from '../../common/components/images/Image.vue';
+import { providers } from '../../../providers';
+
+import { GameData } from '../../dashboard/services/GameService';
+import { useSocketsGame } from '../../../sockets';
+import Flag from '../../common/components/Flag.vue';
 
 const router = useRouter();
+const route = useRoute();
 const gameStore = useGameStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+const isLoading = ref<boolean>(true);
+
+const gameData = ref<GameData>();
+
+const { gameService } = providers();
 
 const isMuted = ref<boolean>(false);
 const isStart = ref<boolean>(false);
 const app = ref<HTMLDivElement>();
 const game = ref<PongGame>();
 const canvas = document.createElement('canvas');
+
+const { socketGame } = useSocketsGame();
 
 const mutedGame = () => {
   isMuted.value = true;
@@ -97,10 +124,17 @@ const exitGame = () => {
 };
 
 const getGameData = async () => {
+  isLoading.value = true;
+  try {
+    gameData.value = await gameService.get(route.params.id as string);
+  } catch (error) {
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-}
-
-onMounted(() => {
+onMounted(async () => {
+  await getGameData();
   canvas.height = app.value!.clientHeight - 1;
   canvas.width = app.value!.clientWidth - 1;
   document.querySelector('#game')!.appendChild(canvas);
@@ -109,9 +143,16 @@ onMounted(() => {
     canvas,
     canvas.width,
     canvas.height,
-    gameStore.mode,
-    router,
+    'online',
+    user.value.login == gameData.value?.players[0].login ? 'left' : 'right',
+    socketGame.value,
+    gameData.value?.id,
+    {
+      player: gameData.value?.players[0].login,
+      rival: gameData.value?.players[1].login,
+    },
   );
+  game.value.startGame();
 });
 
 onUnmounted(() => {

@@ -8,14 +8,16 @@
         <div class="text is-large box-game" @click="selectGame('pve')">PVE</div>
       </div>
       <div class="column">
-        <div class="text is-large box-game">ONLINE</div>
+        <router-link :to="{ name: 'gameSearch' }">
+          <div class="text is-large box-game">ONLINE</div>
+        </router-link>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
-import { useGameStore } from '../../../stores/game';
+import { useGameStore } from '../../../../stores/game';
 
 // STORES
 const gameStore = useGameStore();

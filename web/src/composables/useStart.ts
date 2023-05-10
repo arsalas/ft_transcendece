@@ -5,7 +5,7 @@ import {
   useThemeStore,
   useUserStore,
 } from '../stores';
-import { useSockets } from '../sockets';
+import { useSockets, useSocketsGame } from '../sockets';
 import { providers } from '../providers';
 
 export const useStart = () => {
@@ -18,6 +18,7 @@ export const useStart = () => {
   const friendsStore = useFriendsStore();
   const themeStore = useThemeStore();
   const { connectToServerNotifications } = useSockets();
+  const { connectToServerGame } = useSocketsGame();
 
   const startApp = async () => {
     themeStore.loadTheme();
@@ -29,6 +30,7 @@ export const useStart = () => {
     userStore.setUser(user);
     friendsStore.friends = await friendsService.get();
     connectToServerNotifications();
+    connectToServerGame();
   };
 
   return {

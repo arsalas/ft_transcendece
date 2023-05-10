@@ -1,6 +1,7 @@
 import { Router } from 'vue-router';
 import audioPaddle from '../../../assets/audio/pong1.mp3';
 import audioPoint from '../../../assets/audio/pong_defeat.mp3';
+import { Socket } from 'socket.io-client';
 
 const soundPadle = new Audio(audioPaddle);
 const soundPoint = new Audio(audioPoint);
@@ -27,7 +28,7 @@ class AudioController {
     try {
       if (this.isMuted) return;
       await this.traks[name].play();
-    } catch (error) { }
+    } catch (error) {}
   }
 
   muted() {
@@ -50,8 +51,10 @@ type AudioPong = 'paddle' | 'point';
 export class PongGame {
   private idAnimationFrame: number = 0;
 
-  private playerPressKey = this.handlePressKeyPlayer.bind(this);
-  private playerReleaseKey = this.handleReleaseKeyPlayer.bind(this);
+  private playerLeftPressKey = this.handlePressKeyPlayerLeft.bind(this);
+  private playerRightPressKey = this.handlePressKeyPlayerRight.bind(this);
+  private playerLeftReleaseKey = this.handleReleaseKeyPlayerLeft.bind(this);
+  private playerRightReleaseKey = this.handleReleaseKeyPlayerRight.bind(this);
 
   private rivalPressKey = this.handlePressKeyRival.bind(this);
   private rivalReleaseKey = this.handleReleaseKeyRival.bind(this);
@@ -71,19 +74,20 @@ export class PongGame {
   private height: number = 0;
 
   // Paddle
-  private readonly margins = 10;
-  private readonly paddleWidth = 20;
-  private readonly paddleHeight = 100;
+  private margins = 10;
+  private paddleWidth = 20;
+  private paddleHeight = 100;
   private paddlePosition: Players;
   private paddleDiff = 25;
 
   private ball: Vector;
-  private readonly ballRadius = 8;
+  private ballRadius = 8;
   private score: Players = { player: 0, rival: 0 };
 
   private speed: Vector = { x: 5, y: 5 };
-  private rivalSpeed = 10;
-  private playerSpeed = 10;
+  private speedBase = 0.005;
+  private rivalSpeed = 0.01;
+  private playerSpeed = 0.01;
 
   private trayectory: Vector;
 
@@ -100,52 +104,115 @@ export class PongGame {
 
   private isPaused = false;
 
+  private screen = 4 / 3;
+
+  private readonly playerSide: 'left' | 'right' | 'spectator';
+
   constructor(
     canvas: HTMLCanvasElement,
     width: number,
     height: number,
     gameMode: GameMode,
-    private router: Router,
+    playerSide: 'left' | 'right' | 'spectator' = 'left',
+    private readonly socket?: Socket,
+    private readonly gameId?: string,
+    private readonly playerNames?: any,
   ) {
     this.gameMode = gameMode;
     this.canvas = canvas;
     this.context = canvas.getContext('2d')!;
-    this.calcDimensionsScreen(width, height)
+    this.calcDimensionsScreen(width, height);
+    this.playerSide = playerSide;
     this.ball = {
-      x: width / 2,
-      y: height / 2,
+      x: this.width / 2,
+      y: this.height / 2,
     };
     this.trayectory = { x: 0, y: 0 };
-    this.paddlePosition = { player: height / 2, rival: height / 2 };
+    this.paddlePosition = { player: this.height / 2, rival: this.height / 2 };
     this.audio.addSound('paddle', soundPadle);
     this.audio.addSound('point', soundPoint);
+    if (this.gameMode == 'online') {
+      console.log('NO PAUSE');
+      this.listenSockets();
+      this.isPaused = false;
+    }
     this.renderCanvas();
   }
 
   destructor() {
     window.cancelAnimationFrame(this.idAnimationFrame);
-    document.removeEventListener('keydown', this.playerPressKey);
-    document.removeEventListener('keyup', this.playerReleaseKey);
+    document.removeEventListener('keydown', this.playerLeftPressKey);
+    document.removeEventListener('keydown', this.playerRightPressKey);
+    document.removeEventListener('keyup', this.playerLeftReleaseKey);
+    document.removeEventListener('keyup', this.playerRightReleaseKey);
     if (this.gameMode == 'pvp') {
       document.removeEventListener('keydown', this.rivalPressKey);
       document.removeEventListener('keyup', this.rivalReleaseKey);
     }
   }
 
-  private calcDimensionsScreen(width: number, height: number) {
-    console.log('calc')
-    // DIMENSIONES 16/9
-    if (width > height) {
-      this.height = height;
-      this.width = height * (16 / 9);
-    } else {
-      this.width = width;
-      this.height = width * (16 / 9)
-    }
+  private listenSockets() {
+    this.socket?.on('playerLeft-move-up', () => {
+      this.playerMovement.isMovement = true;
+      this.playerMovement.direction = 'up';
+    });
+    this.socket?.on('playerLeft-move-down', () => {
+      this.playerMovement.isMovement = true;
+      this.playerMovement.direction = 'down';
+    });
+    this.socket?.on('playerLeft-stop', () => {
+      this.playerMovement.isMovement = false;
+    });
+    this.socket?.on('playerRight-move-up', () => {
+      this.rivalMovement.isMovement = true;
+      this.rivalMovement.direction = 'up';
+    });
+    this.socket?.on('playerRight-move-down', () => {
+      this.rivalMovement.isMovement = true;
+      this.rivalMovement.direction = 'down';
+    });
+    this.socket?.on('playerRight-stop', () => {
+      this.rivalMovement.isMovement = false;
+    });
 
-
+    this.socket?.on('update-game', (gameData) => {
+      this.paddlePosition.player = (gameData.playerLeft * this.height) / 100;
+      this.paddlePosition.rival = (gameData.playerRight * this.height) / 100;
+      this.ball.x = (gameData.ball.x * this.width) / 100;
+      this.ball.y = (gameData.ball.y * this.height) / 100;
+      this.score.player = gameData.score.playerLeft;
+      this.score.rival = gameData.score.playerRight;
+    });
   }
 
+  private calcDimensionsScreen(width: number, height: number) {
+    if (width > height) {
+      if (height * this.screen > width) {
+        this.width = width;
+        this.height = width / this.screen;
+      } else {
+        this.height = height;
+        this.width = height * this.screen;
+      }
+    } else {
+      this.width = width;
+      this.height = width / this.screen;
+    }
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.calcDimensionObjects();
+  }
+  private calcDimensionObjects() {
+    this.margins = 0.03 * this.width;
+    this.paddleWidth = 0.02 * this.width;
+    this.paddleHeight = 0.12 * this.width;
+    this.paddleDiff = 0.03 * this.width;
+    this.ballRadius = 0.01 * this.width;
+    this.speed = {
+      x: this.width * this.speedBase,
+      y: this.width * this.speedBase,
+    };
+  }
   /**
    * Renderiza la pista de juego
    */
@@ -286,9 +353,9 @@ export class PongGame {
   private playerMove() {
     if (!this.playerMovement.isMovement) return;
     if (this.playerMovement.direction == 'up')
-      this.paddlePosition.player -= this.playerSpeed;
+      this.paddlePosition.player -= this.playerSpeed * this.width;
     if (this.playerMovement.direction == 'down')
-      this.paddlePosition.player += this.playerSpeed;
+      this.paddlePosition.player += this.playerSpeed * this.width;
     if (this.paddlePosition.player < 0) this.paddlePosition.player = 0;
 
     if (this.paddlePosition.player > this.height - this.paddleHeight)
@@ -301,9 +368,9 @@ export class PongGame {
   private rivalMove() {
     if (!this.rivalMovement.isMovement) return;
     if (this.rivalMovement.direction == 'up')
-      this.paddlePosition.rival -= this.rivalSpeed;
+      this.paddlePosition.rival -= this.rivalSpeed * this.width;
     if (this.rivalMovement.direction == 'down')
-      this.paddlePosition.rival += this.rivalSpeed;
+      this.paddlePosition.rival += this.rivalSpeed * this.width;
     if (this.paddlePosition.rival < 0) this.paddlePosition.rival = 0;
 
     if (this.paddlePosition.rival > this.height - this.paddleHeight)
@@ -352,10 +419,14 @@ export class PongGame {
         this.ball.y < this.paddlePosition.player + this.paddleHeight
       ) {
         this.audio.play('paddle');
+        console.log(this.speed);
+        // const area = Math.abs(this.speed.x * this.speed.y);
         this.speed.x = -this.speed.x;
         this.trayectory.y =
           this.ball.y - (this.paddlePosition.player + this.paddleDiff);
-        this.speed.y = this.trayectory.y * 0.3;
+        this.speed.y = this.trayectory.y * 0.2;
+        // this.speed.x = area / this.ball.y;
+        console.log(this.speed);
       } else if (this.ball.x <= this.paddleDiff / 2) {
         this.audio.play('point');
         this.score.rival++;
@@ -379,13 +450,13 @@ export class PongGame {
   private paddleIA() {
     if (
       this.paddlePosition.rival + this.paddleDiff >
-      Math.floor(this.ball.y) + 5 ||
+        Math.floor(this.ball.y) + 5 ||
       this.paddlePosition.rival + this.paddleDiff < Math.floor(this.ball.y) - 5
     ) {
       if (this.paddlePosition.rival + this.paddleDiff < this.ball.y) {
-        this.paddlePosition.rival += this.rivalSpeed;
+        this.paddlePosition.rival += this.rivalSpeed * this.width;
       } else {
-        this.paddlePosition.rival -= this.rivalSpeed;
+        this.paddlePosition.rival -= this.rivalSpeed * this.width;
       }
     }
   }
@@ -397,27 +468,54 @@ export class PongGame {
     if (
       this.score.player == this.limitPoints ||
       this.score.rival == this.limitPoints
-    )
-      // this.router.push({ name: 'home' });
+    ) {
       this.isPaused = true;
+      if (this.playerSide == 'left')
+        this.socket?.emit('finish-game', {
+          gameId: this.gameId,
+          scores: [
+            { userId: this.playerNames.player, score: this.score.player },
+            { userId: this.playerNames.rival, score: this.score.rival },
+          ],
+        });
+    }
 
     this.ball.x = this.width / 2;
     this.ball.y = this.height / 2;
-    if (this.speed.x < 0) this.speed.x = -5;
-    else this.speed.x = 5;
-    if (this.speed.y < 0) this.speed.y = -5;
-    else this.speed.y = 5;
+    if (this.speed.x < 0) this.speed.x = -this.speedBase * this.width;
+    else this.speed.x = this.speedBase * this.width;
+    if (this.speed.y < 0) this.speed.y = -this.speedBase * this.width;
+    else this.speed.y = this.speedBase * this.width;
   }
 
   private tick() {
     if (this.isPaused) return;
-    this.ballBoundaries();
+    if (this.playerSide == 'left') {
+      this.ballBoundaries();
+      this.ballMove();
+      this.playerMove();
+      this.rivalMove();
+    }
     this.renderCanvas();
-    this.ballMove();
-    this.playerMove();
     if (this.gameMode == 'pvp') this.rivalMove();
     if (this.gameMode == 'pve') this.paddleIA();
     // Llama a la funcion animate en cada frame
+    if (this.playerSide == 'left') {
+      const data = {
+        gameId: this.gameId,
+        playerLeft: (this.paddlePosition.player * 100) / this.height,
+        playerRight: (this.paddlePosition.rival * 100) / this.height,
+        ball: {
+          x: (this.ball.x * 100) / this.width,
+          y: (this.ball.y * 100) / this.height,
+        },
+        score: {
+          playerLeft: this.score.player,
+          playerRight: this.score.rival,
+        },
+      };
+      this.socket?.emit('update-game', data);
+    }
     this.idAnimationFrame = window.requestAnimationFrame(this.tick.bind(this));
   }
 
@@ -430,8 +528,20 @@ export class PongGame {
     this.score.rival = 0;
 
     // this.canvas.addEventListener('mousemove', this.movePaddleMouse.bind(this))
-    document.addEventListener('keydown', this.playerPressKey);
-    document.addEventListener('keyup', this.playerReleaseKey);
+    if (this.gameMode == 'online') {
+      if (this.playerSide == 'left') {
+        document.addEventListener('keydown', this.playerLeftPressKey);
+        document.addEventListener('keyup', this.playerLeftReleaseKey);
+      }
+      if (this.playerSide == 'right') {
+        document.addEventListener('keydown', this.playerRightPressKey);
+        document.addEventListener('keyup', this.playerRightReleaseKey);
+      }
+    }
+    if (this.gameMode == 'pve') {
+      document.addEventListener('keydown', this.playerLeftPressKey);
+      document.addEventListener('keyup', this.playerLeftReleaseKey);
+    }
     if (this.gameMode == 'pvp') {
       document.addEventListener('keydown', this.rivalPressKey);
       document.addEventListener('keyup', this.rivalReleaseKey);
@@ -456,14 +566,37 @@ export class PongGame {
    * Comprueba cuando el jugador ha pulsado una tecla
    * @param e evento
    */
-  public handlePressKeyPlayer(e: KeyboardEvent) {
+  public handlePressKeyPlayerRight(e: KeyboardEvent) {
     if (e.key == 'w') {
-      this.playerMovement.isMovement = true;
-      this.playerMovement.direction = 'up';
+      //   this.rivalMovement.isMovement = true;
+      //   this.rivalMovement.direction = 'up';
+      if (this.gameMode == 'online')
+        this.socket?.emit('playerRight-move-up', this.gameId);
     }
     if (e.key == 's') {
-      this.playerMovement.isMovement = true;
-      this.playerMovement.direction = 'down';
+      //   this.rivalMovement.isMovement = true;
+      //   this.rivalMovement.direction = 'down';
+      if (this.gameMode == 'online')
+        this.socket?.emit('playerRight-move-down', this.gameId);
+    }
+  }
+
+  /**
+   * Comprueba cuando el jugador ha pulsado una tecla
+   * @param e evento
+   */
+  public handlePressKeyPlayerLeft(e: KeyboardEvent) {
+    if (e.key == 'w') {
+      //   this.playerMovement.isMovement = true;
+      //   this.playerMovement.direction = 'up';
+      if (this.gameMode == 'online')
+        this.socket?.emit('playerLeft-move-up', this.gameId);
+    }
+    if (e.key == 's') {
+      //   this.playerMovement.isMovement = true;
+      //   this.playerMovement.direction = 'down';
+      if (this.gameMode == 'online')
+        this.socket?.emit('playerLeft-move-down', this.gameId);
     }
   }
 
@@ -471,8 +604,16 @@ export class PongGame {
    * Comprueba cuando el jugador ha soltado una tecla
    * @param e evento
    */
-  public handleReleaseKeyPlayer(e: KeyboardEvent) {
-    this.playerMovement.isMovement = false;
+  public handleReleaseKeyPlayerLeft(e: KeyboardEvent) {
+    // this.playerMovement.isMovement = false;
+    if (this.gameMode == 'online')
+      this.socket?.emit('playerLeft-stop', this.gameId);
+  }
+
+  public handleReleaseKeyPlayerRight(e: KeyboardEvent) {
+    // this.rivalMovement.isMovement = false;
+    if (this.gameMode == 'online')
+      this.socket?.emit('playerRight-stop', this.gameId);
   }
 
   /**
@@ -512,7 +653,7 @@ export class PongGame {
   }
 
   public resizeWindows(width: number, height: number) {
-    this.calcDimensionsScreen(width, height)
+    this.calcDimensionsScreen(width, height);
     console.log(this.width, this.height);
     this.canvas.width = this.width;
     this.canvas.height = this.height;

@@ -47,41 +47,24 @@
               <span>Achivements</span>
             </span>
           </li>
+
           <li>
-						<span class="icon-text text">
-							<span class="icon">
-								<i class="fa-solid fa-table"></i>
-							</span>
-							<span>Ladder</span>
-						</span>
-
-					</li>
-					<li>
-						<span class="icon-text text">
-							<span class="icon">
-								<i class="fa-solid fa-trophy"></i>
-							</span>
-							<span>Achivements</span>
-						</span>
-
-					</li>
-					<li>
-						<router-link :to="{ name: 'profileUser', params:{username: user.username || user.login} }">
-
-							<span class="icon-text text">
-								<span class="icon">
-									<i class="fa-solid fa-user"></i>
-								</span>
-								<span>Profile</span>
-							</span>
-
-
-
-						</router-link>
-					</li>
-				</ul>
-			</nav>
-			<!-- </div>
+            <router-link
+              :to="{
+                name: 'profileUser',
+                params: { username: user.username || user.login },
+              }">
+              <span class="icon-text text">
+                <span class="icon">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+                <span>Profile</span>
+              </span>
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <!-- </div>
 		<aside class="right"> -->
       <!-- <div class="right"> -->
 

@@ -8,5 +8,6 @@ import { FriendsModule } from 'src/friends/friends.module';
 @Module({
   providers: [NotificationsWsGateway, NotificationsWsService],
   imports: [AuthModule, FriendsModule],
+  exports: [NotificationsWsGateway]
 })
 export class NotificationsWsModule {}

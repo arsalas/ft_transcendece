@@ -81,7 +81,7 @@ const routes: RouteRecordRaw[] = [
         name: 'selectGame',
         component: () =>
           import(
-            /* webpackChunkName: "account" */ '../pages/SelectGamePage.vue'
+            /* webpackChunkName: "account" */ '../pages/game/SelectGamePage.vue'
           ),
       },
       {
