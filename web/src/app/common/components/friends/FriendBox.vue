@@ -27,10 +27,17 @@
           role="menu">
           <div class="dropdown-content">
             <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
-            <a href="#" class="dropdown-item text is-small"> Send Message </a>
+            <a
+              href="#"
+              @click="chatStore.open"
+              class="dropdown-item text is-small">
+              Send Message
+            </a>
             <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
             <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a @click="refuseFriend" class="dropdown-item text is-small"> Unfriend </a>
+            <a @click="refuseFriend" class="dropdown-item text is-small">
+              Unfriend
+            </a>
             <a href="#" class="dropdown-item text is-small"> Block </a>
           </div>
         </div>
@@ -50,7 +57,7 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { IFriend } from '../../../../interfaces/friends';
 import { providers } from '../../../../providers';
-import { useFriendsStore } from '../../../../stores';
+import { useChatStore, useFriendsStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
 
@@ -62,6 +69,7 @@ const props = defineProps<{
 
 const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
+const chatStore = useChatStore();
 const { friends } = storeToRefs(firendsStore);
 const { friendsService } = providers();
 
@@ -88,8 +96,16 @@ const refuseFriend = async () => {
   } catch (error) {}
 };
 
+// const openButton = document.getElementById('open-chat');
+// const isOpenChat = ref<boolean>(true);
 
+// const isCloseChat = ref<boolean>(false);
+// const openChat = () => {
+//   isCloseChat.value = false;
+//   isOpenChat.value = true;
+// };
 </script>
+
 <style lang="scss" scoped>
 .actions {
   display: flex;

@@ -121,6 +121,7 @@ const handleResize = () => {
 };
 window.addEventListener('resize', handleResize);
 </script>
+
 <style lang="scss" scoped>
 .main-container {
   width: 100vw;

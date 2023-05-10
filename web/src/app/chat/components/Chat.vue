@@ -139,18 +139,13 @@ const chats = ref<IChat[]>([
   },
 ]);
 
-const emits = defineEmits(['close']);
-
-const close = () => {
-  emits('close');
-};
-
 const closeChat = () => {
   isOpenChat.value = false;
 };
 
 const chatContainer = document.getElementById('chat-container');
 const closeButton = document.getElementById('close-chat');
+// const displayChate = chatContainer!.style.display;
 
 // Listen for a click event on the page
 document.addEventListener('click', (event: MouseEvent) => {
