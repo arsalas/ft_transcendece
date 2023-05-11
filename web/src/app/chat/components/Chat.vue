@@ -20,7 +20,7 @@
         </div>
 
         <div class="right">
-          <button @click="closeChat" class="close-chat button is-primary">
+          <button @click="chatStore.close" class="close-chat button is-primary">
             X
           </button>
           <div class="dropdown is-right is-active" @click="isOpen = true">
@@ -95,20 +95,20 @@
 <script lang="ts" setup>
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { useChatStore } from '../../../stores';
 
 interface IChat {
-  open: boolean;
   login: string;
   message: string;
   date: string;
 }
 
+const chatStore = useChatStore();
 const message = ref<string>('');
 
 const sendMsg = () => {
   if (message.value.length > 0) {
     chats.value.push({
-      open: true,
       login: 'amurcia-',
       message: message.value,
       date: '10.05.2023',
@@ -126,13 +126,11 @@ const onClickAway = (event: any) => {
 const chats = ref<IChat[]>([
   // const y no let para que no pierda la reactividad
   {
-    open: true,
     login: 'amurcia-',
     message: 'Hola Alberto',
     date: '10.05.2023',
   },
   {
-    open: true,
     login: 'aramirez',
     message: 'Hola Alicia',
     date: '11.05.2023',
@@ -142,25 +140,6 @@ const chats = ref<IChat[]>([
 const closeChat = () => {
   isOpenChat.value = false;
 };
-
-const chatContainer = document.getElementById('chat-container');
-const closeButton = document.getElementById('close-chat');
-// const displayChate = chatContainer!.style.display;
-
-// Listen for a click event on the page
-document.addEventListener('click', (event: MouseEvent) => {
-  // Check if the clicked element is the chat box or its child elements
-  if ((event.target as HTMLElement).closest('#chat-container')) {
-    return;
-  }
-  chatContainer!.style.display = 'none'; // Hide the chat box
-});
-
-// Listen for a click event on the close button
-closeButton?.addEventListener('click', () => {
-  // Hide the chat box
-  chatContainer!.style.display = 'none';
-});
 </script>
 
 <style lang="scss" scoped>

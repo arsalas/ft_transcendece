@@ -95,15 +95,6 @@ const refuseFriend = async () => {
     socketNotifications.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
-
-// const openButton = document.getElementById('open-chat');
-// const isOpenChat = ref<boolean>(true);
-
-// const isCloseChat = ref<boolean>(false);
-// const openChat = () => {
-//   isCloseChat.value = false;
-//   isOpenChat.value = true;
-// };
 </script>
 
 <style lang="scss" scoped>

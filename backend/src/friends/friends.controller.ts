@@ -15,7 +15,7 @@ import { JwtPayload } from 'src/auth/interfaces';
 import { AcceptFriendDto, CreateFriendDto } from './dto';
 import { UnfriendDto } from './dto/unfriend.dto';
 
-@UseGuards(JwtAuthGuard)
+
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}

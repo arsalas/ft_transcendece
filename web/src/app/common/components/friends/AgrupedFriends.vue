@@ -37,16 +37,7 @@ defineProps<{
   friends: IFriend[];
 }>();
 
-const openButton = document.getElementById('open-chat');
 const isOpen = ref<boolean>(true);
-
-// document.addEventListener('click', (event: MouseEvent) => {
-//   // Check if the clicked element is the chat box or its child elements
-//   if ((event.target as HTMLElement).closest('#chat-container')) {
-//     return;
-//   }
-//   chatContainer!.style.display = 'none'; // Hide the chat box
-// });
 </script>
 
 <style lang="scss" scoped>
