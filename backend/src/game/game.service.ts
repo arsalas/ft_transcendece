@@ -17,6 +17,7 @@ interface ConnectedClients {
   [id: string]: {
     socket: Socket;
     userId: string;
+    room: string | undefined;
   };
 }
 
@@ -59,6 +60,15 @@ export class GameService {
     return this.connectedClients[clientId].userId;
   }
 
+  getUserClientById(userId: string) {
+    for (const clientId of Object.keys(this.connectedClients)) {
+      const connectedClient = this.connectedClients[clientId];
+      if (connectedClient.userId === userId) {
+        return clientId;
+      }
+    }
+  }
+
   getSocketByUserId(userId: string) {
     for (const clientId of Object.keys(this.connectedClients)) {
       const connectedClient = this.connectedClients[clientId];
@@ -73,14 +83,22 @@ export class GameService {
     this.connectedClients[client.id] = {
       socket: client,
       userId,
+      room: undefined,
     };
   }
 
-  removeClient(clientId: string) {
+  async removeClient(clientId: string) {
+    const user = this.connectedClients[clientId];
+    console.log('disconn: ', user.room);
+    if (user.room)
+      this.gameGateway.wss
+        .to(`room_${user.room}`)
+        .emit('player-exit', { user: user.userId, gameId: user.room });
     delete this.connectedClients[clientId];
   }
 
   async create(createGameDto: CreateGameDto, userId: string) {
+    console.log('cola: ', this.queque[createGameDto.type]);
     // 1 - Buscar si existe algun jugador en cola
     const user = this.queque[createGameDto.type].shift();
     // 2.a - Si no existe crear una cola
@@ -99,6 +117,7 @@ export class GameService {
         type: createGameDto.type,
       });
       const gameData = await queryRunner.manager.save(game);
+      console.log('create game: ', gameData);
       const gameUser1 = this.gameUserRepository.create({
         userId: { login: userId },
         game: gameData,
@@ -113,6 +132,8 @@ export class GameService {
       await queryRunner.commitTransaction();
       this.getSocketByUserId(userId).join(`room_${gameData.id}`);
       this.getSocketByUserId(user).join(`room_${gameData.id}`);
+      this.connectedClients[this.getUserClientById(userId)].room = gameData.id;
+      this.connectedClients[this.getUserClientById(user)].room = gameData.id;
       this.gameGateway.wss
         .to(`room_${gameData.id}`)
         .emit('game-start', gameData.id);
@@ -156,7 +177,7 @@ export class GameService {
   }
 
   async finishGame(result: any) {
-	const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -164,20 +185,32 @@ export class GameService {
         id: result.gameId,
         finishAt: new Date(),
       });
-	  console.log(game) 
+      console.log(game);
       const gameData = await queryRunner.manager.save(game);
-	  const gameUser1 = this.gameUserRepository.create({
+      const gameUser1 = this.gameUserRepository.create({
         userId: { login: result.scores[0].userId },
         game: gameData,
         result: result.scores[0].score,
+        isWinner: result.scores[0].isWinner,
       });
       const gameUser2 = this.gameUserRepository.create({
         userId: { login: result.scores[1].userId },
         game: gameData,
         result: result.scores[1].score,
+        isWinner: result.scores[1].isWinner,
       });
 
-      await queryRunner.manager.save([gameUser1, gameUser2]);
+      await queryRunner.manager.update(
+        GameUser,
+        { userId: gameUser1.userId.login, game: gameUser1.game.id },
+        gameUser1,
+      );
+      await queryRunner.manager.update(
+        GameUser,
+        { userId: gameUser2.userId.login, game: gameUser2.game.id },
+        gameUser2,
+      );
+      //   await queryRunner.manager.save([gameUser1, gameUser2]);
       // Si todo ha ido bien aplicamos los cambios
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -189,5 +222,7 @@ export class GameService {
       // Soltamos la conexion
       await queryRunner.release();
     }
+
+    this.gameGateway.wss.socketsLeave(`room_${result.gameId}`);
   }
 }

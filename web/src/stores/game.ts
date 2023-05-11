@@ -5,6 +5,7 @@ type GameMode = 'pvp' | 'pve' | 'online';
 
 export const useGameStore = defineStore('game', () => {
   const mode = ref<GameMode>('pve');
+  const activeRoom = ref<string>();
 
   const selectGameMode = (gameMode: GameMode) => {
     mode.value = gameMode;
@@ -12,6 +13,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     mode,
+    activeRoom,
     selectGameMode,
   };
 });

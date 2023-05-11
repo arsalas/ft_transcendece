@@ -59,7 +59,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, onUnmounted } from 'vue';
-import { PongGame } from '../helpers';
+import { PongGame } from '../classes';
 import { useRouter } from 'vue-router';
 import { useGameStore } from '../../../stores/game';
 import { useUserStore } from '../../../stores';
@@ -96,9 +96,7 @@ const exitGame = () => {
   router.push({ name: 'home' });
 };
 
-const getGameData = async () => {
-
-}
+const getGameData = async () => {};
 
 onMounted(() => {
   canvas.height = app.value!.clientHeight - 1;

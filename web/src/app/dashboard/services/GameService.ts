@@ -1,18 +1,6 @@
 import { HttpService } from '../../../api/http';
+import { GameData } from '../../../interfaces';
 
-interface GamePlayer {
-  login: string;
-  username: string;
-  avatar: string;
-  avatar42: string;
-  coallition: string;
-  icon: string;
-  color: string;
-}
-export interface GameData {
-  id: string;
-  players: GamePlayer[];
-}
 
 export class GameService {
   constructor(private http: HttpService) {}

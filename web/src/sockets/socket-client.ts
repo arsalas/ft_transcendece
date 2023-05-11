@@ -2,11 +2,12 @@ import { Manager, Socket } from 'socket.io-client';
 import { useAuthStore, useFriendsStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { providers } from '../providers';
+import { CONFIG } from '../config';
 
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
 
-const manager = new Manager('http://localhost:3000/socket.io/socket.io.js', {
+const manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
   extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
 });
 

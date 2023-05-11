@@ -82,9 +82,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.wss.to(`room_${gameData.gameId}`).emit('update-game', gameData);
   }
 
-  //   score: [{player1: number, userId,} player2:number]
   @SubscribeMessage('finish-game')
   finishGame(@MessageBody() gameData: any) {
     this.gameService.finishGame(gameData);
+  }
+
+  @SubscribeMessage('player-disconnect')
+  playerDisconnect(@MessageBody() gameData: string | undefined) {
+    console.log('disconnect: ', { gameData });
+  }
+
+  @SubscribeMessage('begin-game')
+  beginGame(@MessageBody() gameId: string) {
+    this.wss.to(`room_${gameId}`).emit('start-game');
   }
 }

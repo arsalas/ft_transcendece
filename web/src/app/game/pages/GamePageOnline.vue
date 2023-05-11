@@ -1,8 +1,12 @@
 <template>
-  <div class="main-container" v-if="!isLoading">
+  <Start
+    v-if="!isLoading && !isStart"
+    :player-left="gameData!.players[0]"
+    :player-right="gameData!.players[1]" />
+  <div class="main-container" v-if="isStart">
     <div class="actions">
       <div class="brand">
-        <div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
+        <Logo />
       </div>
       <div class="action-buttons buttons">
         <button
@@ -17,23 +21,13 @@
         <button
           v-if="!isMuted"
           @click="mutedGame"
-          class="button is-primary is-large">
+          class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="fa-solid fa-volume-high"></i>
           </span>
         </button>
-        <button
-          v-if="!isStart"
-          @click="startGame"
-          class="button is-primary is-large">
-          <span class="icon is-small">
-            <i class="fa-solid fa-play"></i>
-          </span>
-        </button>
-        <button
-          v-if="isStart"
-          @click="exitGame"
-          class="button is-primary is-large">
+
+        <button @click="exitGame" class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="fa-solid fa-person-running"></i>
           </span>
@@ -72,99 +66,136 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted, provide } from 'vue';
-import { PongGame } from '../helpers';
+import { onMounted, ref, onUnmounted, defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useGameStore } from '../../../stores/game';
-import { useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
-import Image from '../../common/components/images/Image.vue';
-import { providers } from '../../../providers';
 
-import { GameData } from '../../dashboard/services/GameService';
+import { useUserStore, useGameStore } from '../../../stores';
+
 import { useSocketsGame } from '../../../sockets';
-import Flag from '../../common/components/Flag.vue';
+import { useGame } from '../composables';
 
+import { PongOnline } from '../classes';
+import { providers } from '../../../providers';
+import { GameData } from '../../../interfaces';
+
+// COMPONENTES
+const Image = defineAsyncComponent(
+  () => import('../../common/components/images/Image.vue'),
+);
+const Logo = defineAsyncComponent(
+  () => import('../../common/components/ui/Logo.vue'),
+);
+const Start = defineAsyncComponent(() => import('../components/Start.vue'));
+const Victory = defineAsyncComponent(() => import('../components/Victory.vue'));
+
+// COMPOSABLES
 const router = useRouter();
 const route = useRoute();
+const { socketGame } = useSocketsGame();
+const {
+  app,
+  canvas,
+  game,
+  isLoading,
+  isMuted,
+  isStart,
+  mutedGame,
+  startGame,
+  unmutedGame,
+  createCanvasDiv,
+  destroyGame,
+} = useGame();
+
+// STORES
 const gameStore = useGameStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
-const isLoading = ref<boolean>(true);
+const { activeRoom } = storeToRefs(gameStore);
 
-const gameData = ref<GameData>();
-
+// PROVIDERS
 const { gameService } = providers();
 
-const isMuted = ref<boolean>(false);
-const isStart = ref<boolean>(false);
-const app = ref<HTMLDivElement>();
-const game = ref<PongGame>();
-const canvas = document.createElement('canvas');
+// VARIABLES
+const gameData = ref<GameData>();
 
-const { socketGame } = useSocketsGame();
+// FUNCIONES
 
-const mutedGame = () => {
-  isMuted.value = true;
-  game.value?.muted();
-};
-
-const unmutedGame = () => {
-  isMuted.value = false;
-  game.value?.unMuted();
-};
-
-const startGame = () => {
-  isStart.value = true;
-  game.value?.startGame();
-};
-
+/**
+ * Abandona el juego
+ */
 const exitGame = () => {
   router.push({ name: 'home' });
 };
 
+/**
+ * Obtiene la data del juego
+ */
 const getGameData = async () => {
   isLoading.value = true;
   try {
     gameData.value = await gameService.get(route.params.id as string);
+    activeRoom.value = route.params.id as string;
+    if (gameData.value.players[0].username == user.value.username) {
+      setTimeout(() => {
+        socketGame.value?.emit('begin-game', gameData.value?.id);
+      }, 1000);
+    }
   } catch (error) {
   } finally {
     isLoading.value = false;
   }
 };
 
-onMounted(async () => {
-  await getGameData();
-  canvas.height = app.value!.clientHeight - 1;
-  canvas.width = app.value!.clientWidth - 1;
-  document.querySelector('#game')!.appendChild(canvas);
-
-  game.value = new PongGame(
+/**
+ * Crea el juego
+ */
+const createdGame = () => {
+  app.value = document.querySelector<HTMLDivElement>('#game')!;
+  console.log(app.value);
+  createCanvasDiv();
+  game.value = new PongOnline(
     canvas,
     canvas.width,
     canvas.height,
     'online',
     user.value.login == gameData.value?.players[0].login ? 'left' : 'right',
-    socketGame.value,
-    gameData.value?.id,
+    socketGame.value!,
+    gameData.value!.id,
     {
-      player: gameData.value?.players[0].login,
-      rival: gameData.value?.players[1].login,
+      left: gameData.value!.players[0].login,
+      right: gameData.value!.players[1].login,
     },
   );
-  game.value.startGame();
+};
+
+onMounted(async () => {
+  // Crear la partida
+  await getGameData();
+  socketGame.value?.on(
+    'player-exit',
+    ({ user, gameId }: { user: string; gameId: string }) => {
+      if (gameId != (route.params.id as string)) return;
+      game.value?.gameExit(user);
+
+      router.push({ name: 'home' });
+    },
+  );
+  socketGame.value?.on('start-game', () => {
+    isStart.value = true;
+    setTimeout(() => {
+      createdGame();
+      game.value?.startGame();
+    }, 500);
+  });
 });
 
 onUnmounted(() => {
-  game.value!.destructor();
-  delete game.value;
-  window.removeEventListener('resize', handleResize);
+  // Dejar de escuchar los eventos
+  destroyGame();
+  socketGame.value?.removeAllListeners('player-exit');
+  socketGame.value?.removeAllListeners('start-game');
 });
-
-const handleResize = () => {
-  game.value?.resizeWindows(app.value!.clientWidth, app.value!.clientHeight);
-};
-window.addEventListener('resize', handleResize);
 </script>
 <style lang="scss" scoped>
 .main-container {
