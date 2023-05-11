@@ -7,7 +7,7 @@
 					<div class="brand text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
 				</div>
 				<a class="button is-primary is-outlined is-large"
-					href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-002f8307ed61fa03609f72d495d3a6e7efe6c446b08744c9b33e4ea27e613829&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fauth%2Fconfirm&response_type=code">
+					href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-002f8307ed61fa03609f72d495d3a6e7efe6c446b08744c9b33e4ea27e613829&redirect_uri=http%3A%2F%2F10.11.10.3%3A5173%2Fauth%2Fconfirm&response_type=code">
 					SIGN IN 42
 				</a>
 			</div>

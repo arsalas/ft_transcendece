@@ -139,7 +139,7 @@ const getGameData = async () => {
     if (gameData.value.players[0].username == user.value.username) {
       setTimeout(() => {
         socketGame.value?.emit('begin-game', gameData.value?.id);
-      }, 1000);
+      }, 2000);
     }
   } catch (error) {
   } finally {

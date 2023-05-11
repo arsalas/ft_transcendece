@@ -5,9 +5,8 @@ import { Manager, Socket } from 'socket.io-client';
 
 import { CONFIG } from '../config';
 
-const manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
-  extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
-});
+let manager
+console.log('manager: ', sessionStorage.getItem('token'))
 
 const socketGame = ref<Socket>();
 
@@ -15,8 +14,11 @@ export const useSocketsGame = () => {
   const router = useRouter();
 
   const connectToServerGame = () => {
+    manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
+      extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
+    });
     socketGame.value = manager.socket('/game');
-    console.log(socketGame);
+    console.log('socket-game: ', socketGame);
     addListeners();
   };
 
@@ -27,7 +29,7 @@ export const useSocketsGame = () => {
 
     // Escucha el evento cuando el cliente se desconecta
     socketGame.value?.on('disconnect', () => {
-      console.log('player-disconnect');
+      console.log('game disconnect');
     });
 
     socketGame.value?.on('game-start', (gameId: string) => {
@@ -36,7 +38,7 @@ export const useSocketsGame = () => {
       router.push({ name: 'online', params: { id: gameId } });
     });
 
-   
+
   };
 
   return {

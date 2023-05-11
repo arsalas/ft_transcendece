@@ -49,11 +49,10 @@
           </li>
 
           <li>
-            <router-link
-              :to="{
-                name: 'profileUser',
-                params: { username: user.username || user.login },
-              }">
+            <router-link :to="{
+              name: 'profileUser',
+              params: { username: user.username || user.login },
+            }">
               <span class="icon-text text">
                 <span class="icon">
                   <i class="fa-solid fa-user"></i>
@@ -69,22 +68,14 @@
       <!-- <div class="right"> -->
 
       <div class="media-object right">
-        <MediaObject
-          :click="changeStatus"
-          :image="user.avatar!"
-          :image-fallback="user.avatar42!"
-          :name="user.username || user.login"
-          :status="user.status"
-          width="2.7rem" />
+        <MediaObject :click="changeStatus" :image="user.avatar!" :image-fallback="user.avatar42!"
+          :name="user.username || user.login" :status="user.status" width="2.7rem" />
         <router-link :to="{ name: 'editProfile' }" class="is-hidden-mobile">
           <span class="icon text" style="font-size: 1rem; margin-left: 1rem">
             <i class="fa-solid fa-gear"></i>
           </span>
         </router-link>
-        <span
-          @click="logout"
-          class="icon text is-clickable is-hidden-mobile"
-          style="font-size: 1rem; margin-left: 1rem">
+        <span @click="logout" class="icon text is-clickable is-hidden-mobile" style="font-size: 1rem; margin-left: 1rem">
           <i class="fa-solid fa-right-from-bracket"></i>
         </span>
       </div>
@@ -99,7 +90,7 @@ import { storeToRefs } from 'pinia';
 
 import { useUserStore, useAuthStore } from '../../../../stores';
 import Image from '../images/Image.vue';
-import { useSockets } from '../../../../sockets';
+import { useSockets, useSocketsGame } from '../../../../sockets';
 import MediaObject from '../MediaObject.vue';
 
 const router = useRouter();
@@ -107,6 +98,7 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const { socketNotifications } = useSockets();
+const { socketGame } = useSocketsGame()
 
 const changeStatus = () => {
   if (user.value.status == 'online') user.value.status = 'out';
@@ -114,6 +106,8 @@ const changeStatus = () => {
   socketNotifications.emit('change-status', user.value.status);
 };
 const logout = () => {
+  socketGame.value?.emit('force-diconnect', user.value.login)
+
   authStore.logOut();
   router.push({ name: 'signin' });
 };

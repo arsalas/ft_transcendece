@@ -44,12 +44,13 @@ export class GameService {
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(GameUser)
     private readonly gameUserRepository: Repository<GameUser>,
-  ) {}
+  ) { }
 
   private checkUserConnection(userId: string) {
     for (const clientId of Object.keys(this.connectedClients)) {
       const connectedClient = this.connectedClients[clientId];
       if (connectedClient.userId === userId) {
+        console.log('desconect')
         connectedClient.socket.disconnect();
         break;
       }
@@ -130,6 +131,8 @@ export class GameService {
       await queryRunner.manager.save([gameUser1, gameUser2]);
       // Si todo ha ido bien aplicamos los cambios
       await queryRunner.commitTransaction();
+      console.log('id: ', gameData.id);
+      console.log('clients: ', this.connectedClients);
       this.getSocketByUserId(userId).join(`room_${gameData.id}`);
       this.getSocketByUserId(user).join(`room_${gameData.id}`);
       this.connectedClients[this.getUserClientById(userId)].room = gameData.id;
@@ -138,6 +141,7 @@ export class GameService {
         .to(`room_${gameData.id}`)
         .emit('game-start', gameData.id);
     } catch (error) {
+      console.log(error);
       // Si ha fallado algo deshacemos los cambios
       await queryRunner.rollbackTransaction();
       throw new Error('Something is wrong');
@@ -224,5 +228,13 @@ export class GameService {
     }
 
     this.gameGateway.wss.socketsLeave(`room_${result.gameId}`);
+  }
+
+  async disconnectClient(userId: string) {
+
+    // const clientId = this.getUserClientById(userId);
+    // this.removeClient(clientId);
+
+    // console.log(this.connectedClients)
   }
 }

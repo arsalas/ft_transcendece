@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { useSocketsGame } from '../sockets';
+import { useUserStore } from './user';
 
 const tokenPersist: string = sessionStorage.getItem('token') || '';
 const auth = tokenPersist ? true : false;
@@ -15,10 +17,12 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const logOut = () => {
+
     isAuth.value = false;
     token.value = '';
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
+
   };
 
   return {

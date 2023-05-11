@@ -24,12 +24,14 @@ export const useSockets = () => {
 
   const addListenersNotifications = () => {
     socketNotifications.on('connect', () => {
-      console.log('connected');
+      console.log('socket-notifications: ', socketNotifications);
+
+      console.log('notifications connected');
     });
 
     // Escucha el evento cuando el cliente se desconecta
     socketNotifications.on('disconnect', () => {
-      console.log('disconnect');
+      console.log('notifications disconnect');
     });
 
     socketNotifications.on('request-recived', (payload: any) => {
