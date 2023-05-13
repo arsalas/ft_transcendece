@@ -32,11 +32,11 @@
           </span>
         </button>
 
-        <button @click="exitGame" class="button is-primary is-medium">
+        <!-- <button @click="exitGame" class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="fa-solid fa-person-running"></i>
           </span>
-        </button>
+        </button> -->
       </div>
     </div>
     <header>
