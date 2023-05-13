@@ -41,7 +41,6 @@ const interval = setInterval(() => {
 
 const findGame = async () => {
   const res = await gameService.searchGame('original');
-  console.log({ res });
 };
 
 onMounted(() => {

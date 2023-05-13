@@ -6,7 +6,7 @@
     :name="friend.profile.username"
     :status="friend.profile.status" />
   <div v-if="friend.activedAt" class="actions">
-    <div class="badge is-primary">
+    <div class="badge is-primary" v-if="false">
       <span class="text is-small"> 1 </span>
     </div>
 
@@ -30,7 +30,9 @@
             <a href="#" class="dropdown-item text is-small"> Send Message </a>
             <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
             <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a @click="refuseFriend" class="dropdown-item text is-small"> Unfriend </a>
+            <a @click="refuseFriend" class="dropdown-item text is-small">
+              Unfriend
+            </a>
             <a href="#" class="dropdown-item text is-small"> Block </a>
           </div>
         </div>
@@ -38,10 +40,10 @@
     </div>
   </div>
   <div v-else class="actions">
-    <span class="icon" @click="acceptFriend">
+    <span class="icon text" @click="acceptFriend">
       <i class="fa-solid fa-check"></i>
     </span>
-    <span class="icon" @click="refuseFriend">
+    <span class="icon text" @click="refuseFriend">
       <i class="fa-solid fa-xmark"></i>
     </span>
   </div>
@@ -87,8 +89,6 @@ const refuseFriend = async () => {
     socketNotifications.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
-
-
 </script>
 <style lang="scss" scoped>
 .actions {
@@ -102,7 +102,11 @@ const refuseFriend = async () => {
   color: var(--text-color);
   border: none;
   cursor: pointer;
-  padding: 0.4rem;
+  padding: 0rem;
   aspect-ratio: 1;
+}
+
+.icon.text:hover {
+  color: rgba(var(--color-primary-rgb), 0.5);
 }
 </style>

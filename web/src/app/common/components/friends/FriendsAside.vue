@@ -7,10 +7,18 @@
       </span>
     </header>
 
+    <!-- <div class="text px-3 py-1 friends-req is-clickable" v-if="pending.length > 0">
+      Friends request
+      <div class="badge is-primary">
+        <span class="text is-small"> {{ pending.length }} </span>
+      </div>
+    </div> -->
     <AgrupedFriends
+      v-if="pending.length > 0"
       :total="pending.length"
       :friends="pending"
       title="FRIENDS REQUESTS" />
+
     <AgrupedFriends :total="friends.length" :friends="online" title="ONLINE" />
     <AgrupedFriends
       :total="friends.length"
@@ -92,21 +100,31 @@ const handleSubmit = async () => {
 </script>
 <style lang="scss" scoped>
 aside {
-  width: 18rem;
-  height: calc(100vh - 59px);
+  width: var(--aside-w);
+  height: calc(100vh - var(--header-h));
   background-color: var(--bg-dark-0);
   position: sticky;
-  top: 59px;
+  top: var(--header-h);
   overflow-y: auto;
+  //   border-left: var(--border)
 }
 
 .friends-header {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 1rem;
   display: flex;
   justify-content: space-between;
   background-color: var(--bg-dark-2);
   position: sticky;
   top: 0px;
   cursor: pointer;
+  //   border-bottom: var(--border);
+}
+
+.friends-req {
+  display: flex;
+  justify-content: space-between;
+  &:hover{
+	background-color: rgba(var(--color-primary-rgb), 0.5);
+  }
 }
 </style>

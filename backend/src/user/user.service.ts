@@ -11,7 +11,9 @@ import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
-import { IHistory, IStadistics, IUserProfile } from './interfaces';
+import {  IStadistics, IUserProfile } from './interfaces';
+import { GameService } from 'src/game/game.service';
+import { Game, GameUser } from 'src/game/entities';
 
 @Injectable()
 export class UserService {
@@ -19,11 +21,18 @@ export class UserService {
 
   constructor(
     private dataSource: DataSource,
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    private gameService: GameService,
+    // @InjectRepository(Game)
+    // private gameRepository: Repository<Game>,
+    // @InjectRepository(GameUser)
+    // private gameUserRepository: Repository<GameUser>,
+
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Busca un usuario a partir del login de 42
@@ -40,9 +49,11 @@ export class UserService {
 
   async findProfileByUsername(username: string): Promise<IUserProfile> {
     const profile = await this.profileRepository.findOneBy({ username });
-    const history: IHistory[] = [
-      { date: new Date().toDateString(), player: 'aramirez' },
-    ];
+    const history = await this.gameService.getHistoryByUser(profile.login);
+
+    // const history: IHistory[] = [
+    //   { date: new Date().toDateString(), player: 'aramirez' },
+    // ];
     const stadistics: IStadistics = { lost: 4, played: 8, win: 4 };
     return { profile, history, stadistics };
   }

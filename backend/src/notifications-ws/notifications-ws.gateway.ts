@@ -3,6 +3,7 @@ import {
   WebSocketServer,
   OnGatewayDisconnect,
   SubscribeMessage,
+  MessageBody,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
@@ -92,5 +93,10 @@ export class NotificationsWsGateway
       return;
     await this.notificationsWsService.changeStatus(client.id, status);
     this.wss.emit('refresh-friends');
+  }
+
+  @SubscribeMessage('force-diconnect')
+  forceDisconnect(@MessageBody() userId: string) {
+    // this.notificationsWsService.disconnectClient(userId);
   }
 }

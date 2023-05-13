@@ -1,2 +1,2 @@
-export * from './socket-client'
+export * from './useSockets'
 export * from './useSocketsGame'

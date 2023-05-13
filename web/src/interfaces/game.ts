@@ -17,17 +17,26 @@ export type GameMode = 'pvp' | 'pve' | 'online';
 export type PlayerType = 'left' | 'right' | 'spectator';
 export type AudioPong = 'paddle' | 'point';
 
-
 export interface GamePlayer {
-	login: string;
-	username: string;
-	avatar: string;
-	avatar42: string;
-	coallition: string;
-	icon: string;
-	color: string;
-  }
-  export interface GameData {
-	id: string;
-	players: GamePlayer[];
-  }
+  login: string;
+  username: string;
+  avatar: string;
+  avatar42: string;
+  coallition: string;
+  icon: string;
+  color: string;
+}
+export interface GameData {
+  id: string;
+  players: GamePlayer[];
+}
+
+export interface Scores {
+  userId: string;
+  score: number;
+  isWinner: boolean;
+}
+export interface GameFinish {
+  gameId: string;
+  scores: Scores[];
+}

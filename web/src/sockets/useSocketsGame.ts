@@ -5,9 +5,10 @@ import { Manager, Socket } from 'socket.io-client';
 
 import { CONFIG } from '../config';
 
-let manager
-console.log('manager: ', sessionStorage.getItem('token'))
-
+let manager: Manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
+	extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
+  });;
+console.log({ manager });
 const socketGame = ref<Socket>();
 
 export const useSocketsGame = () => {
@@ -18,7 +19,6 @@ export const useSocketsGame = () => {
       extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
     });
     socketGame.value = manager.socket('/game');
-    console.log('socket-game: ', socketGame);
     addListeners();
   };
 
@@ -34,11 +34,8 @@ export const useSocketsGame = () => {
 
     socketGame.value?.on('game-start', (gameId: string) => {
       console.log('El JUEGO ha empezado', gameId);
-      console.log(router, gameId);
       router.push({ name: 'online', params: { id: gameId } });
     });
-
-
   };
 
   return {

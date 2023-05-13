@@ -9,5 +9,5 @@ export const JoiValidationSchema = Joi.object({
 	CLIENT_ID: Joi.required(),
 	CLIENT_SECRET: Joi.required(),
 	JWT_SECRET: Joi.required(),
-	WEB_URL: Joi.string().default('http://10.11.10.3:3000'),
+	WEB_URL: Joi.string().default('http://localhost:3000'),
 });

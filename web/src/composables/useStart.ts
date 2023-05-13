@@ -23,7 +23,6 @@ export const useStart = () => {
   const startApp = async () => {
     themeStore.loadTheme();
     const authToken = authStore.token;
-    console.log({ authToken });
     if (!authToken) return;
     const { token, user } = await authService.recoverSession();
     authStore.signIn(token);

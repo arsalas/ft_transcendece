@@ -34,3 +34,26 @@ img {
   user-drag: none;
   -webkit-touch-callout: none;
 }
+
+// SCROLLBAR
+/* width */
+::-webkit-scrollbar {
+	width: 0.5rem;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+	// box-shadow: inset 0 0 5px grey; 
+	border-radius: 1rem;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+	background: var(--color-primary); 
+	border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+	background: var(--color-primary-hover); 
+  }

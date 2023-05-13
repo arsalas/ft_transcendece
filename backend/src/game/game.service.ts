@@ -12,6 +12,7 @@ import { Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameUser } from './entities';
 import { DataSource, Repository } from 'typeorm';
+import { IHistoryGame } from 'src/user/interfaces';
 
 interface ConnectedClients {
   [id: string]: {
@@ -44,13 +45,13 @@ export class GameService {
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(GameUser)
     private readonly gameUserRepository: Repository<GameUser>,
-  ) { }
+  ) {}
 
   private checkUserConnection(userId: string) {
     for (const clientId of Object.keys(this.connectedClients)) {
       const connectedClient = this.connectedClients[clientId];
       if (connectedClient.userId === userId) {
-        console.log('desconect')
+        console.log('desconect');
         connectedClient.socket.disconnect();
         break;
       }
@@ -226,15 +227,72 @@ export class GameService {
       // Soltamos la conexion
       await queryRunner.release();
     }
-
+    this.gameGateway.wss.emit('finish-game', result);
     this.gameGateway.wss.socketsLeave(`room_${result.gameId}`);
   }
 
-  async disconnectClient(userId: string) {
+  async getHistoryByUser(userId: string) {
+    try {
+      const games = await this.gameUserRepository.find({
+        relations: { game: true },
+        select: {
+          isWinner: false,
+          id: false,
+          result: false,
+          game: { id: true },
+        },
+        where: {
+          userId: { login: userId },
+        },
+      });
+      console.log({ games });
+      if (games.length == 0) return [];
+      const gameArr = games.map((g) => ({ game: { id: g.game.id } }));
+      //  return gameArr
+      const history = await this.gameUserRepository.find({
+        relations: { game: true, userId: true },
+        take: 10,
+        // skip: 5,
+        order: {
+          game: { finishAt: 'DESC' },
+        },
+        where: [...gameArr],
+      });
 
+      const historyData: IHistoryGame[] = [];
+
+      history.map((h) => {
+        const index = historyData.findIndex((hd) => hd.id == h.game.id);
+        if (index == -1) {
+          const data: IHistoryGame = {
+            id: h.game.id,
+            date: h.game.startedAt,
+            type: h.game.type,
+            playerLeft: {
+              profile: h.userId,
+              isWinner: h.isWinner,
+              result: h.result,
+            },
+          };
+          historyData.push(data);
+        } else {
+          historyData[index].playerRight = {
+            profile: h.userId,
+            isWinner: h.isWinner,
+            result: h.result,
+          };
+        }
+      });
+
+      return historyData;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async disconnectClient(userId: string) {
     // const clientId = this.getUserClientById(userId);
     // this.removeClient(clientId);
-
     // console.log(this.connectedClients)
   }
 }

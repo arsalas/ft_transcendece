@@ -7,9 +7,7 @@ import { CONFIG } from '../config';
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
 
-const manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
-  extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
-});
+let manager: Manager;
 
 let socketNotifications: Socket;
 
@@ -18,14 +16,15 @@ export const useSockets = () => {
   const { friends } = storeToRefs(friendsStore);
 
   const connectToServerNotifications = () => {
+    manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
+      extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
+    });
     socketNotifications = manager.socket('/notifications');
     addListenersNotifications();
   };
 
   const addListenersNotifications = () => {
     socketNotifications.on('connect', () => {
-      console.log('socket-notifications: ', socketNotifications);
-
       console.log('notifications connected');
     });
 

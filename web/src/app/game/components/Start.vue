@@ -57,6 +57,9 @@ defineProps<{ playerLeft: GamePlayer; playerRight: GamePlayer }>();
   background-color: var(--bg-dark-0);
   display: flex;
   overflow: hidden;
+  position: fixed;
+  z-index: 2;
+
   & .player {
     flex: 1;
     height: 100%;

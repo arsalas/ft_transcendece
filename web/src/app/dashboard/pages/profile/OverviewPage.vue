@@ -24,7 +24,7 @@
         <Flag
           :color="profile!.profile.color"
           :image="profile!.profile.icon"
-          width="10rem" />
+          width="8rem" />
       </div>
     </header>
     <div class="overview-content">
@@ -47,7 +47,6 @@ import Flag from '../../../common/components/Flag.vue';
 
 const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore); // extraemos una variable reactiva de un store
-console.log(profile);
 </script>
 
 <style lang="scss" scoped>
@@ -55,7 +54,7 @@ console.log(profile);
   display: flex;
   flex-direction: column;
   height: calc(100vh - 59px - 50px);
-  width: 100vw;
+//   width: 100vw;
 }
 
 .details {
@@ -73,18 +72,19 @@ console.log(profile);
 }
 
 .photo {
-  width: 15rem;
-  border-radius: 100%;
-  border: var(--border);
+  width: 10rem;
+  border-radius: 50%;
+  border: solid 0.3rem var(--border-color);
   margin-right: 3rem;
 }
 
 .overview-header {
-  height: calc(100vh - 59px - 50px - 60%);
+  height: calc(33vh);
   width: 100%;
   background-position: center;
   background-size: contain;
   font-size: 1.5rem;
+  padding: 2rem;
   // background-repeat: repeat-x;
 }
 .overview-content {

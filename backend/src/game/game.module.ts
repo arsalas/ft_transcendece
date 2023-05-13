@@ -9,11 +9,8 @@ import { Game, GameUser } from './entities';
 
 @Module({
   providers: [GameService, GameGateway],
-  imports: [
-    TypeOrmModule.forFeature([Game, GameUser]),
-    ConfigModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Game, GameUser]), ConfigModule],
   controllers: [GameController],
-  //   exports: [GameService]
+  exports: [GameService, TypeOrmModule],
 })
 export class GameModule {}

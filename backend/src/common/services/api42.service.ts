@@ -10,7 +10,7 @@ export class Api42Service {
   private readonly url = 'https://api.intra.42.fr';
   private readonly clientId = process.env.CLIENT_ID;
   private readonly clientSecret = process.env.CLIENT_SECRET;
-  private readonly redirectUri = 'http://10.11.10.3:5173/auth/confirm';
+  private readonly redirectUri = 'http://localhost:5173/auth/confirm';
   private access_token = '';
 
   constructor(private readonly httpService: HttpService) {}

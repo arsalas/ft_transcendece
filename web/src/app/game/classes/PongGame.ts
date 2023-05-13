@@ -296,7 +296,7 @@ export class PongGame {
    * Comprueba las colisiones con la pala del rival
    */
   protected rivalBoundarie() {
-    if (this.ball.x > this.width - this.paddleDiff) {
+    if (this.ball.x > this.width - this.paddleDiff - this.paddleWidth) {
       if (
         this.ball.y > this.paddlePosition.right &&
         this.ball.y < this.paddlePosition.right + this.paddleHeight
@@ -319,7 +319,7 @@ export class PongGame {
    * Comprueba las colisiones con la pala del jugador
    */
   protected playerBoundarie() {
-    if (this.ball.x < this.paddleDiff) {
+    if (this.ball.x < this.paddleDiff + this.paddleWidth) {
       if (
         this.ball.y > this.paddlePosition.left &&
         this.ball.y < this.paddlePosition.left + this.paddleHeight

@@ -1,4 +1,4 @@
-import { IProfile } from "./user";
+import { IProfile } from './user';
 
 export interface IStadistics {
   win: number;
@@ -6,13 +6,21 @@ export interface IStadistics {
   played: number;
 }
 
-export interface IHistory {
-  date: string;
-  player: string; 
+interface PlayerHistory {
+  result: number;
+  isWinner: boolean;
+  profile: IProfile;
+}
+export interface IHistoryGame {
+  id: string;
+  date: Date;
+  type: string;
+  playerLeft: PlayerHistory;
+  playerRight: PlayerHistory;
 }
 
 export interface IUserProfile {
   profile: IProfile;
   stadistics: IStadistics;
-  history: IHistory[];
+  history: IHistoryGame[];
 }

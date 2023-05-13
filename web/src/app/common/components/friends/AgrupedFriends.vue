@@ -16,8 +16,8 @@
 
     <Transition
       name="custom-classes"
-      enter-active-class="animate__animated animate__slideInDown z-transition"
-      leave-active-class="animate__animated animate__slideOutUp z-transition">
+      enter-active-class="animate__animated animate__faster animate__slideInDown z-transition"
+      leave-active-class="animate__animated animate__faster animate__slideOutUp z-transition">
       <div v-if="isOpen" style="position: relative; width: 100%">
         <div v-for="friend in friends" class="container-user">
           <FriendBox :friend="friend" />
@@ -49,7 +49,7 @@ const isOpen = ref<boolean>(true);
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 1rem;
   cursor: pointer;
   transition: 300ms;
   background-color: var(--bg-dark-0);
@@ -62,9 +62,10 @@ const isOpen = ref<boolean>(true);
   padding: 0.25rem 0.5rem;
   display: flex;
   justify-content: space-between;
-  background-color: var(--bg-dark-2);
+  background-color: var(--bg-dark-0);
   position: sticky;
   top: 0px;
   cursor: pointer;
+//   border-bottom: var(--border);
 }
 </style>

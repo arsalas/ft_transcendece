@@ -3,16 +3,16 @@
 }
 
 .badge {
-  border-radius: 9999px;
+    border-radius: 9999px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  aspect-ratio: 1;
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 .badge.is-primary {
   background-color: var(--color-primary);
-  padding: 0.2rem;
-  aspect-ratio: 1;
-  width: 1.5rem;
 }

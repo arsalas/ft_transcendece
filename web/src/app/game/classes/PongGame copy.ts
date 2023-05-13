@@ -132,7 +132,6 @@ export class PongGame {
     this.audio.addSound('paddle', soundPadle);
     this.audio.addSound('point', soundPoint);
     if (this.gameMode == 'online') {
-      console.log('NO PAUSE');
       this.listenSockets();
       this.isPaused = false;
     }
@@ -419,14 +418,12 @@ export class PongGame {
         this.ball.y < this.paddlePosition.player + this.paddleHeight
       ) {
         this.audio.play('paddle');
-        console.log(this.speed);
         // const area = Math.abs(this.speed.x * this.speed.y);
         this.speed.x = -this.speed.x;
         this.trayectory.y =
           this.ball.y - (this.paddlePosition.player + this.paddleDiff);
         this.speed.y = this.trayectory.y * 0.2;
         // this.speed.x = area / this.ball.y;
-        console.log(this.speed);
       } else if (this.ball.x <= this.paddleDiff / 2) {
         this.audio.play('point');
         this.score.rival++;
@@ -654,7 +651,6 @@ export class PongGame {
 
   public resizeWindows(width: number, height: number) {
     this.calcDimensionsScreen(width, height);
-    console.log(this.width, this.height);
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.renderCanvas();

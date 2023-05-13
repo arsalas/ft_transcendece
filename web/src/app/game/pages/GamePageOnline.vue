@@ -3,6 +3,11 @@
     v-if="!isLoading && !isStart"
     :player-left="gameData!.players[0]"
     :player-right="gameData!.players[1]" />
+  <Finish
+    v-if="isFinish"
+    :player-left="gameData!.players[0]"
+    :player-right="gameData!.players[1]"
+    :result="result!.scores" />
   <div class="main-container" v-if="isStart">
     <div class="actions">
       <div class="brand">
@@ -77,7 +82,7 @@ import { useGame } from '../composables';
 
 import { PongOnline } from '../classes';
 import { providers } from '../../../providers';
-import { GameData } from '../../../interfaces';
+import { GameData, GameFinish, Scores } from '../../../interfaces';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -87,7 +92,7 @@ const Logo = defineAsyncComponent(
   () => import('../../common/components/ui/Logo.vue'),
 );
 const Start = defineAsyncComponent(() => import('../components/Start.vue'));
-const Victory = defineAsyncComponent(() => import('../components/Victory.vue'));
+const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
 
 // COMPOSABLES
 const router = useRouter();
@@ -100,6 +105,8 @@ const {
   isLoading,
   isMuted,
   isStart,
+  isFinish,
+  result,
   mutedGame,
   startGame,
   unmutedGame,
@@ -152,7 +159,6 @@ const getGameData = async () => {
  */
 const createdGame = () => {
   app.value = document.querySelector<HTMLDivElement>('#game')!;
-  console.log(app.value);
   createCanvasDiv();
   game.value = new PongOnline(
     canvas,
@@ -177,8 +183,8 @@ onMounted(async () => {
     ({ user, gameId }: { user: string; gameId: string }) => {
       if (gameId != (route.params.id as string)) return;
       game.value?.gameExit(user);
-
-      router.push({ name: 'home' });
+      console.log('player-exit');
+    //   router.push({ name: 'home' });
     },
   );
   socketGame.value?.on('start-game', () => {
@@ -188,6 +194,14 @@ onMounted(async () => {
       game.value?.startGame();
     }, 500);
   });
+
+  socketGame.value?.on('finish-game', (resultGame: GameFinish) => {
+    isFinish.value = true;
+    result.value = resultGame;
+    setTimeout(() => {
+      router.push({ name: 'home' });
+    }, 4000);
+  });
 });
 
 onUnmounted(() => {
@@ -195,6 +209,7 @@ onUnmounted(() => {
   destroyGame();
   socketGame.value?.removeAllListeners('player-exit');
   socketGame.value?.removeAllListeners('start-game');
+  socketGame.value?.removeAllListeners('finish-game');
 });
 </script>
 <style lang="scss" scoped>

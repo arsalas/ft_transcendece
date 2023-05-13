@@ -1,13 +1,16 @@
 import { ref } from 'vue';
 import { PongGame } from '../classes';
+import { GameFinish } from '../../../interfaces';
 
 export const useGame = () => {
   const canvas = document.createElement('canvas');
   const isLoading = ref<boolean>(true);
   const isMuted = ref<boolean>(false);
   const isStart = ref<boolean>(false);
+  const isFinish = ref<boolean>(false);
   const app = ref<HTMLDivElement>();
   const game = ref<PongGame>();
+  const result = ref<GameFinish>();
 
   const mutedGame = () => {
     isMuted.value = true;
@@ -51,6 +54,8 @@ export const useGame = () => {
     isLoading,
     isMuted,
     isStart,
+    isFinish,
+	result,
     app,
     game,
     mutedGame,

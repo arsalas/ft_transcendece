@@ -12,6 +12,6 @@ import { Profile } from 'src/user/entities';
   imports: [TypeOrmModule.forFeature([Friend, Profile]), ConfigModule],
   controllers: [FriendsController],
   providers: [FriendsService],
-  exports: [FriendsService],
+  exports: [FriendsService, TypeOrmModule],
 })
 export class FriendsModule {}

@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Body,
+  Put,
   Patch,
   Param,
   Delete,
@@ -34,5 +35,12 @@ export class GameController {
     @Body() createGameDto: CreateGameDto,
   ) {
     return this.gameService.create(createGameDto, user.login);
+  }
+
+  @Put('history')
+  getHistory(
+    @Request() { user }: { user: JwtPayload },
+  ) {
+    return this.gameService.getHistoryByUser(user.login);
   }
 }
