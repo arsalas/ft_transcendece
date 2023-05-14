@@ -143,7 +143,7 @@ main {
   align-items: center;
   padding: 0rem 2rem;
   border-bottom: var(--border);
-  width: 15rem;
+  min-width: 20vw;
   & img {
     border: solid 0.2rem var(--border-color);
   }

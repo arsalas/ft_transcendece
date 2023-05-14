@@ -10,6 +10,7 @@ import { Socket, Server } from 'socket.io';
 import { NotificationsWsService } from './notifications-ws.service';
 import { JwtPayload } from 'src/auth/interfaces';
 import { JwtService } from '@nestjs/jwt';
+import { UserStatus } from 'src/user/entities';
 
 @WebSocketGateway({ cors: true, namespace: '/notifications' })
 export class NotificationsWsGateway
@@ -63,32 +64,22 @@ export class NotificationsWsGateway
 
   @SubscribeMessage('accept-request')
   async handlAcceptRequest(client: Socket, username: string) {
-    // const newFriend = await this.notificationsWsService.sendRequest(
-    //   client.id,
-    //   username,
-    // );
-    // const userId = this.notificationsWsService.getUserIdByClient(client.id);
     console.log(username);
     this.wss.to(username).emit('refresh-friends');
   }
 
   @SubscribeMessage('refuse-request')
   async handlRefuseRequest(client: Socket, username: string) {
-    // const newFriend = await this.notificationsWsService.sendRequest(
-    //   client.id,
-    //   username,
-    // );
-    // const userId = this.notificationsWsService.getUserIdByClient(client.id);
     this.wss.to(username).emit('refresh-friends');
   }
 
   @SubscribeMessage('change-status')
-  async handlChangeStatus(client: Socket, status: string) {
+  async handlChangeStatus(client: Socket, status: UserStatus) {
     if (
-      status != 'online' &&
-      status != 'offline' &&
-      status != 'away' &&
-      status != 'game'
+      status != UserStatus.ONLINE &&
+      status != UserStatus.OFFLINE &&
+      status != UserStatus.AWAY &&
+      status != UserStatus.GAME
     )
       return;
     await this.notificationsWsService.changeStatus(client.id, status);
@@ -97,6 +88,5 @@ export class NotificationsWsGateway
 
   @SubscribeMessage('force-diconnect')
   forceDisconnect(@MessageBody() userId: string) {
-    // this.notificationsWsService.disconnectClient(userId);
   }
 }

@@ -77,7 +77,7 @@ import { storeToRefs } from 'pinia';
 
 import { useUserStore, useGameStore } from '../../../stores';
 
-import { useSocketsGame } from '../../../sockets';
+import { useSockets, useSocketsGame } from '../../../sockets';
 import { useGame } from '../composables';
 
 import { PongOnline } from '../classes';
@@ -98,6 +98,7 @@ const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
 const router = useRouter();
 const route = useRoute();
 const { socketGame } = useSocketsGame();
+const { socketNotifications } = useSockets();
 const {
   app,
   canvas,
@@ -184,11 +185,12 @@ onMounted(async () => {
       if (gameId != (route.params.id as string)) return;
       game.value?.gameExit(user);
       console.log('player-exit');
-    //   router.push({ name: 'home' });
+      //   router.push({ name: 'home' });
     },
   );
   socketGame.value?.on('start-game', () => {
     isStart.value = true;
+    socketNotifications.emit('change-status', 'game');
     setTimeout(() => {
       createdGame();
       game.value?.startGame();
@@ -199,6 +201,7 @@ onMounted(async () => {
     isFinish.value = true;
     result.value = resultGame;
     setTimeout(() => {
+      socketNotifications.emit('change-status', 'online');
       router.push({ name: 'home' });
     }, 4000);
   });

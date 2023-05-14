@@ -122,7 +122,6 @@ const changeStatus = () => {
 };
 const logout = () => {
   socketGame.value?.emit('force-diconnect', user.value.login);
-
   authStore.logOut();
   router.push({ name: 'signin' });
 };

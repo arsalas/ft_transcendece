@@ -1,10 +1,12 @@
+export type Status = 'online' | 'away' | 'offline' | 'game'
+
 export interface IProfile {
   login: string;
   avatar42: string;
   username: string | undefined;
   avatar: string | undefined;
   twoFactorAuth: boolean;
-  status: string;
+  status: Status;
   color: string;
   icon: string;
   background:string;
