@@ -11,7 +11,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
 import { Profile, User } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
-import {  IStadistics, IUserProfile } from './interfaces';
+import { IStadistics, IUserProfile } from './interfaces';
 import { GameService } from 'src/game/game.service';
 import { Game, GameUser } from 'src/game/entities';
 
@@ -49,12 +49,16 @@ export class UserService {
 
   async findProfileByUsername(username: string): Promise<IUserProfile> {
     const profile = await this.profileRepository.findOneBy({ username });
+
+    if (profile.avatar)
+      profile.avatar =
+        this.configService.get<string>('webURL') + '/image/' + profile.avatar;
+
     const history = await this.gameService.getHistoryByUser(profile.login);
 
-    // const history: IHistory[] = [
-    //   { date: new Date().toDateString(), player: 'aramirez' },
-    // ];
-    const stadistics: IStadistics = { lost: 4, played: 8, win: 4 };
+    const stadistics: IStadistics = await this.gameService.getStadisticsByUser(
+      profile.login,
+    );
     return { profile, history, stadistics };
   }
 

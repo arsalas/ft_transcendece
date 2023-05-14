@@ -274,6 +274,11 @@ export class GameService {
               result: h.result,
             },
           };
+
+          if (data.playerLeft.profile.avatar)
+            data.playerLeft.profile.avatar =
+              process.env.WEB_URL + '/image/' + data.playerLeft.profile.avatar;
+
           historyData.push(data);
         } else {
           historyData[index].playerRight = {
@@ -281,10 +286,40 @@ export class GameService {
             isWinner: h.isWinner,
             result: h.result,
           };
+          if (historyData[index].playerRight.profile.avatar)
+            historyData[index].playerRight.profile.avatar =
+              process.env.WEB_URL +
+              '/image/' +
+              historyData[index].playerRight.profile.avatar;
         }
       });
 
       return historyData;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getStadisticsByUser(userId: string) {
+    try {
+      const games = await this.gameUserRepository.find({
+        relations: { game: true },
+        select: {
+          isWinner: false,
+          id: false,
+          result: false,
+          game: { id: true },
+        },
+        where: {
+          userId: { login: userId },
+        },
+      });
+      const stadistics = { victories: 0, defeats: 0 };
+      games.map((game) => {
+        if (game.isWinner) stadistics.victories++;
+        else stadistics.defeats++;
+      });
+      return stadistics;
     } catch (error) {
       console.log(error);
     }

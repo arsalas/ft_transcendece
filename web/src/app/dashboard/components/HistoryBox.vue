@@ -22,7 +22,7 @@
       <div
         class="text"
         :class="{
-          out: !isUserWinner(game),
+          away: !isUserWinner(game),
           online: isUserWinner(game),
         }">
         {{ isUserWinner(game) ? 'VICTORY' : 'DEFEAT' }}
@@ -92,6 +92,7 @@ const isUserWinner = (game: IHistoryGame) => {
   & img {
     width: 4rem;
     border-radius: 50%;
+	aspect-ratio: 1;
   }
 
   &.right{

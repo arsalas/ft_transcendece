@@ -87,7 +87,7 @@ export class NotificationsWsGateway
     if (
       status != 'online' &&
       status != 'offline' &&
-      status != 'out' &&
+      status != 'away' &&
       status != 'game'
     )
       return;

@@ -116,7 +116,7 @@ const { socketNotifications } = useSockets();
 const { socketGame } = useSocketsGame();
 
 const changeStatus = () => {
-  if (user.value.status == 'online') user.value.status = 'out';
+  if (user.value.status == 'online') user.value.status = 'away';
   else user.value.status = 'online';
   socketNotifications.emit('change-status', user.value.status);
 };

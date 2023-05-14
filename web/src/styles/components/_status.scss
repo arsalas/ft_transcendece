@@ -16,12 +16,12 @@
 
 }
 
-.out {
-  color: var(--color-out-0); 
-   text-shadow: -0.05rem -0.05rem 0 var(--color-out-1),
-  0.05rem -0.05rem 0 var(--color-out-1),
-  -0.05rem 0.05rem 0 var(--color-out-1),
-  0.05rem 0.05rem 0 var(--color-out-1);
+.away {
+  color: var(--color-away-0); 
+   text-shadow: -0.05rem -0.05rem 0 var(--color-away-1),
+  0.05rem -0.05rem 0 var(--color-away-1),
+  -0.05rem 0.05rem 0 var(--color-away-1),
+  0.05rem 0.05rem 0 var(--color-away-1);
 
 }
 
@@ -40,8 +40,8 @@
 .avatar.offline{
   border: 2px solid var(--color-offline-0);
 }
-.avatar.out{
-  border: 2px solid var(--color-out-0);
+.avatar.away{
+  border: 2px solid var(--color-away-0);
 }
 .avatar.game{
   border: 2px solid var(--color-game-0);

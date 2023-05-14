@@ -16,7 +16,7 @@
         <div
           class="text is-huge"
           :class="{
-            out: !result[0].isWinner,
+            away: !result[0].isWinner,
             online: result[0].isWinner,
           }">
           {{ result[0].isWinner ? 'WIN' : 'LOSER' }}
@@ -46,7 +46,7 @@
         <div
           class="text is-huge"
           :class="{
-            out: !result[1].isWinner,
+            away: !result[1].isWinner,
             online: result[1].isWinner,
           }">
           {{ result[1].isWinner ? 'WIN' : 'LOSER' }}

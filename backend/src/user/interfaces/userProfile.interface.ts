@@ -1,9 +1,8 @@
 import { Profile } from '../entities';
 
 export interface IStadistics {
-  win: number;
-  lost: number;
-  played: number;
+  victories: number;
+  defeats: number;
 }
 
 interface PlayerHistory {

@@ -1,9 +1,8 @@
 import { IProfile } from './user';
 
 export interface IStadistics {
-  win: number;
-  lost: number;
-  played: number;
+  victories: number;
+  defeats: number;
 }
 
 interface PlayerHistory {
