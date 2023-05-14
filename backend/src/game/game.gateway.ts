@@ -21,7 +21,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @Inject(forwardRef(() => GameService))
     private readonly gameService: GameService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async handleConnection(client: Socket) {
     const token = client.handshake.headers.authentication as string;
@@ -30,7 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       payload = this.jwtService.verify(token);
       client.join(payload.login);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       client.disconnect();
       return;
     }
@@ -101,5 +101,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('force-diconnect')
   forceDisconnect(@MessageBody() userId: string) {
     this.gameService.disconnectClient(userId);
+  }
+
+  @SubscribeMessage('spectate-game')
+  handleSpectateGame(client: Socket, gameId: string) {
+    console.log('SPECTATE GAME');
+    console.log({ client, gameId });
+    client.join(`room_${gameId}`);
   }
 }

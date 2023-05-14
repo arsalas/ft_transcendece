@@ -154,7 +154,7 @@ export class GameService {
     return 'This action adds a new game';
   }
 
-  async getGame(gameId: string, userId: string) {
+  async getGame(gameId: string) {
     console.log(gameId);
     const gameData = await this.gameUserRepository.find({
       relations: { userId: true },
@@ -180,6 +180,8 @@ export class GameService {
 
     return game;
   }
+
+
 
   async finishGame(result: any) {
     const queryRunner = this.dataSource.createQueryRunner();

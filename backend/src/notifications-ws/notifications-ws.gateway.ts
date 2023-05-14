@@ -63,18 +63,20 @@ export class NotificationsWsGateway
   }
 
   @SubscribeMessage('accept-request')
-  async handlAcceptRequest(client: Socket, username: string) {
+  async handleAcceptRequest(client: Socket, username: string) {
     console.log(username);
     this.wss.to(username).emit('refresh-friends');
   }
 
   @SubscribeMessage('refuse-request')
-  async handlRefuseRequest(client: Socket, username: string) {
+  async handleRefuseRequest(client: Socket, username: string) {
     this.wss.to(username).emit('refresh-friends');
   }
 
+X
+
   @SubscribeMessage('change-status')
-  async handlChangeStatus(client: Socket, status: UserStatus) {
+  async handleChangeStatus(client: Socket, status: UserStatus) {
     if (
       status != UserStatus.ONLINE &&
       status != UserStatus.OFFLINE &&

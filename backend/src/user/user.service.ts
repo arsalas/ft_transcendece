@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
-import { Profile, User } from './entities';
+import { Profile, User, UserStatus } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
 import { IStadistics, IUserProfile } from './interfaces';
 import { GameService } from 'src/game/game.service';
@@ -77,7 +77,7 @@ export class UserService {
       });
       const profileRepo = this.profileRepository.create({
         ...user42,
-        status: 'online',
+        status: UserStatus.ONLINE,
       });
       await queryRunner.manager.save(userRepo);
       await queryRunner.manager.save(profileRepo);

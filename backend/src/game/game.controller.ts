@@ -26,7 +26,7 @@ export class GameController {
     @Request() { user }: { user: JwtPayload },
     @Param('gameId') gameId: string,
   ) {
-    return this.gameService.getGame(gameId, user.login);
+    return this.gameService.getGame(gameId);
   }
 
   @Post()

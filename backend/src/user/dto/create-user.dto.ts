@@ -1,4 +1,5 @@
 import { IsString, IsBoolean, MinLength } from 'class-validator';
+import { UserStatus } from '../entities';
 
 export class CreateUserDto {
   @IsString()
@@ -12,5 +13,5 @@ export class CreateUserDto {
   readonly avatar: string;
 
   @IsString()
-  readonly status: string;
+  readonly status: UserStatus;
 }

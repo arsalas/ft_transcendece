@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Socket } from 'socket.io';
 import { FriendsService } from 'src/friends/friends.service';
-import { Profile } from 'src/user/entities';
+import { Profile, UserStatus } from 'src/user/entities';
 import { Repository } from 'typeorm';
 
 interface ConnectedClients {
@@ -33,11 +33,11 @@ export class NotificationsWsService {
       socket: client,
       userId,
     };
-    await this.changeStatus(client.id, 'online');
+    await this.changeStatus(client.id, UserStatus.ONLINE);
   }
 
   async removeClient(clientId: string) {
-    await this.changeStatus(clientId, 'offline');
+    await this.changeStatus(clientId, UserStatus.OFFLINE);
     delete this.connectedClients[clientId];
   }
 
@@ -52,7 +52,7 @@ export class NotificationsWsService {
     });
   }
 
-  async changeStatus(clientId: string, status: string) {
+  async changeStatus(clientId: string, status: UserStatus) {
     const userId = this.getUserIdByClient(clientId);
     await this.profileRepository.save({ login: userId, status });
   }

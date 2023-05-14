@@ -32,8 +32,6 @@ export class PongOnline extends PongGame {
     document.removeEventListener('keyup', this.playerRightReleaseKey);
   }
 
- 
-
   private listenSockets() {
     this.socket.on('playerLeft-move-up', () => {
       this.playerLeftMovement.isMovement = true;
@@ -57,8 +55,9 @@ export class PongOnline extends PongGame {
     this.socket.on('playerRight-stop', () => {
       this.playerRightMovement.isMovement = false;
     });
-
+    console.log('LISTEN');
     this.socket.on('update-game', (gameData) => {
+      console.log('UPDATE GAME');
       this.paddlePosition.left = (gameData.playerLeft * this.height) / 100;
       this.paddlePosition.right = (gameData.playerRight * this.height) / 100;
       this.ball.x = (gameData.ball.x * this.width) / 100;

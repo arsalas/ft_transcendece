@@ -82,7 +82,7 @@ import { useGame } from '../composables';
 
 import { PongOnline } from '../classes';
 import { providers } from '../../../providers';
-import { GameData, GameFinish, Scores } from '../../../interfaces';
+import { GameData, GameFinish, PlayerType, Scores } from '../../../interfaces';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -160,13 +160,24 @@ const getGameData = async () => {
  */
 const createdGame = () => {
   app.value = document.querySelector<HTMLDivElement>('#game')!;
+  let playerType: PlayerType;
+  playerType =
+    user.value.login == gameData.value?.players[0].login ? 'left' : 'right';
+  if (
+    user.value.login != gameData.value?.players[0].login &&
+    user.value.login != gameData.value?.players[1].login
+  ) {
+    playerType = 'spectator';
+    socketGame.value?.emit('spectate-game', gameData.value?.id);
+  }
+  console.log('PLAYER TYPE', playerType);
   createCanvasDiv();
   game.value = new PongOnline(
     canvas,
     canvas.width,
     canvas.height,
     'online',
-    user.value.login == gameData.value?.players[0].login ? 'left' : 'right',
+    playerType,
     socketGame.value!,
     gameData.value!.id,
     {
@@ -176,9 +187,25 @@ const createdGame = () => {
   );
 };
 
+const isSpectator = () => {
+  if (
+    user.value.login != gameData.value?.players[0].login &&
+    user.value.login != gameData.value?.players[1].login
+  )
+    return true;
+  return false;
+};
+
 onMounted(async () => {
   // Crear la partida
   await getGameData();
+  if (isSpectator()) {
+	isStart.value = true;
+    setTimeout(() => {
+      createdGame();
+      game.value?.startGame();
+    }, 500);
+  }
   socketGame.value?.on(
     'player-exit',
     ({ user, gameId }: { user: string; gameId: string }) => {
@@ -192,6 +219,7 @@ onMounted(async () => {
     isStart.value = true;
     socketNotifications.emit('change-status', 'game');
     setTimeout(() => {
+      console.log('start');
       createdGame();
       game.value?.startGame();
     }, 500);
