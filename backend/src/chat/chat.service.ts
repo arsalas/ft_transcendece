@@ -10,6 +10,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { ChatMessage, ChatRoom, ChatUser } from './entities';
 import { JwtPayload } from 'src/auth/interfaces';
+import { User } from 'src/user/entities';
 
 @Injectable()
 export class ChatService {
@@ -22,23 +23,28 @@ export class ChatService {
     private chatMessageRepository: Repository<ChatMessage>,
   ) {}
 
+  /**
+   * Obtiene todos los mensajes de un chatRoom
+   */
   async create() {
     try {
       const mess = this.chatRoomRepository.create({
         name: 'name',
         type: 'direct',
       });
-      const res = await this.chatRoomRepository.insert(mess);
+      // const res = await this.chatRoomRepository.insert(mess);
+      const res = await this.chatRoomRepository.save(mess);
       return { res };
     } catch (error) {
       console.log(error);
     }
   }
 
-  // en este punto ya nos hemos asegurado de que el mensaje no este vacio
-  async sendMsg(senderLogin: string, msg: string, reciverId: string) {
-    // mirar si existe chat
-    const history = await this.chatUserRepository.findOne({
+  async findChatOrCreate(
+    senderLogin: string,
+    reciverId: string,
+  ): Promise<ChatUser> {
+    const chat = await this.chatUserRepository.findOne({
       where: [
         {
           userId: { login: senderLogin },
@@ -48,49 +54,50 @@ export class ChatService {
         },
       ],
     });
-    if (!history) {
-      // si no existe el chat, creamos un registro y guardarlo con el save
-      // crear room de chat. inserto usuarios. creo mensaje
-      const newHistory = this.chatMessageRepository.create({});
-      //save
+    if (!chat) {
+      const newChat = new ChatRoom();
+      newChat.type = 'direct';
+      newChat.name = 'name';
     }
-    // si existe chat, miramos si es uno o mas
+    return chat;
   }
 
-  // async getAllByUser(id: string) {
-  //   const msgs = await this.chatRoomRepository.find({});
-  // }
-
-  // // encontrar el chat que tenga ese Id
-  // async findHistory(chatId: string) {
-  //   const msgs = await this.chatMessageRepository.findOne({
-  //     where: [
-  //       {
-  //       },
-  //     ],
-  //   });
-  //   return msgs;
-  // }
-
-  // async sendMsg(login: string, ChatUser: CreateChatDto) {
-  //   const msg = await this.chatMessageRepository.findOneBy({
-  //     // username: ChatUser.,
-  //   });
-  //   if (!msg)
-  //     throw new NotFoundException('CREAMOS EL INICIO DE LOS MENSAJES');
-  //   if (await this.chatMessageRepository)
-  //     throw new BadRequestException('TENEMOS MENSAJES');
-  //   const friend = this.chatMessageRepository.create({
-  //     reciver: { login: msg.login },
-  //     sender: { login },
-  //   });
-  //   await this.chatMessageRepository.insert(msg);
-  //   return {
-  //     msg: {
-  //       login: chat.login,
-  //       id: chat.id;
-  //       date: chat.date;
-  //     },
-  //   };
-  // }
+  async storeMessage(msg: string, chatId: string, user2: string): Promise<ChatMessage> {
+    const chat = await this.chatMessageRepository.findOne({relations: ['user']});
+    const newMsg = new ChatMessage();
+    newMsg.message = msg;
+    newMsg.createdAt = new Date();
+    newMsg.isRead = false;
+    return chat;
+  }
 }
+//   // en este punto ya nos hemos asegurado de que el mensaje no este vacio
+//   async sendMsg(senderLogin: string, msg: string, reciverId: string) {
+//     // mirar si existe chat
+//     const history = await this.chatUserRepository.findOne({
+//       where: [
+//         {
+//           userId: { login: senderLogin },
+//         },
+//         {
+//           userId: { login: reciverId },
+//         },
+//       ],
+//     });
+//     // si no existe el chat, creamos un registro y guardarlo con el save
+//     // crear room de chat. inserto usuarios. creo mensaje
+//     if (!history) {
+//       await this.chatUserRepository.save({
+//         ...history, // los ... es para crear un nuevo objeto copiando las propiedades de otro objeto
+//         activedAt: new Date(),
+//       });
+//       const newHistory = this.chatMessageRepository.create({});
+//       //save
+//     } else {
+//       const newMsg = this.chatMessageRepository.create({});
+//       const findMsg = await this.chatUserRepository.insert(newMsg);
+//     }
+//     // si existe chat, miramos si es uno o mas
+//     return history;
+//   }
+// }
