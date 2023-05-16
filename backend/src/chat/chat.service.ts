@@ -23,16 +23,13 @@ export class ChatService {
     private chatMessageRepository: Repository<ChatMessage>,
   ) {}
 
-  /**
-   * Obtiene todos los mensajes de un chatRoom
-   */
+  /** para grupos */
   async create() {
     try {
       const mess = this.chatRoomRepository.create({
         name: 'name',
         type: 'direct',
       });
-      // const res = await this.chatRoomRepository.insert(mess);
       const res = await this.chatRoomRepository.save(mess);
       return { res };
     } catch (error) {
@@ -40,10 +37,7 @@ export class ChatService {
     }
   }
 
-  async findChatOrCreate(
-    senderLogin: string,
-    reciverId: string,
-  ): Promise<ChatUser> {
+  async findChatOrCreate(senderLogin: string, reciverId: string) {
     const chat = await this.chatUserRepository.findOne({
       where: [
         {
@@ -54,11 +48,33 @@ export class ChatService {
         },
       ],
     });
+    // create es crear una instancia de clase
+    // el save guarda, el insert no
     if (!chat) {
-      const newChat = new ChatRoom();
+      const newChat = this.chatRoomRepository.create({
+        name: `${senderLogin}-${reciverId}`,
+        type: 'direct',
+      });
+      const room = await this.chatRoomRepository.save(newChat);
       newChat.type = 'direct';
       newChat.name = 'name';
+      const user1 = this.chatUserRepository.create({
+        chatRoom: room,
+        userId: { login: senderLogin },
+        isAdmin: false,
+        isOwner: false,
+      });
+      const user2 = this.chatUserRepository.create({
+        chatRoom: room,
+        userId: { login: reciverId },
+        isAdmin: false,
+        isOwner: false,
+      });
+      this.chatRoomRepository.save([user1, user2]);
+      console.log('Nuevo chat creado');
+      return [];
     }
+    console.log('Chat localizado');
     return chat;
   }
 
@@ -72,6 +88,7 @@ export class ChatService {
     });
     const newMsg = new ChatMessage();
     newMsg.message = msg;
+
     newMsg.createdAt = new Date();
     newMsg.isRead = false;
     return chat;

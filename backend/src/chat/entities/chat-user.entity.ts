@@ -17,7 +17,7 @@ export class ChatUser {
     onDelete: 'CASCADE',
     // eager: true,
   })
-  chatRoomId: ChatRoom;
+  chatRoom: ChatRoom;
 
   @OneToOne(() => User, (user) => user.login, {
     onDelete: 'CASCADE',

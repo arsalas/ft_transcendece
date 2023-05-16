@@ -15,14 +15,14 @@ import { JwtPayload } from 'src/auth/interfaces';
 import { AcceptFriendDto, CreateFriendDto } from './dto';
 import { UnfriendDto } from './dto/unfriend.dto';
 
-
+@UseGuards(JwtAuthGuard)
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   @Get()
   async getFriends(@Request() { user }: { user: JwtPayload }) {
-	return this.friendsService.getAllByUser(user.login);
+    return this.friendsService.getAllByUser(user.login);
   }
 
   @Post()
@@ -44,7 +44,7 @@ export class FriendsController {
   @Delete(':userId')
   async unfriend(
     @Request() { user }: { user: JwtPayload },
-	@Param('userId') userId: string
+    @Param('userId') userId: string,
   ) {
     return await this.friendsService.unfriend(user.login, userId);
   }
