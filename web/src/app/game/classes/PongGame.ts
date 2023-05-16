@@ -302,11 +302,13 @@ export class PongGame {
         this.ball.y < this.paddlePosition.right + this.paddleHeight
       ) {
         this.audio.play('paddle');
-
         this.speed.x = -this.speed.x;
-        this.trayectory.y =
-          this.ball.y - (this.paddlePosition.right + this.paddleDiff);
-        this.speed.y = this.trayectory.y * 0.3;
+        const paddleCenter = this.paddlePosition.right + this.paddleHeight / 2;
+        const d = paddleCenter - this.ball.y;
+        this.speed.y += d * -0.1;
+        // this.trayectory.y =
+        //   this.ball.y - (this.paddlePosition.right + this.paddleDiff);
+        // this.speed.y = this.trayectory.y * 0.3;
       } else if (this.ball.x >= this.width - this.paddleDiff / 2) {
         this.audio.play('point');
         this.score.left++;
@@ -326,9 +328,12 @@ export class PongGame {
       ) {
         this.audio.play('paddle');
         this.speed.x = -this.speed.x;
-        this.trayectory.y =
-          this.ball.y - (this.paddlePosition.left + this.paddleDiff);
-        this.speed.y = this.trayectory.y * 0.2;
+        // this.trayectory.y =
+        //   this.ball.y - (this.paddlePosition.left + this.paddleDiff);
+        // this.speed.y = this.trayectory.y * 0.2;
+        const paddleCenter = this.paddlePosition.left + this.paddleHeight / 2;
+        const d = paddleCenter - this.ball.y;
+        this.speed.y += d * -0.1;
       } else if (this.ball.x <= this.paddleDiff / 2) {
         this.audio.play('point');
         this.score.right++;

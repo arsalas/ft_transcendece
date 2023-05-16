@@ -115,6 +115,7 @@ const loadProfileUser = async () => {
 watch(
   () => route.params.username,
   (newValue) => {
+    if (!newValue) return;
     userSearch.value = '';
     loadProfileUser();
     items.value = getNavItems();

@@ -57,7 +57,6 @@ export class PongOnline extends PongGame {
     });
     console.log('LISTEN');
     this.socket.on('update-game', (gameData) => {
-      console.log('UPDATE GAME');
       this.paddlePosition.left = (gameData.playerLeft * this.height) / 100;
       this.paddlePosition.right = (gameData.playerRight * this.height) / 100;
       this.ball.x = (gameData.ball.x * this.width) / 100;

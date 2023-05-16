@@ -3,6 +3,7 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -49,6 +50,7 @@ export class UserService {
 
   async findProfileByUsername(username: string): Promise<IUserProfile> {
     const profile = await this.profileRepository.findOneBy({ username });
+    if (!profile) throw new NotFoundException();
 
     if (profile.avatar)
       profile.avatar =
