@@ -1,5 +1,5 @@
 import { User } from 'src/user/entities';
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ChatRoom } from './chat-room.entity';
 
 @Entity()
@@ -19,7 +19,7 @@ export class ChatUser {
   })
   chatRoom: ChatRoom;
 
-  @OneToOne(() => User, (user) => user.login, {
+  @ManyToOne(() => User, (user) => user.login, {
     onDelete: 'CASCADE',
     // eager: true,
   })

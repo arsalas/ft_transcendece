@@ -38,44 +38,51 @@ export class ChatService {
   }
 
   async findChatOrCreate(senderLogin: string, reciverId: string) {
-    const chat = await this.chatUserRepository.findOne({
-      where: [
-        {
+    try {
+      console.log('ANTES DEL findOne', { senderLogin, reciverId });
+      const chat = await this.chatUserRepository.findOne({
+        where: [
+          {
+            userId: { login: senderLogin },
+          },
+          {
+            userId: { login: reciverId },
+          },
+        ],
+      });
+      // create es crear una instancia de clase
+      // el save guarda, el insert no
+      console.log('ANTES DEL IF ! CHAT', chat);
+      if (!chat) {
+        const newChat = this.chatRoomRepository.create({
+          name: `${senderLogin}-${reciverId}`,
+          type: 'direct',
+        });
+        console.log({newChat})
+        const room = await this.chatRoomRepository.save(newChat);
+        console.log({room})
+
+        const user1 = this.chatUserRepository.create({
+          chatRoom: room,
           userId: { login: senderLogin },
-        },
-        {
+          isAdmin: false,
+          isOwner: false,
+        });
+        const user2 = this.chatUserRepository.create({
+          chatRoom: room,
           userId: { login: reciverId },
-        },
-      ],
-    });
-    // create es crear una instancia de clase
-    // el save guarda, el insert no
-    if (!chat) {
-      const newChat = this.chatRoomRepository.create({
-        name: `${senderLogin}-${reciverId}`,
-        type: 'direct',
-      });
-      const room = await this.chatRoomRepository.save(newChat);
-      newChat.type = 'direct';
-      newChat.name = 'name';
-      const user1 = this.chatUserRepository.create({
-        chatRoom: room,
-        userId: { login: senderLogin },
-        isAdmin: false,
-        isOwner: false,
-      });
-      const user2 = this.chatUserRepository.create({
-        chatRoom: room,
-        userId: { login: reciverId },
-        isAdmin: false,
-        isOwner: false,
-      });
-      this.chatRoomRepository.save([user1, user2]);
-      console.log('Nuevo chat creado');
-      return [];
+          isAdmin: false,
+          isOwner: false,
+        });
+        this.chatRoomRepository.save([user1, user2]);
+        console.log('NUEVO CHAT CREADO!');
+        return [];
+      }
+      console.log('CHAT LOCALIZADO');
+      return chat;
+    } catch (error) {
+      console.log(error);
     }
-    console.log('Chat localizado');
-    return chat;
   }
 
   async storeMessage(
