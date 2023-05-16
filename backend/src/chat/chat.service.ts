@@ -62,15 +62,30 @@ export class ChatService {
     return chat;
   }
 
-  async storeMessage(msg: string, chatId: string, user2: string): Promise<ChatMessage> {
-    const chat = await this.chatMessageRepository.findOne({relations: ['user']});
+  async storeMessage(
+    msg: string,
+    chatId: string,
+    user2: string,
+  ): Promise<ChatMessage> {
+    const chat = await this.chatMessageRepository.findOne({
+      relations: ['user'],
+    });
     const newMsg = new ChatMessage();
     newMsg.message = msg;
     newMsg.createdAt = new Date();
     newMsg.isRead = false;
     return chat;
   }
+
+  // async getChatById(channelId: number): Promise<ChatUser> {
+  //   const source = await this.chatRoomRepository.find{
+  //     where: {channelId: id,},
+  //     select: {}
+  //   }
+  //   return source;
+  // }
 }
+
 //   // en este punto ya nos hemos asegurado de que el mensaje no este vacio
 //   async sendMsg(senderLogin: string, msg: string, reciverId: string) {
 //     // mirar si existe chat
