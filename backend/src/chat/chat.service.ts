@@ -43,10 +43,10 @@ export class ChatService {
       const chat = await this.chatUserRepository.findOne({
         where: [
           {
-            userId: { login: senderLogin },
+            user: { login: senderLogin },
           },
           {
-            userId: { login: reciverId },
+            user: { login: reciverId },
           },
         ],
       });
@@ -64,17 +64,17 @@ export class ChatService {
 
         const user1 = this.chatUserRepository.create({
           chatRoom: room,
-          userId: { login: senderLogin },
+          user: { login: senderLogin },
           isAdmin: false,
           isOwner: false,
         });
         const user2 = this.chatUserRepository.create({
           chatRoom: room,
-          userId: { login: reciverId },
+          user: { login: reciverId },
           isAdmin: false,
           isOwner: false,
         });
-        this.chatRoomRepository.save([user1, user2]);
+        await this.chatUserRepository.save([user1, user2]);
         console.log('NUEVO CHAT CREADO!');
         return [];
       }

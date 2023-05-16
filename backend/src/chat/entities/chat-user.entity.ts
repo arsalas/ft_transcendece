@@ -23,5 +23,5 @@ export class ChatUser {
     onDelete: 'CASCADE',
     // eager: true,
   })
-  userId: User;
+  user: User;
 }
