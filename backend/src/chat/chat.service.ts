@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { ChatMessage, ChatRoom, ChatUser } from './entities';
@@ -22,20 +22,6 @@ export class ChatService {
     @InjectRepository(ChatMessage)
     private chatMessageRepository: Repository<ChatMessage>,
   ) {}
-
-  /** para grupos */
-  // async create() {
-  //   try {
-  //     const mess = this.chatRoomRepository.create({
-  //       name: 'name',
-  //       type: 'direct',
-  //     });
-  //     const res = await this.chatRoomRepository.save(mess);
-  //     return { res };
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 
   // store the message
   async storeMessage(senderLogin: string, msg: string, roomId: string) {
@@ -126,7 +112,7 @@ export class ChatService {
   }
 
   // Open the chat. If not exist, create one.
-  async findChatOrCreate(senderLogin: string, reciverId: string, msg: string) {
+  async openDirectChat(senderLogin: string, reciverId: string, msg: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
         where: [
@@ -149,6 +135,66 @@ export class ChatService {
       // await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
       await this.findOldMsg(chat.chatRoom.id);
       return chat;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // no existe el chat grupal
+  async createSaveGroupChat(
+    nameGroup: string,
+    sendersLog: string[],
+    reciverId: string,
+    msg: string,
+  ) {
+    const newChat = await this.chatRoomRepository.create({
+      name: nameGroup,
+      type: 'group',
+    });
+    console.log({ newChat });
+    const room = await this.chatRoomRepository.save(newChat);
+    console.log({ room });
+
+    const user1 = sendersLog.map((senderLog) =>
+      this.chatUserRepository.create({
+        chatRoom: room,
+        user: { login: senderLog },
+        isAdmin: false,
+        isOwner: false,
+      }),
+    );
+    const user2 = await this.chatUserRepository.create({
+      chatRoom: room,
+      user: { login: reciverId },
+      isAdmin: true,
+      isOwner: true,
+    });
+    await this.chatUserRepository.save([...user1, user2]);
+    console.log('NUEVO CHAT GRUPAL CREADO');
+  }
+
+  // open a group chat. If doesn't exist, I create it, I'm the owner
+  async openGroupChat(
+    nameGroup: string,
+    sendersLog: string[],
+    reciverId: string,
+    msg: string,
+  ) {
+    try {
+      const chat = await this.chatUserRepository.findOne({
+        where: [
+          {
+            user: { login: reciverId },
+          },
+          {
+            user: { login: In(sendersLog) },
+          },
+        ],
+      });
+      if (!chat) {
+        await this.createSaveGroupChat(nameGroup, sendersLog, reciverId, msg);
+        return [];
+      }
     } catch (error) {
       console.log(error);
     }

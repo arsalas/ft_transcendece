@@ -26,6 +26,7 @@ export class ChatController {
   //   return this.chatService.getAllByUser(user.login);
   // }
 
+  // send a message
   @Post('direct/:username')
   async sendMsg(
     @Request() { user }: { user: JwtPayload },
@@ -33,21 +34,39 @@ export class ChatController {
     @Param('username') reciverId: string,
   ) {
     console.log(user, msgDto, reciverId);
-    return await this.chatService.findChatOrCreate(
+    return await this.chatService.sendMsg(
       reciverId,
       user.login,
       msgDto.message,
     );
   }
 
+  // open a direct chat
   @Post('direct/:username')
-  async openChat(
+  async openDirectChat(
     @Request() { user }: { user: JwtPayload },
     @Body() msgDto: CreateMsgDto,
     @Param('username') reciverId: string,
   ) {
     console.log(user, msgDto, reciverId);
-    return await this.chatService.sendMsg(
+    return await this.chatService.openDirectChat(
+      reciverId,
+      user.login,
+      msgDto.message,
+    );
+  }
+
+  // open a group chat
+  @Post('direct/:username')
+  async openGroupChat(
+    @Request() { user }: { user: JwtPayload },
+    @Body() msgDto: CreateMsgDto,
+    @Body() nameGroup: string,
+    @Param('username') reciverId: string[],
+  ) {
+    console.log(user, msgDto, reciverId);
+    return await this.chatService.openGroupChat(
+      nameGroup,
       reciverId,
       user.login,
       msgDto.message,
