@@ -37,7 +37,45 @@ export class ChatService {
   //   }
   // }
 
-  // no existe el chat
+  // store the message
+  async storeMessage(senderLogin: string, msg: string, roomId: string) {
+    const newMsg = await this.chatMessageRepository.create({
+      message: msg,
+      isRead: false,
+      userId: { login: senderLogin },
+      chatRoomId: { id: roomId },
+    });
+    await this.chatMessageRepository.save(newMsg);
+    console.log('NUEVO MENSAJE GUARDADO');
+  }
+
+  // storage the msg
+  async sendMsg(senderLogin: string, reciverId: string, msg: string) {
+    try {
+      const chat = await this.chatUserRepository.findOne({
+        where: [
+          {
+            user: { login: senderLogin },
+          },
+          {
+            user: { login: reciverId },
+          },
+        ],
+        relations: ['chatRoom'],
+      });
+      if (!chat) {
+        console.log('User not found');
+        return [];
+      }
+      if (chat) {
+        await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // no existe el chat directo
   async createSaveChat(senderLogin: string, reciverId: string, msg: string) {
     const newChat = await this.chatRoomRepository.create({
       name: `${senderLogin}-${reciverId}`,
@@ -61,25 +99,33 @@ export class ChatService {
     });
     await this.chatUserRepository.save([user1, user2]);
     console.log('NUEVO CHAT CREADO');
-    await this.storeMessage(senderLogin, msg, room.id);
+    // await this.storeMessage(senderLogin, msg, room.id);
   }
 
-  // store the message
-  async storeMessage(senderLogin: string, msg: string, roomId: string) {
-    // const date = new Date();
-    // const actualDate = date.toLocaleString();
-    console.log('Vamos a almacenar el mensaje');
-    const newMsg = await this.chatMessageRepository.create({
-      message: msg,
-      isRead: false,
-      userId: { login: senderLogin },
-      chatRoomId: { id: roomId },
-    });
-    await this.chatMessageRepository.save(newMsg);
-    console.log('NUEVO MENSAJE GUARDADO');
+  // find the last 10 messages in this chatRoom
+  async findOldMsg(roomId: string) {
+    try {
+      const msgs = await this.chatMessageRepository.find({
+        where: {
+          chatRoomId: { id: roomId },
+        },
+        // in descending order
+        order: {
+          id: 'DESC',
+        },
+        take: 10,
+      });
+      console.log(
+        'LAST 10 MESSAGES:',
+        msgs.map((msg) => msg.message),
+      );
+      return msgs;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  // find the chat. If not exist, create one. Store the message
+  // Open the chat. If not exist, create one.
   async findChatOrCreate(senderLogin: string, reciverId: string, msg: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
@@ -100,50 +146,11 @@ export class ChatService {
         return [];
       }
       console.log('EXISTE EL CHAT');
-      // coinciden los usuarios?
-      await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
+      // await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
+      await this.findOldMsg(chat.chatRoom.id);
       return chat;
     } catch (error) {
       console.log(error);
     }
   }
-
-  // async getChatById(channelId: number): Promise<ChatUser> {
-  //   const source = await this.chatRoomRepository.find{
-  //     where: {channelId: id,},
-  //     select: {}
-  //   }
-  //   return source;
-  // }
 }
-
-//   // en este punto ya nos hemos asegurado de que el mensaje no este vacio
-//   async sendMsg(senderLogin: string, msg: string, reciverId: string) {
-//     // mirar si existe chat
-//     const history = await this.chatUserRepository.findOne({
-//       where: [
-//         {
-//           userId: { login: senderLogin },
-//         },
-//         {
-//           userId: { login: reciverId },
-//         },
-//       ],
-//     });
-//     // si no existe el chat, creamos un registro y guardarlo con el save
-//     // crear room de chat. inserto usuarios. creo mensaje
-//     if (!history) {
-//       await this.chatUserRepository.save({
-//         ...history, // los ... es para crear un nuevo objeto copiando las propiedades de otro objeto
-//         activedAt: new Date(),
-//       });
-//       const newHistory = this.chatMessageRepository.create({});
-//       //save
-//     } else {
-//       const newMsg = this.chatMessageRepository.create({});
-//       const findMsg = await this.chatUserRepository.insert(newMsg);
-//     }
-//     // si existe chat, miramos si es uno o mas
-//     return history;
-//   }
-// }

@@ -39,4 +39,18 @@ export class ChatController {
       msgDto.message,
     );
   }
+
+  @Post('direct/:username')
+  async openChat(
+    @Request() { user }: { user: JwtPayload },
+    @Body() msgDto: CreateMsgDto,
+    @Param('username') reciverId: string,
+  ) {
+    console.log(user, msgDto, reciverId);
+    return await this.chatService.sendMsg(
+      reciverId,
+      user.login,
+      msgDto.message,
+    );
+  }
 }
