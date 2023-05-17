@@ -12,6 +12,12 @@
               class="avatar"
               src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
               alt="" />
+            <!-- <MediaObject
+              width="2.5rem"
+              :image="friend.profile.avatar"
+              :image-fallback="friend.profile.avatar42"
+              :name="friend.profile.username"
+              :status="friend.profile.status" /> -->
             <div class="media-text">
               <div class="text is-large name">aramirez</div>
               <div class="text is-small status">conectado</div>
@@ -94,14 +100,28 @@
 
 <script lang="ts" setup>
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { defineAsyncComponent, computed, ref } from 'vue';
 import { useChatStore } from '../../../stores';
+import { IFriend } from '../../../interfaces/friends';
+import { providers } from '../../../providers';
+
+const Avatar = defineAsyncComponent(
+  () => import('../../common/components/images/Avatar.vue'),
+);
 
 interface IChat {
   login: string;
   message: string;
   date: string;
 }
+
+const MediaObject = defineAsyncComponent(
+  () => import('../../common/components/MediaObject.vue'),
+);
+const { friendsService } = providers();
+const props = defineProps<{
+  friend: IFriend;
+}>();
 
 const chatStore = useChatStore();
 const message = ref<string>('');
