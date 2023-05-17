@@ -38,9 +38,15 @@ export class GameController {
   }
 
   @Put('history')
-  getHistory(
+  getHistory(@Request() { user }: { user: JwtPayload }) {
+    return this.gameService.getHistoryByUser(user.login);
+  }
+
+  @Get('spectate/:username')
+  getIdGame(
+	@Param('username') username: string,
     @Request() { user }: { user: JwtPayload },
   ) {
-    return this.gameService.getHistoryByUser(user.login);
+    return this.gameService.getIdGameUser(username);
   }
 }

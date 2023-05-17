@@ -11,7 +11,7 @@ import { GameGateway } from './game.gateway';
 import { Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameUser } from './entities';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { IHistoryGame } from 'src/user/interfaces';
 
 interface ConnectedClients {
@@ -51,7 +51,6 @@ export class GameService {
     for (const clientId of Object.keys(this.connectedClients)) {
       const connectedClient = this.connectedClients[clientId];
       if (connectedClient.userId === userId) {
-        console.log('desconect');
         connectedClient.socket.disconnect();
         break;
       }
@@ -91,7 +90,6 @@ export class GameService {
 
   async removeClient(clientId: string) {
     const user = this.connectedClients[clientId];
-    console.log('disconn: ', user.room);
     if (user.room)
       this.gameGateway.wss
         .to(`room_${user.room}`)
@@ -100,7 +98,6 @@ export class GameService {
   }
 
   async create(createGameDto: CreateGameDto, userId: string) {
-    console.log('cola: ', this.queque[createGameDto.type]);
     // 1 - Buscar si existe algun jugador en cola
     const user = this.queque[createGameDto.type].shift();
     // 2.a - Si no existe crear una cola
@@ -119,7 +116,6 @@ export class GameService {
         type: createGameDto.type,
       });
       const gameData = await queryRunner.manager.save(game);
-      console.log('create game: ', gameData);
       const gameUser1 = this.gameUserRepository.create({
         userId: { login: userId },
         game: gameData,
@@ -132,8 +128,6 @@ export class GameService {
       await queryRunner.manager.save([gameUser1, gameUser2]);
       // Si todo ha ido bien aplicamos los cambios
       await queryRunner.commitTransaction();
-      console.log('id: ', gameData.id);
-      console.log('clients: ', this.connectedClients);
       this.getSocketByUserId(userId).join(`room_${gameData.id}`);
       this.getSocketByUserId(user).join(`room_${gameData.id}`);
       this.connectedClients[this.getUserClientById(userId)].room = gameData.id;
@@ -155,7 +149,6 @@ export class GameService {
   }
 
   async getGame(gameId: string) {
-    console.log(gameId);
     const gameData = await this.gameUserRepository.find({
       relations: { userId: true },
       where: { game: { id: gameId } },
@@ -181,8 +174,6 @@ export class GameService {
     return game;
   }
 
-
-
   async finishGame(result: any) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -192,7 +183,6 @@ export class GameService {
         id: result.gameId,
         finishAt: new Date(),
       });
-      console.log(game);
       const gameData = await queryRunner.manager.save(game);
       const gameUser1 = this.gameUserRepository.create({
         userId: { login: result.scores[0].userId },
@@ -221,7 +211,6 @@ export class GameService {
       // Si todo ha ido bien aplicamos los cambios
       await queryRunner.commitTransaction();
     } catch (error) {
-      console.log(error);
       // Si ha fallado algo deshacemos los cambios
       await queryRunner.rollbackTransaction();
       //   throw new Error('Something is wrong');
@@ -247,7 +236,6 @@ export class GameService {
           userId: { login: userId },
         },
       });
-      console.log({ games });
       if (games.length == 0) return [];
       const gameArr = games.map((g) => ({ game: { id: g.game.id } }));
       //  return gameArr
@@ -297,9 +285,7 @@ export class GameService {
       });
 
       return historyData;
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async getStadisticsByUser(userId: string) {
@@ -322,9 +308,19 @@ export class GameService {
         else stadistics.defeats++;
       });
       return stadistics;
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
+  }
+
+  async getIdGameUser(username: string) {
+    const game = await this.gameUserRepository.find({
+      relations: { game: true },
+      where: {
+        result: IsNull(),
+        userId: { login: username },
+      },
+    });
+    if (game.length == 0) throw new NotFoundException();
+    return { id: game[0].game.id };
   }
 
   async disconnectClient(userId: string) {

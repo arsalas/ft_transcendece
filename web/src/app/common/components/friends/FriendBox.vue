@@ -28,8 +28,22 @@
           <div class="dropdown-content">
             <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
             <a href="#" class="dropdown-item text is-small"> Send Message </a>
-            <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
-            <a href="#" class="dropdown-item text is-small"> View Profile </a>
+            <a
+              v-if="friend.profile.status == 'game'"
+              @click="getIdGame"
+              href="#"
+              class="dropdown-item text is-small">
+              Spectate Game
+            </a>
+            <router-link
+              @click.stop="isOpen = false"
+              :to="{
+                name: 'profileUser',
+                params: { username: friend.profile.username },
+              }"
+              class="dropdown-item text is-small">
+              View Profile
+            </router-link>
             <a @click="refuseFriend" class="dropdown-item text is-small">
               Unfriend
             </a>
@@ -55,6 +69,7 @@ import { providers } from '../../../../providers';
 import { useFriendsStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
+import { useRouter } from 'vue-router';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
@@ -62,14 +77,22 @@ const props = defineProps<{
   friend: IFriend;
 }>();
 
+const router = useRouter();
 const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
 const { friends } = storeToRefs(firendsStore);
-const { friendsService } = providers();
+const { friendsService, gameService } = providers();
 
 const isOpen = ref<boolean>(false);
 const onClickAway = (event: any) => {
   isOpen.value = false;
+};
+
+const getIdGame = async () => {
+  try {
+    const game = await gameService.getActiveGameId(props.friend.profile.login);
+    router.push({ name: 'online', params: { id: game.id } });
+  } catch (error) {}
 };
 
 const acceptFriend = async () => {

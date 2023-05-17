@@ -102,7 +102,7 @@ const color = computed(() => `6rem solid ${profile.value?.profile.color}`);
     & .flag {
       padding: 2rem 0;
       width: 12rem;
-      height: 50%;
+      min-height: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
