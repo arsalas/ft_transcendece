@@ -23,7 +23,7 @@ export class UserService {
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Busca un usuario a partir del login de 42

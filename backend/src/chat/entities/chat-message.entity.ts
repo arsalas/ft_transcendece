@@ -1,5 +1,11 @@
 import { User } from 'src/user/entities';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ChatRoom } from './chat-room.entity';
 
 @Entity()
@@ -9,7 +15,7 @@ export class ChatMessage {
 
   @Column()
   message: string;
- 
+
   @Column()
   isRead: boolean;
 
@@ -18,7 +24,6 @@ export class ChatMessage {
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   public createdAt: Date;
-
 
   @ManyToOne(() => User, (user) => user.login, {
     onDelete: 'CASCADE',
@@ -31,6 +36,4 @@ export class ChatMessage {
     // eager: true,
   })
   chatRoomId: ChatRoom;
-
-
 }

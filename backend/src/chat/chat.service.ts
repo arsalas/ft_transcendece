@@ -24,22 +24,64 @@ export class ChatService {
   ) {}
 
   /** para grupos */
-  async create() {
-    try {
-      const mess = this.chatRoomRepository.create({
-        name: 'name',
-        type: 'direct',
-      });
-      const res = await this.chatRoomRepository.save(mess);
-      return { res };
-    } catch (error) {
-      console.log(error);
-    }
+  // async create() {
+  //   try {
+  //     const mess = this.chatRoomRepository.create({
+  //       name: 'name',
+  //       type: 'direct',
+  //     });
+  //     const res = await this.chatRoomRepository.save(mess);
+  //     return { res };
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // no existe el chat
+  async createSaveChat(senderLogin: string, reciverId: string, msg: string) {
+    const newChat = await this.chatRoomRepository.create({
+      name: `${senderLogin}-${reciverId}`,
+      type: 'direct',
+    });
+    console.log({ newChat });
+    const room = await this.chatRoomRepository.save(newChat);
+    console.log({ room });
+
+    const user1 = await this.chatUserRepository.create({
+      chatRoom: room,
+      user: { login: senderLogin },
+      isAdmin: false,
+      isOwner: false,
+    });
+    const user2 = await this.chatUserRepository.create({
+      chatRoom: room,
+      user: { login: reciverId },
+      isAdmin: false,
+      isOwner: false,
+    });
+    await this.chatUserRepository.save([user1, user2]);
+    console.log('NUEVO CHAT CREADO');
+    await this.storeMessage(senderLogin, msg, room.id);
   }
 
-  async findChatOrCreate(senderLogin: string, reciverId: string) {
+  // store the message
+  async storeMessage(senderLogin: string, msg: string, roomId: string) {
+    // const date = new Date();
+    // const actualDate = date.toLocaleString();
+    console.log('Vamos a almacenar el mensaje');
+    const newMsg = await this.chatMessageRepository.create({
+      message: msg,
+      isRead: false,
+      userId: { login: senderLogin },
+      chatRoomId: { id: roomId },
+    });
+    await this.chatMessageRepository.save(newMsg);
+    console.log('NUEVO MENSAJE GUARDADO');
+  }
+
+  // find the chat. If not exist, create one. Store the message
+  async findChatOrCreate(senderLogin: string, reciverId: string, msg: string) {
     try {
-      console.log('ANTES DEL findOne', { senderLogin, reciverId });
       const chat = await this.chatUserRepository.findOne({
         where: [
           {
@@ -49,56 +91,21 @@ export class ChatService {
             user: { login: reciverId },
           },
         ],
+        relations: ['chatRoom'],
       });
       // create es crear una instancia de clase
       // el save guarda, el insert no
-      console.log('ANTES DEL IF ! CHAT', chat);
       if (!chat) {
-        const newChat = this.chatRoomRepository.create({
-          name: `${senderLogin}-${reciverId}`,
-          type: 'direct',
-        });
-        console.log({newChat})
-        const room = await this.chatRoomRepository.save(newChat);
-        console.log({room})
-
-        const user1 = this.chatUserRepository.create({
-          chatRoom: room,
-          user: { login: senderLogin },
-          isAdmin: false,
-          isOwner: false,
-        });
-        const user2 = this.chatUserRepository.create({
-          chatRoom: room,
-          user: { login: reciverId },
-          isAdmin: false,
-          isOwner: false,
-        });
-        await this.chatUserRepository.save([user1, user2]);
-        console.log('NUEVO CHAT CREADO!');
+        await this.createSaveChat(senderLogin, reciverId, msg);
         return [];
       }
-      console.log('CHAT LOCALIZADO');
+      console.log('EXISTE EL CHAT');
+      // coinciden los usuarios?
+      await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
       return chat;
     } catch (error) {
       console.log(error);
     }
-  }
-
-  async storeMessage(
-    msg: string,
-    chatId: string,
-    user2: string,
-  ): Promise<ChatMessage> {
-    const chat = await this.chatMessageRepository.findOne({
-      relations: ['user'],
-    });
-    const newMsg = new ChatMessage();
-    newMsg.message = msg;
-
-    newMsg.createdAt = new Date();
-    newMsg.isRead = false;
-    return chat;
   }
 
   // async getChatById(channelId: number): Promise<ChatUser> {

@@ -33,6 +33,10 @@ export class ChatController {
     @Param('username') reciverId: string,
   ) {
     console.log(user, msgDto, reciverId);
-    return await this.chatService.findChatOrCreate(reciverId, user.login);
+    return await this.chatService.findChatOrCreate(
+      reciverId,
+      user.login,
+      msgDto.message,
+    );
   }
 }
