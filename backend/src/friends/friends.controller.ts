@@ -22,7 +22,7 @@ export class FriendsController {
 
   @Get()
   async getFriends(@Request() { user }: { user: JwtPayload }) {
-	return this.friendsService.getAllByUser(user.login);
+    return this.friendsService.getAllByUser(user.login);
   }
 
   @Post()
@@ -44,8 +44,24 @@ export class FriendsController {
   @Delete(':userId')
   async unfriend(
     @Request() { user }: { user: JwtPayload },
-	@Param('userId') userId: string
+    @Param('userId') userId: string,
   ) {
     return await this.friendsService.unfriend(user.login, userId);
+  }
+
+  @Post('block/:userId')
+  async blockUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('userId') userId: string,
+  ) {
+    return await this.friendsService.blockUser(user.login, userId);
+  }
+
+  @Delete('block/:userId')
+  async unblockUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('userId') userId: string,
+  ) {
+    return await this.friendsService.unblockUser(user.login, userId);
   }
 }

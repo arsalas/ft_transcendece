@@ -36,4 +36,20 @@ export class FriendsService {
       throw new Error(error as string);
     }
   }
+
+  async block(userId: string) {
+    try {
+      return await this.http.post<void>('/friends/block/' + userId, {});
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async unblock(userId: string) {
+    try {
+      return await this.http.delete<void>('/friends/block/' + userId);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
 }
