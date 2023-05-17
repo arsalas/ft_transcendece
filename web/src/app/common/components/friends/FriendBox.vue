@@ -30,8 +30,23 @@
             <a href="#" class="dropdown-item text is-small"> Send Message </a>
             <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
             <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a @click="refuseFriend" class="dropdown-item text is-small"> Unfriend </a>
-            <a href="#" class="dropdown-item text is-small"> Block </a>
+            <a @click="refuseFriend" class="dropdown-item text is-small">
+              Unfriend
+            </a>
+            <a
+              @click="unblockUser"
+              v-if="friend.isBlock"
+              href="#"
+              class="dropdown-item text is-small">
+              Unblock
+            </a>
+            <a
+              @click="blockUser"
+              v-else
+              href="#"
+              class="dropdown-item text is-small">
+              Block
+            </a>
           </div>
         </div>
       </Transition>
@@ -88,7 +103,19 @@ const refuseFriend = async () => {
   } catch (error) {}
 };
 
+const blockUser = async () => {
+  try {
+    await friendsService.block(props.friend.profile.login);
+    props.friend.isBlock = true;
+  } catch (error) {}
+};
 
+const unblockUser = async () => {
+  try {
+    await friendsService.unblock(props.friend.profile.login);
+    props.friend.isBlock = false;
+  } catch (error) {}
+};
 </script>
 <style lang="scss" scoped>
 .actions {
