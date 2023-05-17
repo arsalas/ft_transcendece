@@ -43,11 +43,14 @@ export class Profile {
   @Column()
   color: string;
 
+  @Column({ default: 100, type: 'int' })
+  ladder: number;
+
   @Column({
     nullable: true,
     type: 'enum',
     enum: UserStatus,
-    default: UserStatus.ONLINE,
+    default: UserStatus.OFFLINE,
   })
   status: UserStatus;
 

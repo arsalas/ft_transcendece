@@ -13,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameUser } from './entities';
 import { DataSource, IsNull, Repository } from 'typeorm';
 import { IHistoryGame } from 'src/user/interfaces';
+import { Profile } from 'src/user/entities';
 
 interface ConnectedClients {
   [id: string]: {
@@ -45,6 +46,8 @@ export class GameService {
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(GameUser)
     private readonly gameUserRepository: Repository<GameUser>,
+    @InjectRepository(Profile)
+    private readonly profileRepository: Repository<Profile>,
   ) {}
 
   private checkUserConnection(userId: string) {
@@ -174,6 +177,25 @@ export class GameService {
     return game;
   }
 
+  private calcLadderRatePoints(diffPoints: number) {
+    if (diffPoints >= 1000) {
+      return {
+        more: { winner: 0.05, loser: 0.3 },
+        less: { winner: 0.3, loser: 0.05 },
+      };
+    }
+    if (diffPoints >= 500) {
+      return {
+        more: { winner: 0.1, loser: 0.2 },
+        less: { winner: 0.2, loser: 0.1 },
+      };
+    }
+    return {
+      more: { winner: 0.1, loser: 0.1 },
+      less: { winner: 0.1, loser: 0.1 },
+    };
+  }
+
   async finishGame(result: any) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -207,7 +229,37 @@ export class GameService {
         { userId: gameUser2.userId.login, game: gameUser2.game.id },
         gameUser2,
       );
-      //   await queryRunner.manager.save([gameUser1, gameUser2]);
+
+      const user1 = await this.profileRepository.findOneBy({
+        login: result.scores[0].userId,
+      });
+      const user2 = await this.profileRepository.findOneBy({
+        login: result.scores[1].userId,
+      });
+
+      const diffLadder = Math.abs(user1.ladder - user2.ladder);
+
+      const ratios = this.calcLadderRatePoints(diffLadder);
+      if (user1.ladder > user2.ladder) {
+        if (result.scores[0].isWinner) {
+          user1.ladder += ratios.more.winner * 100;
+          user2.ladder -= ratios.less.loser * 100;
+        } else {
+          user1.ladder -= ratios.more.loser * 100;
+          user2.ladder += ratios.less.winner * 100;
+        }
+      } else {
+        if (result.scores[0].isWinner) {
+          user1.ladder += ratios.less.winner * 100;
+          user2.ladder -= ratios.more.loser * 100;
+        } else {
+          user1.ladder -= ratios.less.loser * 100;
+          user2.ladder += ratios.more.winner * 100;
+        }
+      }
+
+      console.log({ user1, user2 });
+      await queryRunner.manager.save([user1, user2]);
       // Si todo ha ido bien aplicamos los cambios
       await queryRunner.commitTransaction();
     } catch (error) {

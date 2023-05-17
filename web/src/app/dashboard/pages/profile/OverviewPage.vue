@@ -29,7 +29,7 @@
           <li class="has-text-centered text is-extra">Win Rate</li>
           <li class="has-text-centered text is-extra">Victories</li>
           <li class="has-text-centered text is-extra">Defeats</li>
-          <li class="has-text-centered text is-extra">Elo</li>
+          <li class="has-text-centered text is-extra">Ladder</li>
         </ul>
       </header>
       <footer>
@@ -55,7 +55,7 @@
               {{ profile?.stadistics.defeats }}
             </div>
           </li>
-          <li><div class="has-text-centered text is-huge">200</div></li>
+          <li><div class="has-text-centered text is-huge">{{profile?.profile.ladder}}</div></li>
         </ul>
       </footer>
     </div>

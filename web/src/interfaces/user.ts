@@ -1,4 +1,4 @@
-export type Status = 'online' | 'away' | 'offline' | 'game'
+export type Status = 'online' | 'away' | 'offline' | 'game';
 
 export interface IProfile {
   login: string;
@@ -8,8 +8,10 @@ export interface IProfile {
   twoFactorAuth: boolean;
   status: Status;
   color: string;
+  coallition: string;
   icon: string;
-  background:string;
+  background: string;
+  ladder: number;
 }
 
 export interface IUser extends IProfile {
