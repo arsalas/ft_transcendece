@@ -123,6 +123,12 @@ const props = defineProps<{
   friend: IFriend;
 }>();
 
+// export class UsersTpeComponent implements OnInit {
+//   public formMessage = new FormGrop({
+//     message: new FormControl('');
+//   });
+// }
+
 const chatStore = useChatStore();
 const message = ref<string>('');
 

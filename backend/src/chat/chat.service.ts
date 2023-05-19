@@ -173,7 +173,7 @@ export class ChatService {
     console.log('NUEVO CHAT GRUPAL CREADO');
   }
 
-  // open a group chat. If doesn't exist, I create it, I'm the owner
+  // open a group chat. If doesn't exist, I create it, I'm the owner and administrator
   async openGroupChat(
     nameGroup: string,
     sendersLog: string[],
@@ -199,4 +199,6 @@ export class ChatService {
       console.log(error);
     }
   }
+
+  async addUser(newUser: string, chatGroup: string) {}
 }
