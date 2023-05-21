@@ -21,13 +21,8 @@ import { JwtAuthGuard } from 'src/auth/auth.guard';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  // @Get()
-  // async getMsg(@Request() { user }: { user: JwtPayload }) {
-  //   return this.chatService.getAllByUser(user.login);
-  // }
-
   // send a message
-  @Post('direct/:username')
+  @Post('send/:username')
   async sendMsg(
     @Request() { user }: { user: JwtPayload },
     @Body() msgDto: CreateMsgDto,
@@ -57,19 +52,47 @@ export class ChatController {
   }
 
   // open a group chat
-  @Post('direct/:username')
+  @Post('group/:username')
   async openGroupChat(
     @Request() { user }: { user: JwtPayload },
-    @Body() msgDto: CreateMsgDto,
+    // @Body() msgDto: CreateMsgDto,
     @Body() nameGroup: string,
     @Param('username') reciverId: string[],
   ) {
-    console.log(user, msgDto, reciverId);
+    console.log(user, reciverId);
     return await this.chatService.openGroupChat(
       nameGroup,
       reciverId,
       user.login,
-      msgDto.message,
+      'hola',
+      // msgDto.message,
     );
+  }
+
+  // add user
+  @Post('addUser/:username')
+  async addUser(
+    @Request() { user }: { user: JwtPayload },
+    @Body() chatId: string,
+    @Param('username') newUser: string,
+  ) {
+    return await this.chatService.addUser(newUser, chatId);
+  }
+
+  // delete user
+  @Post('direct/:username')
+  async deleteUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('username') deletedUser: string,
+  ) {
+    // return await this.chatService.deleteUser(deletedUser);
+  }
+
+  @Post('direct/:username')
+  async mutexUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('username') silencedUser: string,
+  ) {
+    // return await this.chatService.mutexUser(silencedUser);
   }
 }

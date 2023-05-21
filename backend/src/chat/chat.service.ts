@@ -174,39 +174,50 @@ export class ChatService {
   }
 
   // open a group chat. If doesn't exist, I create it, I'm the owner and administrator
+  // TODO aqui ponemos name: chatName para poder hacer la llamada con el thunder, pero deberemos cambiarlo a la ID, ahora no se
+  // puede porque con el Thunder deberiamos enviar un UUID
   async openGroupChat(
-    nameGroup: string,
+    chatName: string,
     sendersLog: string[],
     reciverId: string,
     msg: string,
   ) {
+    if (sendersLog.length < 3) {
+      console.log('Un chat grupal debe contener al menos 3 personas');
+      return [];
+    }
     try {
-      const chat = await this.chatUserRepository.findOne({
+      const chat = await this.chatRoomRepository.findOne({
         where: [
           {
-            user: { login: reciverId },
-          },
-          {
-            user: { login: In(sendersLog) },
+            type: 'group',
+            name: chatName,
+            // id: chatName,
           },
         ],
       });
       if (!chat) {
-        await this.createSaveGroupChat(nameGroup, sendersLog, reciverId, msg);
+        console.log('NO EXISTE EL CHAT');
+        await this.createSaveGroupChat(chatName, sendersLog, reciverId, msg);
         return [];
       }
+      console.log('EL CHAT SI EXISTE');
     } catch (error) {
       console.log(error);
     }
   }
 
   // add a user to a group chat
-  async addUser(newUser: string, chatId: string) {
+  // TODO aqui ponemos name: chatName para poder hacer la llamada con el thunder, pero deberemos cambiarlo a la ID, ahora no se
+  // puede porque con el Thunder deberiamos enviar un UUID
+  async addUser(newUser: string, chatName: string) {
+    console.log('newUser: ', newUser, 'chatName: ', chatName);
     try {
       const chat = await this.chatUserRepository.findOne({
         where: [
           {
-            chatRoom: { id: chatId },
+            chatRoom: { name: chatName },
+            // chatRoom: { id: chatName },
           },
         ],
       });
@@ -215,15 +226,27 @@ export class ChatService {
         console.log('Ese usuario ya está en el grupo');
         return [];
       }
-      const 
+      const findRoom = await this.chatRoomRepository.findOne({
+        where: [
+          {
+            name: chatName,
+          },
+        ],
+      });
+      // si no existe el grupo
+      if (!findRoom) {
+        console.log('No existe el grupo');
+        return [];
+      }
       // si no estaba dentro previamente, lo insertamos
       const user1 = await this.chatUserRepository.create({
-        chatRoom: room,
+        chatRoom: findRoom,
         user: { login: newUser },
         isAdmin: false,
         isOwner: false,
       });
       await this.chatUserRepository.save([user1]);
+      console.log('USUARIO AÑADIDO AL GRUPO');
     } catch (error) {
       console.log(error);
     }
