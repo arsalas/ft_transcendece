@@ -26,8 +26,8 @@ export class chatAddUserController {
   async addUser(
     @Request() { user }: { user: JwtPayload },
     @Param('username') newUser: string,
-    @Param('chatGroup') chatGroup: string,
+    @Param('chatGroup') chatId: string,
   ) {
-    return await this.chatService.addUser(newUser, chatGroup);
+    return await this.chatService.addUser(newUser, chatId);
   }
 }

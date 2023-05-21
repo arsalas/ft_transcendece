@@ -200,5 +200,32 @@ export class ChatService {
     }
   }
 
-  async addUser(newUser: string, chatGroup: string) {}
+  // add a user to a group chat
+  async addUser(newUser: string, chatId: string) {
+    try {
+      const chat = await this.chatUserRepository.findOne({
+        where: [
+          {
+            chatRoom: { id: chatId },
+          },
+        ],
+      });
+      // si ese usuario ya está dentro
+      if (chat) {
+        console.log('Ese usuario ya está en el grupo');
+        return [];
+      }
+      const 
+      // si no estaba dentro previamente, lo insertamos
+      const user1 = await this.chatUserRepository.create({
+        chatRoom: room,
+        user: { login: newUser },
+        isAdmin: false,
+        isOwner: false,
+      });
+      await this.chatUserRepository.save([user1]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
