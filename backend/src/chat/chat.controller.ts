@@ -80,12 +80,13 @@ export class ChatController {
   }
 
   // delete user
-  @Post('direct/:username')
+  @Post('deleteUser/:username')
   async deleteUser(
     @Request() { user }: { user: JwtPayload },
+    @Body() chatId: string,
     @Param('username') deletedUser: string,
   ) {
-    // return await this.chatService.deleteUser(deletedUser);
+    return await this.chatService.deleteUser(deletedUser, chatId);
   }
 
   @Post('direct/:username')

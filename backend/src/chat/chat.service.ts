@@ -251,4 +251,25 @@ export class ChatService {
       console.log(error);
     }
   }
+
+  async deleteUser(deleteUser: string, chatName: string) {
+    try {
+      const findRoom = await this.chatUserRepository.findOne({
+        where: [
+          {
+            user: { login: deleteUser },
+            chatRoom: { name: chatName },
+          },
+        ],
+      });
+      if (!findRoom) {
+        console.log('Este usuario no está en el grupo');
+        return [];
+      }
+      await this.chatUserRepository.remove(findRoom);
+      console.log('Usuario eliminado del grupo');
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
