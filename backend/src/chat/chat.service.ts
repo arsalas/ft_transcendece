@@ -288,7 +288,7 @@ export class ChatService {
         console.log('Este usuario no existe');
         return [];
       }
-      // mutear el usuario
+      //TODO mutear el usuario
     } catch (error) {
       console.log(error);
     }
@@ -318,5 +318,13 @@ export class ChatService {
       console.log('Coincidencia: ', coinciden);
     });
     return valid;
+  }
+
+  async createSockets() {
+    const app = await NestFactory.create(AppModule);
+
+    app.listen(3000, () => {
+      console.log('Server on port 3000;');
+    });
   }
 }
