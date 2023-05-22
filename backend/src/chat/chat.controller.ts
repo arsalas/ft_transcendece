@@ -94,6 +94,6 @@ export class ChatController {
     @Request() { user }: { user: JwtPayload },
     @Param('username') silencedUser: string,
   ) {
-    // return await this.chatService.mutexUser(silencedUser);
+    return await this.chatService.mutexUser(silencedUser);
   }
 }

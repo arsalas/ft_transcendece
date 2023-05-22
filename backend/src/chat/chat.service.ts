@@ -11,6 +11,9 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { ChatMessage, ChatRoom, ChatUser } from './entities';
 import { JwtPayload } from 'src/auth/interfaces';
 import { User } from 'src/user/entities';
+const bcrypt = require('bcryptjs');
+import crypto from 'crypto';
+// import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class ChatService {
@@ -35,7 +38,7 @@ export class ChatService {
     console.log('NUEVO MENSAJE GUARDADO');
   }
 
-  // storage the msg
+  // storage the msg in direct chat
   async sendMsg(senderLogin: string, reciverId: string, msg: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
@@ -62,7 +65,7 @@ export class ChatService {
   }
 
   // no existe el chat directo
-  async createSaveChat(senderLogin: string, reciverId: string, msg: string) {
+  async createSaveChat(senderLogin: string, reciverId: string) {
     const newChat = await this.chatRoomRepository.create({
       name: `${senderLogin}-${reciverId}`,
       type: 'direct',
@@ -85,7 +88,6 @@ export class ChatService {
     });
     await this.chatUserRepository.save([user1, user2]);
     console.log('NUEVO CHAT CREADO');
-    // await this.storeMessage(senderLogin, msg, room.id);
   }
 
   // find the last 10 messages in this chatRoom
@@ -128,11 +130,10 @@ export class ChatService {
       // create es crear una instancia de clase
       // el save guarda, el insert no
       if (!chat) {
-        await this.createSaveChat(senderLogin, reciverId, msg);
+        await this.createSaveChat(senderLogin, reciverId);
         return [];
       }
       console.log('EXISTE EL CHAT');
-      // await this.storeMessage(senderLogin, msg, chat.chatRoom.id);
       await this.findOldMsg(chat.chatRoom.id);
       return chat;
     } catch (error) {
@@ -202,6 +203,7 @@ export class ChatService {
         return [];
       }
       console.log('EL CHAT SI EXISTE');
+      await this.findOldMsg(chat.id);
     } catch (error) {
       console.log(error);
     }
@@ -271,5 +273,50 @@ export class ChatService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async mutexUser(silencedUser: string) {
+    try {
+      const findUser = await this.chatUserRepository.findOne({
+        where: [
+          {
+            user: { login: silencedUser },
+          },
+        ],
+      });
+      if (!findUser) {
+        console.log('Este usuario no existe');
+        return [];
+      }
+      // mutear el usuario
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async encriptKey(key: string) {
+    const round = 10;
+    const encript = await bcrypt.hash(key, round, (err, ok) => {
+      if (err) {
+        console.log('Error hasheando:', err);
+        return [];
+      } else {
+        console.log('Y hasheada es: ' + ok);
+      }
+    });
+    return encript;
+  }
+
+  // Comparamos si la contraseña que nos envían para determinado nameRoom coincide
+  // TODO cambiar nameRoom por la id, ahora no me deja para hacer la peti en Thunder y ver que todo funciona
+  async compareKeys(key: string, nameRoom: string) {
+    const valid = await bcrypt.compare(key, nameRoom, (err, coinciden) => {
+      if (err) {
+        console.log('Error en la contraseña');
+        return [];
+      }
+      console.log('Coincidencia: ', coinciden);
+    });
+    return valid;
   }
 }
