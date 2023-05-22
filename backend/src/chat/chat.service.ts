@@ -320,11 +320,26 @@ export class ChatService {
     return valid;
   }
 
+  // https://www.youtube.com/watch?v=vGikkrp-HPM
   async createSockets() {
-    const app = await NestFactory.create(AppModule);
+    const http = require('http');
+    const express = require('express');
+    const app = express();
+    const socketio = require('socket.io');
+    const server = http.createServer(app);
+    const io = socketio.listen(server);
 
-    app.listen(3000, () => {
-      console.log('Server on port 3000;');
+    // cuando hay una nueva conexion de sockers y se conecta un nuevo servidor
+    io.on('connection', (socket) => {
+      console.log('New user connected');
+    });
+
+    // static files
+    app.use(express.static('public'));
+
+    // start the server
+    server.listen(3000, () => {
+      console.log('Server in 3000');
     });
   }
 }
