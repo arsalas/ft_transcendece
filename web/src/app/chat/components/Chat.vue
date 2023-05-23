@@ -104,6 +104,9 @@ import { defineAsyncComponent, computed, ref } from 'vue';
 import { useChatStore } from '../../../stores';
 import { IFriend } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
+// import { FriendsService } from '../../dashboard/services';
+const { chatService } = providers();
+// /Users/amurcia-/Documents/GitHub/ft_transcendece/backend/src/chat/chat.module.ts
 
 const Avatar = defineAsyncComponent(
   () => import('../../common/components/images/Avatar.vue'),
@@ -118,30 +121,20 @@ interface IChat {
 const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
-const { friendsService } = providers();
-const props = defineProps<{
-  friend: IFriend;
-}>();
-
-// export class UsersTpeComponent implements OnInit {
-//   public formMessage = new FormGrop({
-//     message: new FormControl('');
-//   });
-// }
 
 const chatStore = useChatStore();
 const message = ref<string>('');
 
-const sendMsg = () => {
-  if (message.value.length > 0) {
-    chats.value.push({
-      login: 'amurcia-',
-      message: message.value,
-      date: '10.05.2023',
-    });
-    message.value = '';
-  }
-};
+// const sendMsg = () => {
+//   if (message.value.length > 0) {
+//     chats.value.push({
+//       login: 'amurcia-',
+//       message: message.value,
+//       date: '10.05.2023',
+//     });
+//     message.value = '';
+//   }
+// };
 
 const isOpenChat = ref<boolean>(true);
 const isOpen = ref<boolean>(false);
@@ -162,6 +155,13 @@ const chats = ref<IChat[]>([
     date: '11.05.2023',
   },
 ]);
+
+const sendMsg = async () => {
+  try {
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const closeChat = () => {
   isOpenChat.value = false;

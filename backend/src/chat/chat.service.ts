@@ -146,11 +146,11 @@ export class ChatService {
     nameGroup: string,
     sendersLog: string[],
     reciverId: string,
-    msg: string,
+    type: string,
   ) {
     const newChat = await this.chatRoomRepository.create({
       name: nameGroup,
-      type: 'group',
+      type: type,
     });
     console.log({ newChat });
     const room = await this.chatRoomRepository.save(newChat);
@@ -191,7 +191,6 @@ export class ChatService {
       const chat = await this.chatRoomRepository.findOne({
         where: [
           {
-            type: 'group',
             name: chatName,
             // id: chatName,
           },
@@ -199,7 +198,6 @@ export class ChatService {
       });
       if (!chat) {
         console.log('NO EXISTE EL CHAT');
-        await this.createSaveGroupChat(chatName, sendersLog, reciverId, msg);
         return [];
       }
       console.log('EL CHAT SI EXISTE');

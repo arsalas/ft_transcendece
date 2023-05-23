@@ -65,7 +65,23 @@ export class ChatController {
       reciverId,
       user.login,
       'hola',
-      // msgDto.message,
+    );
+  }
+
+  // open a group chat
+  @Post('createGroup/:username')
+  async createSaveGroupChat(
+    @Request() { user }: { user: JwtPayload },
+    @Body() nameGroup: string,
+    type: string,
+    @Param('username') reciverId: string[],
+  ) {
+    console.log(user, reciverId);
+    return await this.chatService.createSaveGroupChat(
+      nameGroup,
+      reciverId,
+      user.login,
+      type,
     );
   }
 
