@@ -11,7 +11,6 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { ChatMessage, ChatRoom, ChatUser } from './entities';
 import { JwtPayload } from 'src/auth/interfaces';
 import { User } from 'src/user/entities';
-const bcrypt = require('bcryptjs');
 import crypto from 'crypto';
 // import bcrypt from 'bcryptjs';
 
@@ -292,31 +291,31 @@ export class ChatService {
     }
   }
 
-  async encriptKey(key: string) {
-    const round = 10;
-    const encript = await bcrypt.hash(key, round, (err, ok) => {
-      if (err) {
-        console.log('Error hasheando:', err);
-        return [];
-      } else {
-        console.log('Y hasheada es: ' + ok);
-      }
-    });
-    return encript;
-  }
+  // async encriptKey(key: string) {
+  //   const round = 10;
+  //   const encript = await bcrypt.hash(key, round, (err, ok) => {
+  //     if (err) {
+  //       console.log('Error hasheando:', err);
+  //       return [];
+  //     } else {
+  //       console.log('Y hasheada es: ' + ok);
+  //     }
+  //   });
+  //   return encript;
+  // }
 
   // Comparamos si la contraseña que nos envían para determinado nameRoom coincide
   // TODO cambiar nameRoom por la id, ahora no me deja para hacer la peti en Thunder y ver que todo funciona
-  async compareKeys(key: string, nameRoom: string) {
-    const valid = await bcrypt.compare(key, nameRoom, (err, coinciden) => {
-      if (err) {
-        console.log('Error en la contraseña');
-        return [];
-      }
-      console.log('Coincidencia: ', coinciden);
-    });
-    return valid;
-  }
+  // async compareKeys(key: string, nameRoom: string) {
+  //   const valid = await bcrypt.compare(key, nameRoom, (err, coinciden) => {
+  //     if (err) {
+  //       console.log('Error en la contraseña');
+  //       return [];
+  //     }
+  //     console.log('Coincidencia: ', coinciden);
+  //   });
+  //   return valid;
+  // }
 
   // https://www.youtube.com/watch?v=vGikkrp-HPM
   async createSockets() {

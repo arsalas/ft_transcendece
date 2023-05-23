@@ -104,9 +104,9 @@ import { defineAsyncComponent, computed, ref } from 'vue';
 import { useChatStore } from '../../../stores';
 import { IFriend } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
+import { useSockets } from '../../../sockets';
 // import { FriendsService } from '../../dashboard/services';
 const { chatService } = providers();
-// /Users/amurcia-/Documents/GitHub/ft_transcendece/backend/src/chat/chat.module.ts
 
 const Avatar = defineAsyncComponent(
   () => import('../../common/components/images/Avatar.vue'),
@@ -124,20 +124,9 @@ const MediaObject = defineAsyncComponent(
 
 const chatStore = useChatStore();
 const message = ref<string>('');
-
-// const sendMsg = () => {
-//   if (message.value.length > 0) {
-//     chats.value.push({
-//       login: 'amurcia-',
-//       message: message.value,
-//       date: '10.05.2023',
-//     });
-//     message.value = '';
-//   }
-// };
-
 const isOpenChat = ref<boolean>(true);
 const isOpen = ref<boolean>(false);
+const { socketNotifications } = useSockets();
 const onClickAway = (event: any) => {
   isOpen.value = false;
 };
@@ -158,6 +147,8 @@ const chats = ref<IChat[]>([
 
 const sendMsg = async () => {
   try {
+    await chatService.sendMsg();
+    // socketNotifications.emit('accept-request', );
   } catch (error) {
     console.log(error);
   }
