@@ -44,6 +44,10 @@ export class UserService {
     return await this.userRepository.findOneBy({ login });
   }
 
+  async getAllUsers(): Promise<Profile[]> {
+    return await this.profileRepository.find({order:{ladder:'DESC'}});
+  }
+
   async findProfile(login: string): Promise<Profile> {
     return await this.profileRepository.findOneBy({ login });
   }

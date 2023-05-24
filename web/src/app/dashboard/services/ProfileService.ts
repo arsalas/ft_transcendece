@@ -12,41 +12,11 @@ export class ProfileService {
     }
   }
 
-  //   async generateQRCode() {
-  //     try {
-  //       return await this.http.get<{ qr: string }>('/auth/generate-tfa');
-  //     } catch (error) {
-  //       throw new Error(error as string);
-  //     }
-  //   }
-
-  //   async activateTFA(token: string) {
-  //     try {
-  //       return await this.http.post<{ qr: string }>('/auth/activate-tfa', {
-  //         token,
-  //       });
-  //     } catch (error) {
-  //       throw new Error(error as string);
-  //     }
-  //   }
-
-  //   async desactivateTFA(token: string) {
-  //     try {
-  //       return await this.http.post<{ qr: string }>('/auth/desactivate-tfa', {
-  //         token,
-  //       });
-  //     } catch (error) {
-  //       throw new Error(error as string);
-  //     }
-  //   }
+  async getLadder() {
+    try {
+      return await this.http.get<IProfile[]>('/user');
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
 }
-
-// async signIn(code: string) {
-//     try {
-//       return await this.http.get<ISignin & ITwoFactorAuth>(
-//         '/auth/signin/' + code,
-//       );
-//     } catch (error) {
-//       throw new Error('error');
-//     }
-//   }

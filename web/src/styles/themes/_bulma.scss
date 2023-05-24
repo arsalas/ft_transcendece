@@ -34,6 +34,20 @@ $subtitle-color: var(--text-secondary);
 $link: var(--color-text-link);
 $link-hover: var(--color-text-link-hover);
 
+// TABLE
+
+$table-cell-border: var(--border);
+$table-color: red;
+$table-background-color: var(--bg-dark-1);
+$table-cell-heading-color: blue;
+$table-head-cell-color: white;
+$table-head-background-color: var(--bg-dark-0);
+// $table-body-background-color: var(--color-primary-hover);
+$table-row-hover-background-color: var(--color-primary-hover);
+$table-striped-row-even-background-color: var(--bg-dark-2);
+$table-striped-row-even-hover-background-color:var(--color-primary-hover);
+$table-row-active-background-color: red;
+
 // Import only what you need from Bulma
 @import '../node_modules/bulma/sass/utilities/_all.sass';
 @import '../node_modules/bulma/sass/base/_all.sass';
