@@ -2,7 +2,7 @@
   <div class="main-container">
     <div class="actions">
       <div class="brand">
-        <div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
+        <Logo />
       </div>
       <div class="action-buttons buttons">
         <button
@@ -17,111 +17,134 @@
         <button
           v-if="!isMuted"
           @click="mutedGame"
-          class="button is-primary is-large">
+          class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="fa-solid fa-volume-high"></i>
           </span>
         </button>
-        <button
-          v-if="!isStart"
-          @click="startGame"
-          class="button is-primary is-large">
-          <span class="icon is-small">
-            <i class="fa-solid fa-play"></i>
-          </span>
-        </button>
-        <button
-          v-if="isStart"
-          @click="exitGame"
-          class="button is-primary is-large">
+
+        <!-- <button @click="exitGame" class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="fa-solid fa-person-running"></i>
           </span>
-        </button>
+        </button> -->
       </div>
     </div>
-    <header>
+    <!-- <header>
       <div class="info-players">
         <div class="player text is-large">
-          <Image :src="user.avatar" :fallback="user.avatar42" />
-          {{ user.username }}
+          <Image
+            :src="gameData?.players[0].avatar"
+            :fallback="gameData?.players[0].avatar42" />
+          {{ gameData?.players[0].username }}
+          <img
+            class="ml-4"
+            :style="{backgroundColor: gameData!.players[0].color}"
+            :src="gameData!.players[0].icon"
+            alt="" />
         </div>
         <div class="player text is-large">
-          <Image src="favicon.png" :fallback="user.avatar42" is-external />
-          CPU
+          <Image
+            :src="gameData?.players[1].avatar"
+            :fallback="gameData?.players[1].avatar42" />
+          {{ gameData?.players[1].username }}
+          <img
+            class="ml-4"
+            :style="{backgroundColor: gameData!.players[1].color}"
+            :src="gameData!.players[1].icon"
+            alt="" />
         </div>
       </div>
-    </header>
+    </header> -->
     <div class="game-container">
       <div id="game" ref="app"></div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted } from 'vue';
-import { PongGame } from '../classes';
-import { useRouter } from 'vue-router';
-import { useGameStore } from '../../../stores/game';
-import { useUserStore } from '../../../stores';
+import { onMounted, ref, onUnmounted, defineAsyncComponent } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import Image from '../../common/components/images/Image.vue';
 
+import { useUserStore, useGameStore } from '../../../stores';
+
+import { useGame } from '../composables';
+
+import { providers } from '../../../providers';
+import { GameData } from '../../../interfaces';
+import { PongCPU } from '../classes/PongCPU';
+
+// COMPONENTES
+const Image = defineAsyncComponent(
+  () => import('../../common/components/images/Image.vue'),
+);
+const Logo = defineAsyncComponent(
+  () => import('../../common/components/ui/Logo.vue'),
+);
+const Start = defineAsyncComponent(() => import('../components/Start.vue'));
+const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
+
+// COMPOSABLES
 const router = useRouter();
+const route = useRoute();
+const {
+  app,
+  canvas,
+  game,
+  isLoading,
+  isMuted,
+  isStart,
+  isFinish,
+  result,
+  mutedGame,
+  startGame,
+  unmutedGame,
+  createCanvasDiv,
+  destroyGame,
+} = useGame();
+
+// STORES
 const gameStore = useGameStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+const { type } = storeToRefs(gameStore);
 
-const isMuted = ref<boolean>(false);
-const isStart = ref<boolean>(false);
-const app = ref<HTMLDivElement>();
-const game = ref<PongGame>();
-const canvas = document.createElement('canvas');
+// FUNCIONES
 
-const mutedGame = () => {
-  isMuted.value = true;
-  game.value?.muted();
-};
-
-const unmutedGame = () => {
-  isMuted.value = false;
-  game.value?.unMuted();
-};
-
-const startGame = () => {
-  isStart.value = true;
-  game.value?.startGame();
-};
-
+/**
+ * Abandona el juego
+ */
 const exitGame = () => {
   router.push({ name: 'home' });
 };
 
-const getGameData = async () => {};
+/**
+ * Crea el juego
+ */
+const createdGame = () => {
+  app.value = document.querySelector<HTMLDivElement>('#game')!;
 
-onMounted(() => {
-  canvas.height = app.value!.clientHeight - 1;
-  canvas.width = app.value!.clientWidth - 1;
-  document.querySelector('#game')!.appendChild(canvas);
-
-  game.value = new PongGame(
+  createCanvasDiv();
+  game.value = new PongCPU(
     canvas,
     canvas.width,
     canvas.height,
-    gameStore.mode,
-    router,
+    'pve',
+    type.value,
   );
+
+  startGame();
+};
+
+onMounted(async () => {
+  // Crear la partida
+    createdGame();
 });
 
 onUnmounted(() => {
-  game.value!.destructor();
-  delete game.value;
-  window.removeEventListener('resize', handleResize);
+  // Dejar de escuchar los eventos
+  destroyGame();
 });
-
-const handleResize = () => {
-  game.value?.resizeWindows(app.value!.clientWidth, app.value!.clientHeight);
-};
-window.addEventListener('resize', handleResize);
 </script>
 <style lang="scss" scoped>
 .main-container {

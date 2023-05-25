@@ -1,19 +1,18 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-
-type GameMode = 'pvp' | 'pve' | 'online';
+import { ETypeGame } from '../app/game/interfaces/game';
 
 export const useGameStore = defineStore('game', () => {
-  const mode = ref<GameMode>('pve');
+  const type = ref<ETypeGame>(ETypeGame.ORIGINAL);
   const activeRoom = ref<string>();
 
-  const selectGameMode = (gameMode: GameMode) => {
-    mode.value = gameMode;
+  const selectGameType = (gameType: ETypeGame) => {
+    type.value = gameType;
   };
 
   return {
-    mode,
+    type,
     activeRoom,
-    selectGameMode,
+    selectGameType,
   };
 });

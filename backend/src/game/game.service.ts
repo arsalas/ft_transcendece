@@ -161,6 +161,7 @@ export class GameService {
     if (gameD.finishAt) throw new BadRequestException();
     const game = {
       id: gameId,
+      type: gameD.type,
       players: gameData.map((g) => {
         return {
           login: g.userId.login,

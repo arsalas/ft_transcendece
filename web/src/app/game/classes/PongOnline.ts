@@ -2,6 +2,7 @@ import { Socket } from 'socket.io-client';
 
 import { PongGame } from './PongGame';
 import { GameMode, PlayerType, Players } from '../../../interfaces';
+import { ETypeGame } from '../interfaces/game';
 
 export class PongOnline extends PongGame {
   private playerLeftPressKey = this.handlePressKeyPlayerLeft.bind(this);
@@ -18,8 +19,9 @@ export class PongOnline extends PongGame {
     private readonly socket: Socket,
     private readonly gameId: string,
     private readonly playerNames: { left: string; right: string },
+	type: ETypeGame
   ) {
-    super(canvas, width, height, gameMode);
+    super(canvas, width, height, gameMode, type);
 
     this.listenSockets();
   }
