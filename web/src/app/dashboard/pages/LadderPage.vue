@@ -1,7 +1,5 @@
 <template>
-  <div class="container">
-    <div class="title">LADDER</div>
-
+  <section class="section">
     <table class="table text is-bordered is-striped is-hoverable is-fullwidth">
       <thead>
         <tr>
@@ -13,40 +11,50 @@
       </thead>
 
       <tbody>
-        <tr v-for="(user, i) in users">
+        <tr
+          v-for="(userLadder, i) in users"
+          :style="{
+            backgroundColor:
+              userLadder.login == user.login
+                ? 'var(--color-primary-hover)'
+                : 'inherit',
+          }">
           <td>{{ i + 1 }}</td>
           <td>
             <MediaObject
-              :image="user.avatar!"
-              :image-fallback="user.avatar42"
-              :name="user.username!"
+              :image="userLadder.avatar!"
+              :image-fallback="userLadder.avatar42"
+              :name="userLadder.username!"
               width="2rem" />
           </td>
           <td>
-            {{ user.ladder }}
+            {{ userLadder.ladder }}
           </td>
-          <td>
-            <MediaObject
-              :style="{ backgroundColor: user.color }"
-              :image="user.icon!"
-              :image-fallback="user.icon"
-              :name="user.coallition!"
-              width="2rem" />
+          <td class="coallition">
+            <Image
+              :src="userLadder.icon!"
+              :fallback="userLadder.icon!"
+              :style="{ backgroundColor: userLadder.color }" />
+            {{ userLadder.coallition }}
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { providers } from '../../../providers';
 import { IProfile } from '../../../interfaces';
 import MediaObject from '../../common/components/MediaObject.vue';
+import Image from '../../common/components/images/Image.vue';
+import { useUserStore } from '../../../stores';
+import { storeToRefs } from 'pinia';
 
 const { profileService } = providers();
 const users = ref<IProfile[]>([]);
-
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 const loadLadder = async () => {
   try {
     users.value = await profileService.getLadder();
@@ -59,4 +67,15 @@ onMounted(() => {
   loadLadder();
 });
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.coallition {
+  display: flex;
+  align-items: center;
+  & img {
+    width: 2rem;
+    margin-right: 1rem;
+    border-radius: 50%;
+    aspect-ratio: 1;
+  }
+}
+</style>
