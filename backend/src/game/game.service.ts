@@ -100,14 +100,7 @@ export class GameService {
     delete this.connectedClients[clientId];
   }
 
-  async create(createGameDto: CreateGameDto, userId: string) {
-    // 1 - Buscar si existe algun jugador en cola
-    const user = this.queque[createGameDto.type].shift();
-    // 2.a - Si no existe crear una cola
-    if (!user) {
-      this.queque[createGameDto.type].push(userId);
-      return;
-    }
+  private async createGame(type: string, userId: string, user: string) {
     // 2.b - Si existe crear la partida y avisar a los jugadores
     // Creamos una transaccion
     const queryRunner = this.dataSource.createQueryRunner();
@@ -116,7 +109,7 @@ export class GameService {
     try {
       const game = this.gameRepository.create({
         startedAt: new Date(),
-        type: createGameDto.type,
+        type,
       });
       const gameData = await queryRunner.manager.save(game);
       const gameUser1 = this.gameUserRepository.create({
@@ -147,8 +140,20 @@ export class GameService {
       // Soltamos la conexion
       await queryRunner.release();
     }
+  }
+  async createInviteGame(type: string, userId1: string, userId2: string) {
+    this.createGame(type, userId1, userId2);
+  }
 
-    return 'This action adds a new game';
+  async create(createGameDto: CreateGameDto, userId: string) {
+    // 1 - Buscar si existe algun jugador en cola
+    const user = this.queque[createGameDto.type].shift();
+    // 2.a - Si no existe crear una cola
+    if (!user) {
+      this.queque[createGameDto.type].push(userId);
+      return;
+    }
+    this.createGame(createGameDto.type, userId, user);
   }
 
   async getGame(gameId: string) {

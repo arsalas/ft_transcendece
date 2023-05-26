@@ -140,6 +140,7 @@ const createdGame = () => {
     'pvp',
     type.value,
   );
+  startGame();
 };
 
 onMounted(async () => {

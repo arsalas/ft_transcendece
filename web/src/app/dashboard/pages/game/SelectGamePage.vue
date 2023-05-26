@@ -63,7 +63,6 @@
         :disabled="modeGame === undefined || typeGame === undefined">
         START GAME
       </button>
-      <button class="button is-primary is-large">INVITE USER</button>
     </div>
   </div>
 </template>
@@ -83,8 +82,6 @@ const router = useRouter();
 // VARIABLES
 const modeGame = ref<EModeGame>();
 const typeGame = ref<ETypeGame>();
-const isInvited = ref<boolean>(false);
-const userInvited = ref<string>();
 
 const selectGame = (mode: EModeGame) => {
   modeGame.value = mode;

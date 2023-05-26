@@ -71,12 +71,12 @@ export class PongPlayer extends PongGame {
    * @param e evento
    */
   public handlePressKeyPlayerRight(e: KeyboardEvent) {
-    if (e.key == 'w') {
+    if (e.key == 'ArrowUp') {
       this.playerRightMovement.isMovement = true;
       this.playerRightMovement.direction = 'up';
     }
 
-    if (e.key == 's') {
+    if (e.key == 'ArrowDown') {
       this.playerRightMovement.isMovement = true;
       this.playerRightMovement.direction = 'down';
     }

@@ -109,4 +109,23 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log({ client, gameId });
     client.join(`room_${gameId}`);
   }
+
+  @SubscribeMessage('reject-game')
+  async handleRejectGame(
+    client: Socket,
+    { userId1, userId2 }: { userId1: string; userId2: string },
+  ) {
+    this.wss.to(userId2).emit('reject-game', userId1);
+  }
+  @SubscribeMessage('accept-game')
+  async handleAcceptGame(
+    client: Socket,
+    {
+      type,
+      userId1,
+      userId2,
+    }: { type: string; userId1: string; userId2: string },
+  ) {
+    this.gameService.createInviteGame(type, userId1, userId2);
+  }
 }

@@ -1,5 +1,14 @@
 <template>
   <aside>
+    <div v-if="invitations.length > 0">
+      <header class="text friends-header">
+        GAME INVITES({{ invitations.length }})
+      </header>
+      <div v-for="invitation in invitations">
+        <InvitationBox :invitation="invitation" />
+      </div>
+    </div>
+
     <header class="friends-header">
       <div class="text">SOCIAL</div>
       <span class="icon text" @click="open">
@@ -68,10 +77,11 @@
 <script lang="ts" setup>
 import { defineAsyncComponent, provide, ref } from 'vue';
 import { useModal } from '../../composables';
-import { useFriendsStore } from '../../../../stores';
+import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { providers } from '../../../../providers';
-import { useSockets } from '../../../../sockets';
+import { useSockets, useSocketsGame } from '../../../../sockets';
+import InvitationBox from './InvitationBox.vue';
 
 // COMPONENTS
 const AgrupedFriends = defineAsyncComponent(
@@ -85,11 +95,13 @@ const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 const { isOpen, isOpenContent, close, open } = useModal();
 
 const friendsStore = useFriendsStore();
+const gameStore = useGameStore();
 const { offline, online, friends, pending, sending } =
   storeToRefs(friendsStore);
+const { invitations } = storeToRefs(gameStore);
 
 const { socketNotifications } = useSockets();
-
+const { socketGame } = useSocketsGame();
 const { friendsService } = providers();
 const sendUser = ref<string>('');
 const handleSubmit = async () => {
@@ -123,8 +135,8 @@ aside {
 .friends-req {
   display: flex;
   justify-content: space-between;
-  &:hover{
-	background-color: rgba(var(--color-primary-rgb), 0.5);
+  &:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.5);
   }
 }
 </style>
