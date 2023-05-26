@@ -3,6 +3,7 @@ import audioPoint from '../../../assets/audio/pong_defeat.mp3';
 
 import { AudioController } from './AudioController';
 import { GameMode, PlayerMovement, Players, Vector } from '../../../interfaces';
+import { ETypeGame } from '../interfaces/game';
 
 const soundPadle = new Audio(audioPaddle);
 const soundPoint = new Audio(audioPoint);
@@ -64,6 +65,7 @@ export class PongGame {
     width: number,
     height: number,
     gameMode: GameMode,
+    protected type: ETypeGame,
   ) {
     this.gameMode = gameMode;
     this.canvas = canvas;
@@ -301,6 +303,13 @@ export class PongGame {
         this.ball.y > this.paddlePosition.right &&
         this.ball.y < this.paddlePosition.right + this.paddleHeight
       ) {
+        if (this.type == ETypeGame.SPEED) {
+          if (this.speed.x > 0) this.speed.x++;
+          else this.speed.x--;
+          if (this.speed.y > 0) this.speed.y++;
+          else this.speed.y--;
+        }
+
         this.audio.play('paddle');
         this.speed.x = -this.speed.x;
         const paddleCenter = this.paddlePosition.right + this.paddleHeight / 2;
@@ -326,6 +335,13 @@ export class PongGame {
         this.ball.y > this.paddlePosition.left &&
         this.ball.y < this.paddlePosition.left + this.paddleHeight
       ) {
+        if (this.type == ETypeGame.SPEED) {
+          if (this.speed.x > 0) this.speed.x++;
+          else this.speed.x--;
+          if (this.speed.y > 0) this.speed.y++;
+          else this.speed.y--;
+        }
+
         this.audio.play('paddle');
         this.speed.x = -this.speed.x;
         // this.trayectory.y =

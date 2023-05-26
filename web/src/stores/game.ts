@@ -1,19 +1,35 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-
-type GameMode = 'pvp' | 'pve' | 'online';
+import { ETypeGame } from '../app/game/interfaces/game';
+import { IFriendProfile, IUserProfile } from '../interfaces';
 
 export const useGameStore = defineStore('game', () => {
-  const mode = ref<GameMode>('pve');
+  const type = ref<ETypeGame>(ETypeGame.ORIGINAL);
   const activeRoom = ref<string>();
+  const inviteUser = ref<IFriendProfile>();
+  const waitingAccept = ref<boolean>(false);
+  const invitations = ref<
+    {
+      typeGame: ETypeGame;
+      user: {
+        login: string;
+        username: string;
+        avatar: string;
+        avatar42: string;
+      };
+    }[]
+  >([]);
 
-  const selectGameMode = (gameMode: GameMode) => {
-    mode.value = gameMode;
+  const selectGameType = (gameType: ETypeGame) => {
+    type.value = gameType;
   };
 
   return {
-    mode,
+    type,
+    inviteUser,
     activeRoom,
-    selectGameMode,
+    invitations,
+	waitingAccept,
+    selectGameType,
   };
 });

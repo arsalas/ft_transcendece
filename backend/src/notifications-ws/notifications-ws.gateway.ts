@@ -73,7 +73,15 @@ export class NotificationsWsGateway
     this.wss.to(username).emit('refresh-friends');
   }
 
-X
+  @SubscribeMessage('invite-game')
+  async handleInviteGame(
+    client: Socket,
+    { userId, typeGame, user }: { userId: string; typeGame: string; user: any },
+  ) {
+    this.wss.to(userId).emit('invite-game', { typeGame, user });
+  }
+
+
 
   @SubscribeMessage('change-status')
   async handleChangeStatus(client: Socket, status: UserStatus) {
@@ -89,6 +97,5 @@ X
   }
 
   @SubscribeMessage('force-diconnect')
-  forceDisconnect(@MessageBody() userId: string) {
-  }
+  forceDisconnect(@MessageBody() userId: string) {}
 }

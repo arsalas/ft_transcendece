@@ -11,21 +11,40 @@
         CANCEL
       </button>
     </main>
-    <FriendsAside />
+    <!-- <aside>
+      <div class="user-info">
+        <MediaObject
+          :image="user.avatar!"
+          :image-fallback="user.avatar42!"
+          :name="user.username || user.login"
+          :status="user.status"
+          width="2.7rem" />
+      </div>
+      <FriendsAside />
+    </aside> -->
   </div>
 </template>
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
-import { providers } from '../../../providers';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
+import { providers } from '../../../providers';
+import { useGameStore, useUserStore } from '../../../stores';
 const FriendsAside = defineAsyncComponent(
   () => import('../../common/components/friends/FriendsAside.vue'),
 );
+const MediaObject = defineAsyncComponent(
+  () => import('../../common/components/MediaObject.vue'),
+);
+
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+
 const { gameService } = providers();
-
 const router = useRouter();
-
+const gameStore = useGameStore();
+const { type } = storeToRefs(gameStore);
 const counter = ref<number>(0);
 
 const timmer = computed(() => {
@@ -40,7 +59,7 @@ const interval = setInterval(() => {
 }, 1000);
 
 const findGame = async () => {
-  const res = await gameService.searchGame('original');
+  const res = await gameService.searchGame(type.value);
 };
 
 onMounted(() => {
@@ -60,5 +79,15 @@ onMounted(() => {
     align-items: center;
     flex-direction: column;
   }
+}
+
+.user-info {
+  width: var(--aside-w);
+  height: var(--header-h);
+  background-color: var(--bg-dark-0);
+  padding: 0rem 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: var(--border);
 }
 </style>

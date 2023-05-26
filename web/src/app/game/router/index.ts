@@ -22,14 +22,14 @@ const routes: RouteRecordRaw[] = [
         name: 'pvp',
         meta: { title: 'Game' },
         component: () =>
-          import(/* webpackChunkName: "game" */ '../pages/GamePage.vue'),
+          import(/* webpackChunkName: "game" */ '../pages/GamePagePlayer.vue'),
       },
       {
         path: 'pve',
         name: 'pve',
         meta: { title: 'Game' },
         component: () =>
-          import(/* webpackChunkName: "game" */ '../pages/GamePage.vue'),
+          import(/* webpackChunkName: "game" */ '../pages/GamePageCPU.vue'),
       },
       {
         path: ':id',

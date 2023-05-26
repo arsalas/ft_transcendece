@@ -1,14 +1,5 @@
 <template>
-  <Start
-    v-if="!isLoading && !isStart"
-    :player-left="gameData!.players[0]"
-    :player-right="gameData!.players[1]" />
-  <Finish
-    v-if="isFinish"
-    :player-left="gameData!.players[0]"
-    :player-right="gameData!.players[1]"
-    :result="result!.scores" />
-  <div class="main-container" v-if="isStart">
+  <div class="main-container">
     <div class="actions">
       <div class="brand">
         <Logo />
@@ -39,7 +30,7 @@
         </button> -->
       </div>
     </div>
-    <header>
+    <!-- <header>
       <div class="info-players">
         <div class="player text is-large">
           <Image
@@ -64,7 +55,7 @@
             alt="" />
         </div>
       </div>
-    </header>
+    </header> -->
     <div class="game-container">
       <div id="game" ref="app"></div>
     </div>
@@ -77,12 +68,11 @@ import { storeToRefs } from 'pinia';
 
 import { useUserStore, useGameStore } from '../../../stores';
 
-import { useSockets, useSocketsGame } from '../../../sockets';
 import { useGame } from '../composables';
 
-import { PongOnline } from '../classes';
 import { providers } from '../../../providers';
-import { GameData, GameFinish, PlayerType, Scores } from '../../../interfaces';
+import { GameData } from '../../../interfaces';
+import { PongCPU } from '../classes/PongCPU';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -97,8 +87,6 @@ const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
 // COMPOSABLES
 const router = useRouter();
 const route = useRoute();
-const { socketGame } = useSocketsGame();
-const { socketNotifications } = useSockets();
 const {
   app,
   canvas,
@@ -119,13 +107,7 @@ const {
 const gameStore = useGameStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
-const { activeRoom } = storeToRefs(gameStore);
-
-// PROVIDERS
-const { gameService } = providers();
-
-// VARIABLES
-const gameData = ref<GameData>();
+const { type } = storeToRefs(gameStore);
 
 // FUNCIONES
 
@@ -137,110 +119,31 @@ const exitGame = () => {
 };
 
 /**
- * Obtiene la data del juego
- */
-const getGameData = async () => {
-  isLoading.value = true;
-  try {
-    gameData.value = await gameService.get(route.params.id as string);
-    activeRoom.value = route.params.id as string;
-    if (gameData.value.players[0].username == user.value.username) {
-      setTimeout(() => {
-        socketGame.value?.emit('begin-game', gameData.value?.id);
-      }, 2000);
-    }
-  } catch (error) {
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-/**
  * Crea el juego
  */
 const createdGame = () => {
   app.value = document.querySelector<HTMLDivElement>('#game')!;
-  let playerType: PlayerType;
-  playerType =
-    user.value.login == gameData.value?.players[0].login ? 'left' : 'right';
-  if (
-    user.value.login != gameData.value?.players[0].login &&
-    user.value.login != gameData.value?.players[1].login
-  ) {
-    playerType = 'spectator';
-    socketGame.value?.emit('spectate-game', gameData.value?.id);
-  }
+
   createCanvasDiv();
-  game.value = new PongOnline(
+  game.value = new PongCPU(
     canvas,
     canvas.width,
     canvas.height,
-    'online',
-    playerType,
-    socketGame.value!,
-    gameData.value!.id,
-    {
-      left: gameData.value!.players[0].login,
-      right: gameData.value!.players[1].login,
-    },
-    gameData.value!.type,
+    'pve',
+    type.value,
   );
-};
 
-const isSpectator = () => {
-  if (
-    user.value.login != gameData.value?.players[0].login &&
-    user.value.login != gameData.value?.players[1].login
-  )
-    return true;
-  return false;
+  startGame();
 };
 
 onMounted(async () => {
   // Crear la partida
-  await getGameData();
-  if (isSpectator()) {
-    isStart.value = true;
-    setTimeout(() => {
-      createdGame();
-      game.value?.startGame();
-    }, 500);
-  }
-  socketGame.value?.on(
-    'player-exit',
-    ({ user, gameId }: { user: string; gameId: string }) => {
-      if (gameId != (route.params.id as string)) return;
-      game.value?.gameExit(user);
-      console.log('player-exit');
-      //   router.push({ name: 'home' });
-    },
-  );
-  socketGame.value?.on('start-game', () => {
-    isStart.value = true;
-    socketNotifications.emit('change-status', 'game');
-    setTimeout(() => {
-      console.log('start');
-      createdGame();
-      game.value?.startGame();
-    }, 500);
-  });
-
-  socketGame.value?.on('finish-game', (resultGame: GameFinish) => {
-    isFinish.value = true;
-    result.value = resultGame;
-    setTimeout(() => {
-      socketNotifications.emit('change-status', 'online');
-      router.push({ name: 'home' });
-    }, 4000);
-  });
+    createdGame();
 });
 
 onUnmounted(() => {
   // Dejar de escuchar los eventos
   destroyGame();
-  socketGame.value?.removeAllListeners('player-exit');
-  socketGame.value?.removeAllListeners('start-game');
-  socketGame.value?.removeAllListeners('finish-game');
 });
 </script>
 <style lang="scss" scoped>

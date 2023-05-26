@@ -7,18 +7,14 @@ const routes: RouteRecordRaw[] = [
     redirect: { name: 'home' },
     meta: { requiresAuth: true },
     component: () =>
-      import(
-        /* webpackChunkName: "account" */ '../layouts/DashboardLayout.vue'
-      ),
+      import(/* webpackChunkName: "app" */ '../layouts/DashboardLayout.vue'),
     children: [
       {
         path: '',
         name: 'home',
         meta: { title: 'Home' },
         component: () =>
-          import(
-            /* webpackChunkName: "create-contest" */ '../pages/HomePage.vue'
-          ),
+          import(/* webpackChunkName: "home" */ '../pages/HomePage.vue'),
       },
       {
         path: 'edit-profile',
@@ -27,7 +23,7 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Profile' },
         component: () =>
           import(
-            /* webpackChunkName: "create-contest" */ '../layouts/EditProfile.vue'
+            /* webpackChunkName: "editProfile" */ '../layouts/EditProfile.vue'
           ),
         children: [
           {
@@ -36,7 +32,7 @@ const routes: RouteRecordRaw[] = [
             meta: { title: 'Edit Profile' },
             component: () =>
               import(
-                /* webpackChunkName: "create-contest" */ '../pages/editProfile/ProfilePage.vue'
+                /* webpackChunkName: "editProfile" */ '../pages/editProfile/ProfilePage.vue'
               ),
           },
           {
@@ -45,7 +41,7 @@ const routes: RouteRecordRaw[] = [
             name: 'twoFactorAuth',
             component: () =>
               import(
-                /* webpackChunkName: "account" */ '../pages/editProfile/TwoFactorAuthPage.vue'
+                /* webpackChunkName: "twoFactorAuth" */ '../pages/editProfile/TwoFactorAuthPage.vue'
               ),
           },
           {
@@ -54,7 +50,7 @@ const routes: RouteRecordRaw[] = [
             name: 'blocking',
             component: () =>
               import(
-                /* webpackChunkName: "account" */ '../pages/editProfile/BlockingPage.vue'
+                /* webpackChunkName: "blocking" */ '../pages/editProfile/BlockingPage.vue'
               ),
           },
           {
@@ -63,7 +59,7 @@ const routes: RouteRecordRaw[] = [
             name: 'themes',
             component: () =>
               import(
-                /* webpackChunkName: "account" */ '../pages/editProfile/ThemesPage.vue'
+                /* webpackChunkName: "themes" */ '../pages/editProfile/ThemesPage.vue'
               ),
           },
         ],
@@ -73,14 +69,7 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Chats' },
         name: 'chat',
         component: () =>
-          import(/* webpackChunkName: "account" */ '../pages/ChatsPage.vue'),
-      },
-      {
-        path: 'ladder',
-        meta: { title: 'Ladder' },
-        name: 'ladder',
-        component: () =>
-          import(/* webpackChunkName: "account" */ '../pages/LadderPage.vue'),
+          import(/* webpackChunkName: "chat" */ '../pages/ChatsPage.vue'),
       },
       {
         path: 'select-game',
@@ -88,7 +77,16 @@ const routes: RouteRecordRaw[] = [
         name: 'selectGame',
         component: () =>
           import(
-            /* webpackChunkName: "account" */ '../pages/game/SelectGamePage.vue'
+            /* webpackChunkName: "selectGame" */ '../pages/game/SelectGamePage.vue'
+          ),
+      },
+      {
+        path: 'invite-game',
+        meta: { title: 'Invite Game' },
+        name: 'inviteGame',
+        component: () =>
+          import(
+            /* webpackChunkName: "inviteGame" */ '../pages/game/InviteGamePage.vue'
           ),
       },
       {
@@ -98,7 +96,7 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Profile' },
         component: () =>
           import(
-            /* webpackChunkName: "create-contest" */ '../layouts/ProfileLayout.vue'
+            /* webpackChunkName: "profileUser" */ '../layouts/ProfileLayout.vue'
           ),
         children: [
           {
@@ -107,7 +105,7 @@ const routes: RouteRecordRaw[] = [
             meta: { title: 'Profile' },
             component: () =>
               import(
-                /* webpackChunkName: "create-contest" */ '../pages/profile/OverviewPage.vue'
+                /* webpackChunkName: "overview" */ '../pages/profile/OverviewPage.vue'
               ),
           },
           {
@@ -116,7 +114,7 @@ const routes: RouteRecordRaw[] = [
             meta: { title: 'Profile' },
             component: () =>
               import(
-                /* webpackChunkName: "create-contest" */ '../pages/profile/HistoryPage.vue'
+                /* webpackChunkName: "history" */ '../pages/profile/HistoryPage.vue'
               ),
           },
         ],

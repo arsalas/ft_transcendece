@@ -26,7 +26,12 @@
           class="dropdown-menu"
           role="menu">
           <div class="dropdown-content">
-            <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
+            <a
+              v-if="friend.profile.status == 'online'"
+              @click.stop="inviteGame"
+              class="dropdown-item text is-small">
+              Invite to Game
+            </a>
             <a href="#" class="dropdown-item text is-small"> Send Message </a>
             <a
               v-if="friend.profile.status == 'game'"
@@ -44,7 +49,7 @@
               class="dropdown-item text is-small">
               View Profile
             </router-link>
-            <a @click="refuseFriend" class="dropdown-item text is-small">
+            <a @click.stop="refuseFriend" class="dropdown-item text is-small">
               Unfriend
             </a>
             <a
@@ -67,10 +72,10 @@
     </div>
   </div>
   <div v-else class="actions">
-    <span class="icon text" @click="acceptFriend">
+    <span class="icon text is-clickable" @click="acceptFriend">
       <i class="fa-solid fa-check"></i>
     </span>
-    <span class="icon text" @click="refuseFriend">
+    <span class="icon text is-clickable" @click="refuseFriend">
       <i class="fa-solid fa-xmark"></i>
     </span>
   </div>
@@ -79,7 +84,7 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { IFriend } from '../../../../interfaces/friends';
 import { providers } from '../../../../providers';
-import { useFriendsStore } from '../../../../stores';
+import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
 import { useRouter } from 'vue-router';
@@ -93,12 +98,19 @@ const props = defineProps<{
 const router = useRouter();
 const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
+const gameStore = useGameStore();
 const { friends } = storeToRefs(firendsStore);
 const { friendsService, gameService } = providers();
 
 const isOpen = ref<boolean>(false);
-const onClickAway = (event: any) => {
+const onClickAway = () => {
   isOpen.value = false;
+};
+
+const inviteGame = () => {
+  onClickAway();
+  gameStore.inviteUser = props.friend.profile;
+  router.push({ name: 'inviteGame' });
 };
 
 const getIdGame = async () => {

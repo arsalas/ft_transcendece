@@ -1,3 +1,5 @@
+import { ETypeGame } from '../app/game/interfaces/game';
+
 export interface Vector {
   x: number;
   y: number;
@@ -28,6 +30,7 @@ export interface GamePlayer {
 }
 export interface GameData {
   id: string;
+  type: ETypeGame;
   players: GamePlayer[];
 }
 
