@@ -72,6 +72,13 @@ const routes: RouteRecordRaw[] = [
           import(/* webpackChunkName: "chat" */ '../pages/ChatsPage.vue'),
       },
       {
+        path: 'ladder',
+        meta: { title: 'Ladder' },
+        name: 'ladder',
+        component: () =>
+          import(/* webpackChunkName: "account" */ '../pages/LadderPage.vue'),
+      },
+      {
         path: 'select-game',
         meta: { title: 'Select Game' },
         name: 'selectGame',
