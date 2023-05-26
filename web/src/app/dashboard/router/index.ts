@@ -119,6 +119,13 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+	  {
+        path: 'achivements',
+        meta: { title: 'Achivements' },
+        name: 'achivements',
+        component: () =>
+          import(/* webpackChunkName: "achivements" */ '../pages/AchivementsPage.vue'),
+      },
     ],
   },
 ];

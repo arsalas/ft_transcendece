@@ -42,7 +42,7 @@
             </router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'chat' }">
+            <router-link :to="{ name: 'achivements' }">
               <span class="icon-text text">
                 <span class="icon">
                   <i class="fa-solid fa-trophy"></i>
