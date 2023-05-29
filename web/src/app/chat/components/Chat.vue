@@ -74,7 +74,7 @@
       </div>
 
       <footer>
-        <form @submit.prevent="sendMsg">
+        <form @submit.prevent="sendMsg()">
           <input
             v-model.trim="message"
             type="text"
@@ -136,7 +136,18 @@ const chats = ref<IChat[]>([
 
 const sendMsg = async () => {
   try {
-    await chatService.sendMsg(message.value, 'aramirez');
+    // console.log('El friend es: ', activeFriend!.value!.username);
+    // console.log('El mensaje es: ', message!.value!);
+    await chatService.sendMsg(message.value, activeFriend!.value!.username);
+    if (message.value.length > 0) {
+      chats.value.push({
+        login: 'amurcia-',
+        message: message.value,
+        date: '10.05.2023',
+      });
+      message.value = '';
+    }
+
     // socketNotifications.emit('accept-request', );
   } catch (error) {
     console.log(error);
