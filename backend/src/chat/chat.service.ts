@@ -112,6 +112,8 @@ export class ChatService {
     }
   }
 
+  async readMsg(roomId: string) {}
+
   // Open the chat. If not exist, create one.
   async openDirectChat(senderLogin: string, reciverId: string, msg: string) {
     try {

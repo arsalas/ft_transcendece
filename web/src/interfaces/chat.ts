@@ -1,5 +1,6 @@
 export interface IChat {
-  sender: string;
-  reciver: string;
-  type: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  userLogin: string;
 }

@@ -4,24 +4,12 @@
       <header>
         <div class="left">
           <div class="media-object">
-            <!-- <img
-          class="avatar"
-          :src="profile?.profile.avatar || profile?.profile.avatar42"
-          alt="" /> -->
-            <img
-              class="avatar"
-              src="https://cdn.intra.42.fr/users/61da00534362577f043e040efaf1a1e7/aramirez.jpg"
-              alt="" />
-            <!-- <MediaObject
+            <MediaObject
               width="2.5rem"
-              :image="friend.profile.avatar"
-              :image-fallback="friend.profile.avatar42"
-              :name="friend.profile.username"
-              :status="friend.profile.status" /> -->
-            <div class="media-text">
-              <div class="text is-large name">aramirez</div>
-              <div class="text is-small status">conectado</div>
-            </div>
+              :image="activeFriend!.avatar"
+              :image-fallback="activeFriend!.avatar42"
+              :name="activeFriend!.username"
+              :status="activeFriend!.status" />
           </div>
         </div>
 
@@ -86,7 +74,7 @@
       </div>
 
       <footer>
-        <form @submit.prevent="sendMsg()">
+        <form @submit.prevent="sendMsg">
           <input
             v-model.trim="message"
             type="text"
@@ -99,10 +87,10 @@
 </template>
 
 <script lang="ts" setup>
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { defineAsyncComponent, computed, ref } from 'vue';
 import { useChatStore } from '../../../stores';
-import { IFriend } from '../../../interfaces/friends';
+import { IFriend, IFriendProfile } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
 import { useSockets } from '../../../sockets';
 // import { FriendsService } from '../../dashboard/services';
@@ -123,6 +111,7 @@ const MediaObject = defineAsyncComponent(
 );
 
 const chatStore = useChatStore();
+const { activeFriend } = storeToRefs(chatStore);
 const message = ref<string>('');
 const isOpenChat = ref<boolean>(true);
 const isOpen = ref<boolean>(false);
@@ -147,7 +136,7 @@ const chats = ref<IChat[]>([
 
 const sendMsg = async () => {
   try {
-    await chatService.sendMsg();
+    await chatService.sendMsg(message.value, 'aramirez');
     // socketNotifications.emit('accept-request', );
   } catch (error) {
     console.log(error);

@@ -11,8 +11,12 @@ export class ChatService {
     }
   }
 
-  async sendMsg() {
+  async sendMsg(message: string, reciverId: string) {
     try {
+      return await this.http.post<void>('send/' + reciverId, {
+        message,
+        reciverId,
+      });
     } catch (error) {
       throw new Error(error as string);
     }

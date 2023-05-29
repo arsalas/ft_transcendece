@@ -4,4 +4,9 @@ export class CreateMsgDto {
   @IsString()
   @MinLength(1)
   readonly message: string;
+
+  @IsString()
+  @MinLength(1)
+  readonly reciverId: string;
+
 }

@@ -29,7 +29,7 @@
             <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
             <a
               href="#"
-              @click="chatStore.open"
+              @click="chatStore.open(friend.profile)"
               class="dropdown-item text is-small">
               Send Message
             </a>
