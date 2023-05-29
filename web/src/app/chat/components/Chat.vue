@@ -124,11 +124,11 @@ const chats = ref<IChat[]>([
   // const y no let para que no pierda la reactividad
   {
     login: 'amurcia-',
-    message: 'Hola Alberto',
+    message: 'Hola',
     date: '10.05.2023',
   },
   {
-    login: 'aramirez',
+    login: activeFriend!.value!.username,
     message: 'Hola Alicia',
     date: '11.05.2023',
   },
@@ -138,7 +138,7 @@ const sendMsg = async () => {
   try {
     // console.log('El friend es: ', activeFriend!.value!.username);
     // console.log('El mensaje es: ', message!.value!);
-    await chatService.sendMsg(message.value, activeFriend!.value!.username);
+    await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
     if (message.value.length > 0) {
       chats.value.push({
         login: 'amurcia-',

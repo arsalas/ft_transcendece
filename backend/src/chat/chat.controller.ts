@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
@@ -25,44 +26,26 @@ export class ChatController {
   @Post('send/')
   async sendMsg(
     @Request() { user }: { user: JwtPayload },
-    @Body() msgDto: CreateMsgDto,
-    reciverId: string,
+    @Body('message') msgDto: string,
+    @Query('reciverId') receiverId: string,
   ) {
-    console.log(
-      'USER: ',
-      reciverId,
-      'LOGIN: ',
-      user.login,
-      'MESSAGE: ',
-      msgDto.message,
-    );
-    return await this.chatService.sendMsg(
-      reciverId,
-      user.login,
-      msgDto.message,
-    );
+    return await this.chatService.sendMsg(user.login, receiverId, msgDto);
   }
 
   // open a direct chat
-  @Post('direct/:username')
+  @Post('direct/')
   async openDirectChat(
     @Request() { user }: { user: JwtPayload },
-    @Body() msgDto: CreateMsgDto,
-    @Param('username') reciverId: string,
+    @Body('reciverId') reciverId: string,
+    // @Param('username') reciverId: string,
   ) {
-    console.log(user, msgDto, reciverId);
-    return await this.chatService.openDirectChat(
-      reciverId,
-      user.login,
-      msgDto.message,
-    );
+    return await this.chatService.openDirectChat(reciverId, user.login);
   }
 
   // open a group chat
   @Post('group/:username')
   async openGroupChat(
     @Request() { user }: { user: JwtPayload },
-    // @Body() msgDto: CreateMsgDto,
     @Body() nameGroup: string,
     @Param('username') reciverId: string[],
   ) {

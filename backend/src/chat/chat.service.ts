@@ -40,6 +40,14 @@ export class ChatService {
   // storage the msg in direct chat
   async sendMsg(senderLogin: string, reciverId: string, msg: string) {
     try {
+      console.log(
+        'senderLogin: ',
+        senderLogin,
+        'reciverId',
+        reciverId,
+        'msg',
+        msg,
+      );
       const chat = await this.chatUserRepository.findOne({
         where: [
           {
@@ -115,7 +123,7 @@ export class ChatService {
   async readMsg(roomId: string) {}
 
   // Open the chat. If not exist, create one.
-  async openDirectChat(senderLogin: string, reciverId: string, msg: string) {
+  async openDirectChat(senderLogin: string, reciverId: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
         where: [
@@ -131,11 +139,13 @@ export class ChatService {
       // create es crear una instancia de clase
       // el save guarda, el insert no
       if (!chat) {
+        console.log('El chat NO existe');
         await this.createSaveChat(senderLogin, reciverId);
         return [];
       }
       console.log('EXISTE EL CHAT');
       await this.findOldMsg(chat.chatRoom.id);
+      console.log('HEMOS RECOGIDO LOS ULTIMOS 10 MENSAJES');
       return chat;
     } catch (error) {
       console.log(error);

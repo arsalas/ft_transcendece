@@ -29,7 +29,7 @@
             <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
             <a
               href="#"
-              @click="chatStore.open(friend.profile)"
+              @click="openDirChat()"
               class="dropdown-item text is-small">
               Send Message
             </a>
@@ -60,22 +60,30 @@ import { providers } from '../../../../providers';
 import { useChatStore, useFriendsStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
+import { ChatService } from '../../../dashboard/services';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
   friend: IFriend;
 }>();
-
 const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
 const chatStore = useChatStore();
 const { friends } = storeToRefs(firendsStore);
 const { friendsService } = providers();
+const { chatService } = providers();
 
 const isOpen = ref<boolean>(false);
 const onClickAway = (event: any) => {
   isOpen.value = false;
+};
+
+const openDirChat = async () => {
+  try {
+    chatStore.open(props.friend.profile);
+    chatService.openDirectChat(props.friend.profile.login);
+  } catch (error) {}
 };
 
 const acceptFriend = async () => {
