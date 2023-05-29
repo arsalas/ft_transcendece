@@ -22,13 +22,20 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   // send a message
-  @Post('send/:username')
+  @Post('send/')
   async sendMsg(
     @Request() { user }: { user: JwtPayload },
     @Body() msgDto: CreateMsgDto,
-    @Param('username') reciverId: string,
+    reciverId: string,
   ) {
-    console.log(user, msgDto, reciverId);
+    console.log(
+      'USER: ',
+      reciverId,
+      'LOGIN: ',
+      user.login,
+      'MESSAGE: ',
+      msgDto.message,
+    );
     return await this.chatService.sendMsg(
       reciverId,
       user.login,

@@ -13,12 +13,19 @@ export class ChatService {
 
   async sendMsg(message: string, reciverId: string) {
     try {
-      console.log('WHERE I SENND: ', 'send/' + reciverId);
-      // return await this.http.post<void>('send/' + reciverId, {
-      //   message,
-      //   reciverId,
-      // });
-      return await this.http.post<void>('send/' + reciverId, { message });
+      return await this.http.post<void>('/chat/send', { message, reciverId });
+
+      // // return await this.http.post<void>('send/' + reciverId, {
+      // //   message,
+      // //   reciverId,
+      // // });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async openDirectChat() {
+    try {
     } catch (error) {
       throw new Error(error as string);
     }
