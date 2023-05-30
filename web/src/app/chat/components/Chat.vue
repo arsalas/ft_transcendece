@@ -66,7 +66,6 @@
               <div v-if="chat.userLogin != 'amurcia-'" class="username">
                 {{ chat.userLogin }}
               </div>
-              <!-- si el usuario no soy yo, printa el nombre del login  -->
               {{ chat.message }}
             </li>
           </ul>

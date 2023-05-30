@@ -21,8 +21,11 @@ export class ChatService {
   async lastTenMsg(login: string) {
     try {
       const response = await this.http.post<IChat[]>('/chat/tenMsg', { login });
-      console.log('Ultimos 10 mensajes en la fnct lastTenmsf: ', response);
       this.chats.value = response;
+      console.log(
+        'Ultimos 10 mensajes en la fnct lastTenmsf: ',
+        this.chats.value,
+      );
     } catch (error) {
       throw new Error(error as string);
     }
