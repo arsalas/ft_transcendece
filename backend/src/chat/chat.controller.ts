@@ -47,7 +47,7 @@ export class ChatController {
     @Request() { user }: { user: JwtPayload },
     @Body('reciverId') reciverId: string,
   ) {
-    return await this.chatService.openDirectChat(reciverId, user.login);
+    return await this.chatService.lastTenMsg(reciverId, user.login);
   }
 
   // open a group chat

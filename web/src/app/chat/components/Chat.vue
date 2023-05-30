@@ -88,7 +88,13 @@
 
 <script lang="ts" setup>
 import { defineStore, storeToRefs } from 'pinia';
-import { defineAsyncComponent, computed, ref } from 'vue';
+import {
+  defineAsyncComponent,
+  computed,
+  ref,
+  defineComponent,
+  onMounted,
+} from 'vue';
 import { useChatStore } from '../../../stores';
 import { IFriend, IFriendProfile } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
@@ -115,22 +121,24 @@ const onClickAway = (event: any) => {
   isOpen.value = false;
 };
 
-const chats = ref<IChat[]>([
-  // await chatService.lastTenMsg(activeFriend!.value!.login);
-  // const y no let para que no pierda la reactividad
-  {
-    userLogin: 'amurcia-',
-    message: 'Hola',
-    isRead: false,
-    createdAt: '10.05.2023',
-  },
-  {
-    userLogin: activeFriend!.value!.username,
-    message: 'Hola Alicia',
-    isRead: false,
-    createdAt: '10.05.2023',
-  },
-]);
+const chats = ref<IChat[]>([]);
+// const y no let para que no pierda la reactividad
+// {
+//   userLogin: 'amurcia-',
+//   message: await chatService.lastTenMsg(activeFriend!.value!.login);
+//   isRead: false,
+//   createdAt: '10.05.2023',
+// },
+// {
+//   userLogin: activeFriend!.value!.username,
+//   message: 'Hola Alicia',
+//   isRead: false,
+//   createdAt: '10.05.2023',
+// },
+
+onMounted(() => {
+  chatService.lastTenMsg(activeFriend!.value!.login);
+});
 
 const sendMsg = async () => {
   try {

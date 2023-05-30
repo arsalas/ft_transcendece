@@ -1,8 +1,10 @@
+import { ref } from 'vue';
 import { HttpService } from '../../../api/http';
 import { IChat, IUser } from '../../../interfaces';
 
 export class ChatService {
   constructor(private http: HttpService) {}
+  chats = ref<IChat[]>([]);
 
   async sendMyMsg(message: string, reciverId: string) {
     try {
@@ -18,7 +20,9 @@ export class ChatService {
 
   async lastTenMsg(login: string) {
     try {
-      return await this.http.post<void>('chat/tenMsg', login);
+      const response = await this.http.post<IChat[]>('/chat/tenMsg', { login });
+      console.log('Ultimos 10 mensajes en la fnct lastTenmsf: ', response);
+      this.chats.value = response;
     } catch (error) {
       throw new Error(error as string);
     }

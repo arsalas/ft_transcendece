@@ -90,6 +90,44 @@ export class ChatService {
   }
 
   // find the last 10 messages in this chatRoom
+  // async lastTenMsg(senderLogin: string, reciverId: string) {
+  //   try {
+  //     const chat = await this.chatUserRepository.findOne({
+  //       where: [
+  //         {
+  //           user: { login: senderLogin },
+  //         },
+  //         {
+  //           user: { login: reciverId },
+  //         },
+  //       ],
+  //       relations: ['chatRoom'],
+  //     });
+  //     if (!chat) {
+  //       console.log('El chat NO existe');
+  //       return [];
+  //     }
+  //     const msgs = await this.chatMessageRepository.find({
+  //       where: {
+  //         chatRoomId: { id: chat.id },
+  //       },
+  //       // in descending order
+  //       order: {
+  //         id: 'DESC',
+  //       },
+  //       take: 10,
+  //     });
+  //     console.log(
+  //       'LAST 10 MESSAGES:',
+  //       msgs.map((msg) => msg.message),
+  //     );
+  //     console.log('MSG IN LAST 10 MSG IS: ', msgs);
+  //     return msgs;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
   async lastTenMsg(senderLogin: string, reciverId: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
@@ -103,25 +141,28 @@ export class ChatService {
         ],
         relations: ['chatRoom'],
       });
+
       if (!chat) {
         console.log('El chat NO existe');
         return [];
       }
+      const roomId = chat.chatRoom.id;
       const msgs = await this.chatMessageRepository.find({
         where: {
-          chatRoomId: { id: chat.id },
+          chatRoomId: { id: roomId },
         },
-        // in descending order
         order: {
           id: 'DESC',
         },
         take: 10,
+        // relations: ['user'],
       });
-      console.log(
-        'LAST 10 MESSAGES:',
-        msgs.map((msg) => msg.message),
-      );
-      console.log('MSG IN LAST 10 MSG IS: ', msgs);
+
+      console.log('LAST 10 MESSAGES:');
+      msgs.forEach((msg) => {
+        console.log('User ID:', msg.userId);
+        console.log('Message:', msg.message);
+      });
       return msgs;
     } catch (error) {
       console.log(error);
@@ -140,11 +181,12 @@ export class ChatService {
           id: 'DESC',
         },
         take: 10,
+        // relations: ['user'],
       });
-      console.log(
-        'LAST 10 MESSAGES:',
-        msgs.map((msg) => msg.message),
-      );
+      // console.log(
+      //   'FIND OLD MSG:',
+      //   msgs.map((msg) => msg.message),
+      // );
       return msgs;
     } catch (error) {
       console.log(error);
@@ -173,8 +215,7 @@ export class ChatService {
         return [];
       }
       console.log('EXISTE EL CHAT');
-      await this.findOldMsg(chat.chatRoom.id);
-      console.log('HEMOS RECOGIDO LOS ULTIMOS 10 MENSAJES');
+      // await this.findOldMsg(chat.chatRoom.id);
       return chat;
     } catch (error) {
       console.log(error);
