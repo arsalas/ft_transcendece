@@ -130,7 +130,14 @@ onMounted(() => {
 
 const insertStartingMsg = async () => {
   try {
-    chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
+    const chatData = await chatService.lastTenMsg(activeFriend!.value!.login);
+    chats.value = chatData.map((chat) => ({
+      userId: { login: chat.userLogin },
+      message: chat.message,
+      isRead: false,
+      createdAt: '',
+      userLogin: '', // Omitir si no está disponible en los datos recibidos
+    }));
   } catch (error) {
     console.log(error);
   }

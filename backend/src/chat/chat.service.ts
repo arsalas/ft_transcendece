@@ -12,6 +12,7 @@ import { ChatMessage, ChatRoom, ChatUser } from './entities';
 import { JwtPayload } from 'src/auth/interfaces';
 import { User } from 'src/user/entities';
 import crypto from 'crypto';
+
 // import bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -89,45 +90,6 @@ export class ChatService {
     console.log('NUEVO CHAT CREADO');
   }
 
-  // find the last 10 messages in this chatRoom
-  // async lastTenMsg(senderLogin: string, reciverId: string) {
-  //   try {
-  //     const chat = await this.chatUserRepository.findOne({
-  //       where: [
-  //         {
-  //           user: { login: senderLogin },
-  //         },
-  //         {
-  //           user: { login: reciverId },
-  //         },
-  //       ],
-  //       relations: ['chatRoom'],
-  //     });
-  //     if (!chat) {
-  //       console.log('El chat NO existe');
-  //       return [];
-  //     }
-  //     const msgs = await this.chatMessageRepository.find({
-  //       where: {
-  //         chatRoomId: { id: chat.id },
-  //       },
-  //       // in descending order
-  //       order: {
-  //         id: 'DESC',
-  //       },
-  //       take: 10,
-  //     });
-  //     console.log(
-  //       'LAST 10 MESSAGES:',
-  //       msgs.map((msg) => msg.message),
-  //     );
-  //     console.log('MSG IN LAST 10 MSG IS: ', msgs);
-  //     return msgs;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   async lastTenMsg(senderLogin: string, reciverId: string) {
     try {
       const chat = await this.chatUserRepository.findOne({
@@ -146,9 +108,12 @@ export class ChatService {
         console.log('El chat NO existe');
         return [];
       }
+
       const roomId = chat.chatRoom.id;
+
       const msgs = await this.chatMessageRepository
         .createQueryBuilder('message')
+        .leftJoinAndSelect('message.userId', 'user') // Cargar la relación 'userId' con la entidad 'User'
         .where('message.chatRoomId = :roomId', { roomId })
         .orderBy('message.createdAt', 'DESC')
         .take(10)
@@ -156,9 +121,10 @@ export class ChatService {
 
       console.log('LAST 10 MESSAGES:');
       msgs.forEach((msg) => {
-        console.log('User ID:', msg.userId);
+        console.log('User ID:', msg.userId.login); // Acceder correctamente a 'login' a través de la relación 'userId'
         console.log('Message:', msg.message);
       });
+
       return msgs;
     } catch (error) {
       console.log(error);
@@ -177,12 +143,7 @@ export class ChatService {
           id: 'DESC',
         },
         take: 10,
-        // relations: ['user'],
       });
-      // console.log(
-      //   'FIND OLD MSG:',
-      //   msgs.map((msg) => msg.message),
-      // );
       return msgs;
     } catch (error) {
       console.log(error);
