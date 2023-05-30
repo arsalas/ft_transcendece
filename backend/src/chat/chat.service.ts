@@ -40,14 +40,6 @@ export class ChatService {
   // storage the msg in direct chat
   async sendMsg(senderLogin: string, reciverId: string, msg: string) {
     try {
-      console.log(
-        'senderLogin: ',
-        senderLogin,
-        'reciverId',
-        reciverId,
-        'msg',
-        msg,
-      );
       const chat = await this.chatUserRepository.findOne({
         where: [
           {
@@ -98,6 +90,45 @@ export class ChatService {
   }
 
   // find the last 10 messages in this chatRoom
+  async lastTenMsg(senderLogin: string, reciverId: string) {
+    try {
+      const chat = await this.chatUserRepository.findOne({
+        where: [
+          {
+            user: { login: senderLogin },
+          },
+          {
+            user: { login: reciverId },
+          },
+        ],
+        relations: ['chatRoom'],
+      });
+      if (!chat) {
+        console.log('El chat NO existe');
+        return [];
+      }
+      const msgs = await this.chatMessageRepository.find({
+        where: {
+          chatRoomId: { id: chat.id },
+        },
+        // in descending order
+        order: {
+          id: 'DESC',
+        },
+        take: 10,
+      });
+      console.log(
+        'LAST 10 MESSAGES:',
+        msgs.map((msg) => msg.message),
+      );
+      console.log('MSG IN LAST 10 MSG IS: ', msgs);
+      return msgs;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // find the last 10 messages in this chatRoom
   async findOldMsg(roomId: string) {
     try {
       const msgs = await this.chatMessageRepository.find({
@@ -119,8 +150,6 @@ export class ChatService {
       console.log(error);
     }
   }
-
-  async readMsg(roomId: string) {}
 
   // Open the chat. If not exist, create one.
   async openDirectChat(senderLogin: string, reciverId: string) {

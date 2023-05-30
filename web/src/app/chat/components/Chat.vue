@@ -61,10 +61,10 @@
           <ul>
             <li
               class="bubble"
-              :class="chat.login == 'amurcia-' ? 'me' : 'other'"
+              :class="chat.userLogin == 'amurcia-' ? 'me' : 'other'"
               v-for="chat in chats">
-              <div v-if="chat.login != 'amurcia-'" class="username">
-                {{ chat.login }}
+              <div v-if="chat.userLogin != 'amurcia-'" class="username">
+                {{ chat.userLogin }}
               </div>
               <!-- si el usuario no soy yo, printa el nombre del login  -->
               {{ chat.message }}
@@ -93,18 +93,13 @@ import { useChatStore } from '../../../stores';
 import { IFriend, IFriendProfile } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
 import { useSockets } from '../../../sockets';
+import { IChat } from '../../../interfaces';
 // import { FriendsService } from '../../dashboard/services';
 const { chatService } = providers();
 
 const Avatar = defineAsyncComponent(
   () => import('../../common/components/images/Avatar.vue'),
 );
-
-interface IChat {
-  login: string;
-  message: string;
-  date: string;
-}
 
 const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
@@ -121,16 +116,19 @@ const onClickAway = (event: any) => {
 };
 
 const chats = ref<IChat[]>([
+  // await chatService.lastTenMsg(activeFriend!.value!.login);
   // const y no let para que no pierda la reactividad
   {
-    login: 'amurcia-',
+    userLogin: 'amurcia-',
     message: 'Hola',
-    date: '10.05.2023',
+    isRead: false,
+    createdAt: '10.05.2023',
   },
   {
-    login: activeFriend!.value!.username,
+    userLogin: activeFriend!.value!.username,
     message: 'Hola Alicia',
-    date: '11.05.2023',
+    isRead: false,
+    createdAt: '10.05.2023',
   },
 ]);
 
@@ -141,9 +139,10 @@ const sendMsg = async () => {
     await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
     if (message.value.length > 0) {
       chats.value.push({
-        login: 'amurcia-',
+        isRead: false,
         message: message.value,
-        date: '10.05.2023',
+        createdAt: '10.05.2023',
+        userLogin: 'amurcia-',
       });
       message.value = '';
     }
