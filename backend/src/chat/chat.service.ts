@@ -147,16 +147,12 @@ export class ChatService {
         return [];
       }
       const roomId = chat.chatRoom.id;
-      const msgs = await this.chatMessageRepository.find({
-        where: {
-          chatRoomId: { id: roomId },
-        },
-        order: {
-          id: 'DESC',
-        },
-        take: 10,
-        // relations: ['user'],
-      });
+      const msgs = await this.chatMessageRepository
+        .createQueryBuilder('message')
+        .where('message.chatRoomId = :roomId', { roomId })
+        .orderBy('message.createdAt', 'DESC')
+        .take(10)
+        .getMany();
 
       console.log('LAST 10 MESSAGES:');
       msgs.forEach((msg) => {
