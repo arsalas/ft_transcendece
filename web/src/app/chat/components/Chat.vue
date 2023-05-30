@@ -121,31 +121,16 @@ const onClickAway = (event: any) => {
 };
 
 const chats = ref<IChat[]>([]);
-// const y no let para que no pierda la reactividad
-// {
-//   userLogin: 'amurcia-',
-//   message: await chatService.lastTenMsg(activeFriend!.value!.login);
-//   isRead: false,
-//   createdAt: '10.05.2023',
-// },
-// {
-//   userLogin: activeFriend!.value!.username,
-//   message: 'Hola Alicia',
-//   isRead: false,
-//   createdAt: '10.05.2023',
-// },
 
 onMounted(() => {
-  //chatService.lastTenMsg(activeFriend!.value!.login);
-  insertStartingMsg();
+  try {
+    insertStartingMsg();
+  } catch (error) {}
 });
 
 const insertStartingMsg = async () => {
   try {
-    // console.log('El friend es: ', activeFriend!.value!.username);
-    // console.log('El mensaje es: ', message!.value!);
-    const response = await chatService.lastTenMsg(activeFriend!.value!.login);
-    chats.value = response;
+    chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
   } catch (error) {
     console.log(error);
   }
