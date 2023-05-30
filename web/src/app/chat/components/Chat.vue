@@ -136,13 +136,23 @@ const chats = ref<IChat[]>([]);
 // },
 
 onMounted(() => {
-  chatService.lastTenMsg(activeFriend!.value!.login);
+  //chatService.lastTenMsg(activeFriend!.value!.login);
+  insertStartingMsg();
 });
 
-const sendMsg = async () => {
+const insertStartingMsg = async () => {
   try {
     // console.log('El friend es: ', activeFriend!.value!.username);
     // console.log('El mensaje es: ', message!.value!);
+    const response = await chatService.lastTenMsg(activeFriend!.value!.login);
+    chats.value = response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const sendMsg = async () => {
+  try {
     await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
     if (message.value.length > 0) {
       chats.value.push({

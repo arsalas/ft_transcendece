@@ -26,6 +26,7 @@ export class ChatService {
         'Ultimos 10 mensajes en la fnct lastTenmsf: ',
         this.chats.value,
       );
+      return response;
     } catch (error) {
       throw new Error(error as string);
     }
