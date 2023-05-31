@@ -25,7 +25,7 @@ export class ChatMessage {
   })
   public createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.login, {
+  @ManyToOne(() => User, {
     onDelete: 'CASCADE',
     // eager: true,
   })

@@ -61,9 +61,10 @@
           <ul>
             <li
               class="bubble"
-              :class="chat.userLogin == 'amurcia-' ? 'me' : 'other'"
-              v-for="chat in chats">
-              <div v-if="chat.userLogin != 'amurcia-'" class="username">
+              :class="chat.userLogin === 'amurcia-' ? 'me' : 'other'"
+              v-for="(chat, index) in chats"
+              :key="index">
+              <div v-if="chat.userLogin !== 'amurcia-'" class="username">
                 {{ chat.userLogin }}
               </div>
               {{ chat.message }}
@@ -129,18 +130,25 @@ onMounted(() => {
 
 const insertStartingMsg = async () => {
   try {
-    const chatData = await chatService.lastTenMsg(activeFriend!.value!.login);
-    chats.value = chatData.map((chat) => ({
-      userId: { login: chat.login },
-      message: chat.message,
-      isRead: true,
-      createdAt: chat.createdAt,
-      userLogin: chat.userLogin,
-    }));
+    chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
+    console.log('CHATS: ');
+    console.log(chats.value);
   } catch (error) {
     console.log(error);
   }
 };
+
+// const chatData = await chatService.lastTenMsg(activeFriend!.value!.login);
+// chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
+// console.log('CHATS IS: ');
+// console.log(chats.value);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// user.login
+
 // chats.value = chatData.map((chat) => ({
 //   userId: { login: chat.userLogin },
 //   message: chat.message,
