@@ -99,7 +99,6 @@ import { IFriend, IFriendProfile } from '../../../interfaces/friends';
 import { providers } from '../../../providers';
 import { useSockets } from '../../../sockets';
 import { IChat } from '../../../interfaces';
-// import { FriendsService } from '../../dashboard/services';
 const { chatService } = providers();
 
 const Avatar = defineAsyncComponent(
@@ -132,16 +131,33 @@ const insertStartingMsg = async () => {
   try {
     const chatData = await chatService.lastTenMsg(activeFriend!.value!.login);
     chats.value = chatData.map((chat) => ({
-      userId: { login: chat.userLogin },
+      userId: { login: chat.login },
       message: chat.message,
-      isRead: false,
-      createdAt: '',
-      userLogin: '', // Omitir si no está disponible en los datos recibidos
+      isRead: true,
+      createdAt: chat.createdAt,
+      userLogin: chat.userLogin,
     }));
   } catch (error) {
     console.log(error);
   }
 };
+// chats.value = chatData.map((chat) => ({
+//   userId: { login: chat.userLogin },
+//   message: chat.message,
+//   isRead: true,
+//   createdAt: chat.createdAt,
+//   userLogin: chat.userLogin, // Omitir si no está disponible en los datos recibidos
+// }));
+// console.log(
+//   'CHATS HAVE: ',
+//   (chats.value = chatData.map((chat) => ({
+//     userId: { login: chat.userLogin },
+//     message: chat.message,
+//     isRead: true,
+//     createdAt: chat.createdAt,
+//     userLogin: chat.userLogin, // Omitir si no está disponible en los datos recibidos
+//   }))),
+// );
 
 const sendMsg = async () => {
   try {
