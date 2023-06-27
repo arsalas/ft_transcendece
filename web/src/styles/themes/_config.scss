@@ -19,8 +19,8 @@
   --color-offline-0: #888;
   --color-offline-1: #333;
 
-  --color-out-0: #fd033f;
-  --color-out-1: #a50141;
+  --color-away-0: #fd033f;
+  --color-away-1: #a50141;
 
   --color-game-0: #1f7fd3;
   --color-game-1: #0220eb;
@@ -36,8 +36,10 @@
   //BUTTONS
   --border-radius-btn: 4px;
 
-  // CHAT BUBBLE
-  --border-radius-chat: 10px;
+  // HEADERS
+  --header-h: 59px;
+  --subheader-h: 50px;
+  --aside-w: 17rem;
 
   // THEMES
   --theme-purple: #c252e1;

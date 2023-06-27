@@ -48,4 +48,20 @@ export class FriendsController {
   ) {
     return await this.friendsService.unfriend(user.login, userId);
   }
+
+  @Post('block/:userId')
+  async blockUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('userId') userId: string,
+  ) {
+    return await this.friendsService.blockUser(user.login, userId);
+  }
+
+  @Delete('block/:userId')
+  async unblockUser(
+    @Request() { user }: { user: JwtPayload },
+    @Param('userId') userId: string,
+  ) {
+    return await this.friendsService.unblockUser(user.login, userId);
+  }
 }

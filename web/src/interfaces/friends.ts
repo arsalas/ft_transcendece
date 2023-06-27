@@ -1,6 +1,7 @@
 export interface IFriend {
   activedAt: string;
-  isSender:boolean;
+  isSender: boolean;
+  isBlock: boolean;
   profile: IFriendProfile;
 }
 

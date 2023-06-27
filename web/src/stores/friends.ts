@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { IFriend,IFriendProfile } from '../interfaces/friends';
+import { IFriend, IFriendProfile } from '../interfaces/friends';
 
 export const useFriendsStore = defineStore('friends', () => {
   const friends = ref<IFriend[]>([]);
@@ -21,5 +21,9 @@ export const useFriendsStore = defineStore('friends', () => {
     friends.value.filter((f) => !f.activedAt && f.isSender),
   );
 
-  return { friends, online, offline, pending, sending };
+  const block = computed<IFriend[]>(() =>
+    friends.value.filter((f) => f.isBlock),
+  );
+
+  return { friends, online, offline, pending, sending, block };
 });

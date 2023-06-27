@@ -1,3 +1,4 @@
 export * from './user';
 export * from './userProfile.interface';
-export * from './chat';
+export * from './game';
+export * from './friends';

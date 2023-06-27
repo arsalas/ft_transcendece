@@ -1,34 +1,38 @@
 import { Manager, Socket } from 'socket.io-client';
-import { useAuthStore, useFriendsStore } from '../stores';
+import { useAuthStore, useFriendsStore, useGameStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { providers } from '../providers';
+import { CONFIG } from '../config';
 
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
 
-const manager = new Manager('http://localhost:3000/socket.io/socket.io.js', {
-  extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
-});
+let manager: Manager;
 
 let socketNotifications: Socket;
 
 export const useSockets = () => {
   const friendsStore = useFriendsStore();
+  const gameStore = useGameStore();
   const { friends } = storeToRefs(friendsStore);
+  const { invitations } = storeToRefs(gameStore);
 
   const connectToServerNotifications = () => {
+    manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
+      extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
+    });
     socketNotifications = manager.socket('/notifications');
     addListenersNotifications();
   };
 
   const addListenersNotifications = () => {
     socketNotifications.on('connect', () => {
-      console.log('connected');
+      console.log('notifications connected');
     });
 
     // Escucha el evento cuando el cliente se desconecta
     socketNotifications.on('disconnect', () => {
-      console.log('disconnect');
+      console.log('notifications disconnect');
     });
 
     socketNotifications.on('request-recived', (payload: any) => {
@@ -38,6 +42,11 @@ export const useSockets = () => {
     socketNotifications.on('refresh-friends', async () => {
       const { friendsService } = providers();
       friendsStore.friends = await friendsService.get();
+    });
+
+    socketNotifications.on('invite-game', async (payload: any) => {
+      console.log('INVITED');
+      invitations.value.push(payload);
     });
 
     // Escucha el evento clients-updated

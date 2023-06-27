@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Friend } from './entities/friend.entity';
+import { Friend, Block } from './entities';
 import { AcceptFriendDto, CreateFriendDto } from './dto';
 import { Profile } from 'src/user/entities';
 import { UnfriendDto } from './dto/unfriend.dto';
@@ -16,6 +16,8 @@ export class FriendsService {
   constructor(
     @InjectRepository(Friend)
     private friendRepository: Repository<Friend>,
+    @InjectRepository(Block)
+    private blockRepository: Repository<Block>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
   ) {}
@@ -55,11 +57,36 @@ export class FriendsService {
       ],
     });
 
-    return friends.map((friend) => ({
-      activedAt: friend.activedAt,
-      isSender: friend.sender.login == login,
-      profile: friend.reciver.login == login ? friend.sender : friend.reciver,
-    }));
+    const block = await this.blockRepository.find({
+      relations: { user: true, blockUser: true },
+      where: {
+        user: { login },
+      },
+    });
+
+    return friends.map((friend) => {
+      const isSender = friend.sender.login == login;
+      let isBlock: boolean = false;
+      if (isSender) {
+        if (
+          block.findIndex((b) => b.blockUser.login == friend.reciver.login) > -1
+        )
+          isBlock = true;
+      } else {
+        if (
+          block.findIndex((b) => b.blockUser.login == friend.sender.login) > -1
+        )
+          isBlock = true;
+      }
+
+      const data = {
+        activedAt: friend.activedAt,
+        isSender,
+        profile: friend.reciver.login == login ? friend.sender : friend.reciver,
+        isBlock,
+      };
+      return data;
+    });
   }
 
   /**
@@ -148,5 +175,34 @@ export class FriendsService {
     if (!friend) throw new BadRequestException('User not found');
     await this.friendRepository.remove(friend);
     return { msg: `${login} unfriend ${userId}` };
+  }
+
+  async blockUser(login: string, userId: string) {
+    try {
+      const user = this.blockRepository.create({
+        user: { login },
+        blockUser: { login: userId },
+      });
+      return await this.blockRepository.save(user);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Unexpected error');
+    }
+  }
+
+  async unblockUser(login: string, userId: string) {
+    try {
+      console.log({
+        user: { login },
+        blockUser: { login: userId },
+      });
+      return await this.blockRepository.delete({
+        user: { login },
+        blockUser: { login: userId },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Unexpected error');
+    }
   }
 }

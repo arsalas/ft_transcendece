@@ -13,6 +13,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { CommonModule } from 'src/common/common.module';
 import { Api42Service, TfaService } from 'src/common/services';
 import { ConfigModule } from '@nestjs/config';
+import { GameModule } from 'src/game/game.module';
 // import { PassportModule } from '@nestjs/passport';
 
 @Module({
@@ -30,6 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     CommonModule,
     ConfigModule,
+    GameModule,
   ],
   controllers: [AuthController],
   providers: [

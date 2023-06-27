@@ -4,7 +4,7 @@ import {
   EditProfieService,
   ProfileService,
   FriendsService,
-  ChatService,
+  GameService,
 } from '../app/dashboard/services';
 
 const http = new Http();
@@ -13,7 +13,7 @@ const editProfileService = new EditProfieService(http);
 const profileService = new ProfileService(http);
 const authService = new AuthService(http);
 const friendsService = new FriendsService(http);
-const chatService = new ChatService(http);
+const gameService = new GameService(http);
 
 export const providers = () => {
   return {
@@ -22,6 +22,6 @@ export const providers = () => {
     profileService,
     authService,
     friendsService,
-    chatService,
+    gameService,
   };
 };

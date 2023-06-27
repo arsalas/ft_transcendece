@@ -1,3 +1,11 @@
+.modal-close {
+  background-color: var(--color-primary);
+  transition: 300ms;
+  &:hover {
+    background-color: var(--color-primary-hover);
+  }
+}
+
 .button {
   font-weight: 500;
   transition: 300ms;
@@ -28,6 +36,7 @@
     // filter: grayscale(80%);
     // background-color: rgba(var(--color-primary), 0.2);
     color: var(--color-text-btn);
+    border: var(--border);
   }
 
   &:focus {

@@ -6,7 +6,7 @@
     :name="friend.profile.username"
     :status="friend.profile.status" />
   <div v-if="friend.activedAt" class="actions">
-    <div class="badge is-primary">
+    <div class="badge is-primary" v-if="false">
       <span class="text is-small"> 1 </span>
     </div>
 
@@ -26,29 +26,56 @@
           class="dropdown-menu"
           role="menu">
           <div class="dropdown-content">
-            <a href="#" class="dropdown-item text is-small"> Invite to Game </a>
             <a
-              href="#"
-              @click="openDirChat()"
+              v-if="friend.profile.status == 'online'"
+              @click.stop="inviteGame"
               class="dropdown-item text is-small">
-              Send Message
+              Invite to Game
             </a>
-            <a href="#" class="dropdown-item text is-small"> Spectate Game </a>
-            <a href="#" class="dropdown-item text is-small"> View Profile </a>
-            <a @click="refuseFriend" class="dropdown-item text is-small">
+            <a href="#" class="dropdown-item text is-small"> Send Message </a>
+            <a
+              v-if="friend.profile.status == 'game'"
+              @click="getIdGame"
+              href="#"
+              class="dropdown-item text is-small">
+              Spectate Game
+            </a>
+            <router-link
+              @click.stop="isOpen = false"
+              :to="{
+                name: 'profileUser',
+                params: { username: friend.profile.username },
+              }"
+              class="dropdown-item text is-small">
+              View Profile
+            </router-link>
+            <a @click.stop="refuseFriend" class="dropdown-item text is-small">
               Unfriend
             </a>
-            <a href="#" class="dropdown-item text is-small"> Block </a>
+            <a
+              @click="unblockUser"
+              v-if="friend.isBlock"
+              href="#"
+              class="dropdown-item text is-small">
+              Unblock
+            </a>
+            <a
+              @click="blockUser"
+              v-else
+              href="#"
+              class="dropdown-item text is-small">
+              Block
+            </a>
           </div>
         </div>
       </Transition>
     </div>
   </div>
   <div v-else class="actions">
-    <span class="icon" @click="acceptFriend">
+    <span class="icon text is-clickable" @click="acceptFriend">
       <i class="fa-solid fa-check"></i>
     </span>
-    <span class="icon" @click="refuseFriend">
+    <span class="icon text is-clickable" @click="refuseFriend">
       <i class="fa-solid fa-xmark"></i>
     </span>
   </div>
@@ -57,32 +84,39 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { IFriend } from '../../../../interfaces/friends';
 import { providers } from '../../../../providers';
-import { useChatStore, useFriendsStore } from '../../../../stores';
+import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
-import { ChatService } from '../../../dashboard/services';
+import { useRouter } from 'vue-router';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
   friend: IFriend;
 }>();
+
+const router = useRouter();
 const { socketNotifications } = useSockets();
 const firendsStore = useFriendsStore();
-const chatStore = useChatStore();
+const gameStore = useGameStore();
 const { friends } = storeToRefs(firendsStore);
-const { friendsService } = providers();
-const { chatService } = providers();
+const { friendsService, gameService } = providers();
 
 const isOpen = ref<boolean>(false);
-const onClickAway = (event: any) => {
+const onClickAway = () => {
   isOpen.value = false;
 };
 
-const openDirChat = async () => {
+const inviteGame = () => {
+  onClickAway();
+  gameStore.inviteUser = props.friend.profile;
+  router.push({ name: 'inviteGame' });
+};
+
+const getIdGame = async () => {
   try {
-    chatStore.open(props.friend.profile);
-    chatService.openDirectChat(props.friend.profile.login);
+    const game = await gameService.getActiveGameId(props.friend.profile.login);
+    router.push({ name: 'online', params: { id: game.id } });
   } catch (error) {}
 };
 
@@ -103,6 +137,20 @@ const refuseFriend = async () => {
     socketNotifications.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
+
+const blockUser = async () => {
+  try {
+    await friendsService.block(props.friend.profile.login);
+    props.friend.isBlock = true;
+  } catch (error) {}
+};
+
+const unblockUser = async () => {
+  try {
+    await friendsService.unblock(props.friend.profile.login);
+    props.friend.isBlock = false;
+  } catch (error) {}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -117,7 +165,11 @@ const refuseFriend = async () => {
   color: var(--text-color);
   border: none;
   cursor: pointer;
-  padding: 0.4rem;
+  padding: 0rem;
   aspect-ratio: 1;
+}
+
+.icon.text:hover {
+  color: rgba(var(--color-primary-rgb), 0.5);
 }
 </style>

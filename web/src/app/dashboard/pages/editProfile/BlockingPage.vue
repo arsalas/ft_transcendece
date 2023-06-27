@@ -8,33 +8,40 @@
         Cyberpong.
       </p>
 
-      <form class="mt-5">
+      <form class="mt-5" @submit.prevent="handleSubmit">
         <label class="label text"
           >Search for a user’s name you wish to block</label
         >
         <div class="field is-grouped">
           <p class="control is-expanded">
-            <input class="input" type="text" placeholder="Search username" />
+            <input
+              v-model.trim="userBlock"
+              class="input"
+              type="text"
+              placeholder="Search username" />
           </p>
           <p class="control">
-            <a class="button is-primary"> Block </a>
+            <button class="button is-primary">Block</button>
           </p>
         </div>
       </form>
 
       <div class="mt-4 text">Blocked Users</div>
 
+      <!-- TODO preparar con componente -->
       <div class="panel mt-3">
         <header class="text">USER</header>
         <div class="body">
-          <div v-for="i in 5" class="user">
-            <div class="media">
-              <img
-                src="https://cdnb.artstation.com/p/users/avatars/000/272/313/medium/947dd2575788d5366e38f91fc1deed59.jpg?1681406726" />
-              <div class="username text">aramirez</div>
-            </div>
+          <div v-for="user in block" class="user">
+            <MediaObject
+              :image="user.profile.avatar"
+              :image-fallback="user.profile.avatar42"
+              :name="user.profile.username"
+              width="2.2rem" />
 
-            <div class="button is-primary is-small">Unblock</div>
+            <div @click="unblockUser(user)" class="button is-primary is-small">
+              Unblock
+            </div>
           </div>
         </div>
       </div>
@@ -45,20 +52,52 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { useUserStore } from '../../../../stores';
-import { useForm } from '../../../common/composables';
+import { useUserStore, useFriendsStore } from '../../../../stores';
+import { useForm, useNotifications } from '../../../common/composables';
+import { providers } from '../../../../providers';
+import { IFriend } from '../../../../interfaces/friends';
+
+const notifications = useNotifications();
 
 const Box = defineAsyncComponent(
   () => import('../../../common/components/ui/Box.vue'),
 );
+const MediaObject = defineAsyncComponent(
+  () => import('../../../common/components/MediaObject.vue'),
+);
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+const friendStore = useFriendsStore();
+const { block, friends } = storeToRefs(friendStore);
 
-const formRef = ref(null);
-const image = ref(user.value.avatar || user.value.avatar42);
+const { friendsService } = providers();
 
-const { createImageFromInput } = useForm();
+const userBlock = ref<string>('');
+
+const handleSubmit = async () => {
+  try {
+    const userFind = friends.value.findIndex(
+      (u) => u.profile.username == userBlock.value,
+    );
+    if (userFind == -1) {
+      notifications.error("User don't exist");
+      return;
+    }
+    await friendsService.block(friends.value[userFind].profile.login);
+    friends.value[userFind].isBlock = true;
+    userBlock.value = '';
+  } catch (error) {
+    notifications.error('Something is wrong');
+  }
+};
+
+const unblockUser = async (user: IFriend) => {
+  try {
+    await friendsService.unblock(user.profile.login);
+    user.isBlock = false;
+  } catch (error) {}
+};
 </script>
 <style lang="scss" scoped>
 .panel {

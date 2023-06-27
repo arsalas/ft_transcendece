@@ -10,18 +10,11 @@
       <form @submit.prevent="handleSubmit">
         <div class="field">
           <div class="control">
-            <input
-              ref="codeRef"
-              v-model.trim="code"
-              class="input"
-              placeholder="code" />
+            <input ref="codeRef" v-model.trim="code" class="input" placeholder="code" />
           </div>
         </div>
         <div class="field">
-          <button
-            type="submit"
-            class="button is-primary is-fullwidth"
-            :class="{ 'is-loading': isLoading }">
+          <button type="submit" class="button is-primary is-fullwidth" :class="{ 'is-loading': isLoading }">
             Send
           </button>
         </div>
@@ -44,7 +37,7 @@ import { storeToRefs } from 'pinia';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
-  () => import('../../common/components/Box.vue'),
+  () => import('../../common/components/ui/Box.vue'),
 );
 
 // STORES

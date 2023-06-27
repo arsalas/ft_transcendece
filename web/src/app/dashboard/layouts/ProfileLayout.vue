@@ -1,49 +1,46 @@
 <template>
-  <!-- Necesita tener un RouterView por ser un layout
-    Lo que este en routerview es lo que se mantiene -->
-  <!-- aqui solo la barrita de arriba -->
-  <header class="sub-header">
-    <nav>
-      <ul class="nav-items">
-        <li class="text">
-          <router-link
-            :to="{
-              name: 'overview',
-              params: { username: route.params.username },
-            }">
-            OVERVIEW
-          </router-link>
-        </li>
-        <li class="text">
-          <router-link
-            :to="{
-              name: 'history',
-              params: { username: route.params.username },
-            }">
-            HISTORY
-          </router-link>
-        </li>
-        <li class="text">FRIENDS</li>
-      </ul>
-    </nav>
-    <div class="actions">
-      <div class="control">
-        <form @submit.prevent="handleSubmit">
-          <input
-            class="input"
-            v-model.trim="userSearch"
-            placeholder="Search user..." />
-        </form>
-      </div>
-    </div>
-  </header>
   <Loader v-if="isLoading" is-fullsize />
-  <RouterView v-else />
-  <!-- TODO PONER DESPUES v-model.trim="user" -->
+  <main
+    v-else
+    :style="`background-image: linear-gradient(
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 1)
+    ),
+    url(${profile!.profile.background});
+ `">
+    <Subheader :items="items">
+      <template v-slot:left>
+        <div class="player-info">
+          <Avatar
+            :src="profile!.profile.avatar!"
+            :fallback="profile!.profile.avatar42"
+            width="2.5rem" />
+          <div class="text ml-4">
+            {{ profile?.profile.username }}
+          </div>
+        </div>
+        <div class="corner-border">
+          <div class="corner"></div>
+        </div>
+      </template>
+      <template v-slot:right>
+        <div class="control">
+          <form @submit.prevent="handleSubmit">
+            <input
+              class="input"
+              v-model.trim="userSearch"
+              placeholder="Search user..." />
+          </form>
+        </div>
+      </template>
+    </Subheader>
+
+    <RouterView />
+  </main>
 </template>
 
 <script lang="ts" setup>
-// prevent para que no se recargue la pagina
 import { defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useProfileStore } from '../../../stores';
@@ -51,24 +48,58 @@ import { useRoute, useRouter } from 'vue-router';
 import { providers } from '../../../providers';
 import { useLoading } from '../../common/composables';
 
-const userSearch = ref<string>('');
-
-const handleSubmit = () => {
-  router.push({ name: 'profileUser', params: { username: userSearch.value } }); // vamos a index.ts de dashboard/router para saber donde hay que ir (string)
-};
+// COMPONENTES
+const Subheader = defineAsyncComponent(
+  () => import('../../common/components/ui/Subheader.vue'),
+);
 
 const Loader = defineAsyncComponent(
   () => import('../../common/components/Loader.vue'),
 );
 
+const Avatar = defineAsyncComponent(
+  () => import('../../common/components/images/Avatar.vue'),
+);
+
+// COMPOSABLES
+const route = useRoute();
+const router = useRouter();
 const { isLoading } = useLoading();
+isLoading.value = true;
+
+// STORES
 const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore);
 
-isLoading.value = true;
+// PROVIDERS
+const { profileService } = providers();
 
-const route = useRoute();
-const router = useRouter();
+const getNavItems = () => [
+  {
+    name: 'overview',
+    route: {
+      path: 'overview',
+      params: { username: route.params.username },
+    },
+  },
+  {
+    name: 'match history',
+    route: {
+      path: 'history',
+      params: { username: route.params.username },
+    },
+  },
+];
+
+// VARIABLES
+const items = ref(getNavItems());
+
+const userSearch = ref<string>('');
+
+// FUNCIONES
+const handleSubmit = () => {
+  router.push({ name: 'profileUser', params: { username: userSearch.value } }); // vamos a index.ts de dashboard/router para saber donde hay que ir (string)
+};
 
 const loadProfileUser = async () => {
   // Pedir la informacion del usuario
@@ -84,17 +115,12 @@ const loadProfileUser = async () => {
 watch(
   () => route.params.username,
   (newValue) => {
+    if (!newValue) return;
     userSearch.value = '';
     loadProfileUser();
+    items.value = getNavItems();
   },
 );
-
-// PROVIDERS
-const { profileService } = providers();
-
-// watch(()=>{})
-
-// Pedir informacion al backend y guardarla en el store
 
 onMounted(async () => {
   loadProfileUser();
@@ -102,51 +128,42 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.overview {
-  & ul {
-    border: 1px solid var(--border-color);
+main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-h));
+  background-position: center;
+  background-size: contain;
+  //   background-repeat: repeat-x;
+}
 
-    & li {
-      background-color: var(--bg-dark-1);
-
-      font-weight: 300;
-
-      border-top: var(--border);
-
-      &:first-child {
-        border-top: 0px;
-      }
-
-      & a {
-        // border-left: 0.3rem solid var(--border-color);
-        padding: 0.6rem 1.2rem;
-        width: 100%;
-        height: 100%;
-        display: block;
-
-        &:hover {
-          background-color: var(--bg-dark-0);
-        }
-      }
-    }
+.player-info {
+  background-color: var(--bg-dark-2);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0rem 2rem;
+  border-bottom: var(--border);
+  min-width: 20vw;
+  & img {
+    border: solid 0.2rem var(--border-color);
   }
 }
-.sub-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  height: 50px;
-  background-color: var(--bg-dark-1);
-  border-bottom: var(--border);
-  .nav-items {
-    display: flex;
-    justify-content: center;
-  }
 
-  .nav-items li {
-    margin-right: 2rem;
-    font-weight: bold;
-  }
+.corner {
+  width: var(--subheader-h);
+  border-bottom: var(--subheader-h) solid transparent;
+  border-left: var(--subheader-h) solid var(--bg-dark-2);
+  position: absolute;
+  left: calc(var(--subheader-h) * -1 - 2px);
+  top: 0;
+  z-index: 1;
+}
+.corner-border {
+  width: var(--subheader-h);
+  border-bottom: calc(var(--subheader-h) + 1px) solid transparent;
+  border-left: calc(var(--subheader-h) + 1px) solid var(--border-color);
+  position: relative;
+  margin-right: 2rem;
 }
 </style>

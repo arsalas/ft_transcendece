@@ -10,6 +10,13 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
+export enum UserStatus {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+  AWAY = 'away',
+  GAME = 'game',
+}
+
 @Entity()
 export class Profile {
   @PrimaryColumn()
@@ -36,8 +43,16 @@ export class Profile {
   @Column()
   color: string;
 
-  @Column({ nullable: true })
-  status: string;
+  @Column({ default: 100, type: 'int' })
+  ladder: number;
+
+  @Column({
+    nullable: true,
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.OFFLINE,
+  })
+  status: UserStatus;
 
   @CreateDateColumn({
     type: 'timestamptz',

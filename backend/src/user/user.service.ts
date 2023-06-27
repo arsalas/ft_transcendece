@@ -3,15 +3,18 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto';
-import { Profile, User } from './entities';
+import { Profile, User, UserStatus } from './entities';
 import { IAuth42 } from 'src/common/interfaces';
-import { IHistory, IStadistics, IUserProfile } from './interfaces';
+import { IStadistics, IUserProfile } from './interfaces';
+import { GameService } from 'src/game/game.service';
+import { Game, GameUser } from 'src/game/entities';
 
 @Injectable()
 export class UserService {
@@ -19,9 +22,16 @@ export class UserService {
 
   constructor(
     private dataSource: DataSource,
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    private gameService: GameService,
+    // @InjectRepository(Game)
+    // private gameRepository: Repository<Game>,
+    // @InjectRepository(GameUser)
+    // private gameUserRepository: Repository<GameUser>,
+
     private readonly configService: ConfigService,
   ) {}
 
@@ -34,16 +44,27 @@ export class UserService {
     return await this.userRepository.findOneBy({ login });
   }
 
+  async getAllUsers(): Promise<Profile[]> {
+    return await this.profileRepository.find({order:{ladder:'DESC'}});
+  }
+
   async findProfile(login: string): Promise<Profile> {
     return await this.profileRepository.findOneBy({ login });
   }
 
   async findProfileByUsername(username: string): Promise<IUserProfile> {
     const profile = await this.profileRepository.findOneBy({ username });
-    const history: IHistory[] = [
-      { date: new Date().toDateString(), player: 'aramirez' },
-    ];
-    const stadistics: IStadistics = { lost: 4, played: 8, win: 4 };
+    if (!profile) throw new NotFoundException();
+
+    if (profile.avatar)
+      profile.avatar =
+        this.configService.get<string>('webURL') + '/image/' + profile.avatar;
+
+    const history = await this.gameService.getHistoryByUser(profile.login);
+
+    const stadistics: IStadistics = await this.gameService.getStadisticsByUser(
+      profile.login,
+    );
     return { profile, history, stadistics };
   }
 
@@ -62,7 +83,7 @@ export class UserService {
       });
       const profileRepo = this.profileRepository.create({
         ...user42,
-        status: 'online',
+        status: UserStatus.ONLINE,
       });
       await queryRunner.manager.save(userRepo);
       await queryRunner.manager.save(profileRepo);

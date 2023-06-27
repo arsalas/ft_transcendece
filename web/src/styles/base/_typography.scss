@@ -24,11 +24,11 @@
   color: var(--color-offline-0);
 }
 
-.text.out {
-  text-shadow: -0.05rem -0.05rem 0 var(--color-out-1),
-    0.05rem -0.05rem 0 var(--color-out-1), -0.05rem 0.05rem 0 var(--color-out-1),
-    0.05rem 0.05rem 0 var(--color-out-1);
-  color: var(--color-out-0);
+.text.away {
+  text-shadow: -0.05rem -0.05rem 0 var(--color-away-1),
+    0.05rem -0.05rem 0 var(--color-away-1), -0.05rem 0.05rem 0 var(--color-away-1),
+    0.05rem 0.05rem 0 var(--color-away-1);
+  color: var(--color-away-0);
 }
 
 .text.game {
@@ -52,7 +52,7 @@
 }
 
 .text.is-huge {
-  font-size: 5rem;
+  font-size: 3rem;
 }
 
 .is-text-bold {
