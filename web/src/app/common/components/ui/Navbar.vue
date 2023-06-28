@@ -22,7 +22,7 @@
             </router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'chat' }">
+            <router-link :to="{ name: 'chats' }">
               <span class="icon-text text">
                 <span class="icon">
                   <i class="fa-sharp fa-solid fa-comments"></i>
@@ -42,7 +42,7 @@
             </router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'chat' }">
+            <router-link :to="{ name: '' }">
               <span class="icon-text text">
                 <span class="icon">
                   <i class="fa-solid fa-trophy"></i>

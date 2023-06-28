@@ -1,6 +1,15 @@
 export interface IChat {
   message: string;
   isRead: boolean;
-  createdAt: string;
-  userLogin: string;
+  createdAt: Date;
+  userId: string;
+}
+
+
+
+
+export enum EChatType {
+	Direct = 'direct',
+	Private = 'private',
+	Protected = 'protected'
 }

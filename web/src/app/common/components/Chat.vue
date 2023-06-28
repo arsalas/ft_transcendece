@@ -3,20 +3,23 @@
     <div class="chat-container">
       <header>
         <div class="left">
-          <div class="media-object">
+          <div v-if="type == EChatType.Direct" class="media-object">
             <MediaObject
               width="2.5rem"
-              :image="activeFriend!.avatar"
-              :image-fallback="activeFriend!.avatar42"
-              :name="activeFriend!.username"
-              :status="activeFriend!.status" />
+              :image="userChat!.avatar"
+              :image-fallback="userChat!.avatar42"
+              :name="userChat!.username"
+              :status="userChat!.status" />
+          </div>
+          <div v-else class="text">
+            {{ name }} (x users)
           </div>
         </div>
 
         <div class="right">
-          <button @click="chatStore.close" class="close-chat button is-primary">
+          <!-- <button @click="chatStore.close" class="close-chat button is-primary">
             X
-          </button>
+          </button> -->
           <div class="dropdown is-right is-active" @click="isOpen = true">
             <div class="dropdown-trigger">
               <button class="ml-2 action-button text">
@@ -52,21 +55,23 @@
         </div>
       </header>
 
-      <div class="chat">
-        <div class="conversation-start">
+      <div class="chat pattern">
+        <!-- <div class="conversation-start">
           <span>Today, 9:00 PM</span>
-        </div>
+        </div> -->
 
         <div class="conversation-msg">
           <ul>
             <li
-              class="bubble"
-              :class="chat.userLogin == 'amurcia-' ? 'me' : 'other'"
-              v-for="chat in chats">
-              <div v-if="chat.userLogin != 'amurcia-'" class="username">
-                {{ chat.userLogin }}
+              v-for="message in messages"
+              class="bubble text"
+              :class="message.userId == user.login ? 'me' : 'other'">
+              <div
+                v-if="message.userId != user.login"
+                class="username is-large">
+                {{ message.userId }}
               </div>
-              {{ chat.message }}
+              {{ message.message }}
             </li>
           </ul>
         </div>
@@ -75,7 +80,7 @@
       <footer>
         <form @submit.prevent="sendMsg()">
           <input
-            v-model.trim="message"
+            v-model.trim="newMessage"
             type="text"
             placeHolder="Enviar mensaje"
             class="input" />
@@ -86,35 +91,34 @@
 </template>
 
 <script lang="ts" setup>
-import { defineStore, storeToRefs } from 'pinia';
-import {
-  defineAsyncComponent,
-  computed,
-  ref,
-  defineComponent,
-  onMounted,
-} from 'vue';
-import { useChatStore } from '../../../stores';
-import { IFriend, IFriendProfile } from '../../../interfaces/friends';
-import { providers } from '../../../providers';
-import { useSockets } from '../../../sockets';
-import { IChat } from '../../../interfaces';
-const { chatService } = providers();
+import { defineAsyncComponent, ref, onMounted } from 'vue';
 
-const Avatar = defineAsyncComponent(
-  () => import('../../common/components/images/Avatar.vue'),
-);
+import { useUserStore } from '../../../stores';
+// import { providers } from '../../../providers';
+import { EChatType } from '../../../interfaces';
+import { IChat } from '../../../interfaces/chat';
+import { IFriendProfile } from '../../../interfaces';
+import { storeToRefs } from 'pinia';
+// const { chatService } = providers();
 
 const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
 
-const chatStore = useChatStore();
-const { activeFriend } = storeToRefs(chatStore);
-const message = ref<string>('');
+const props = defineProps<{
+  userChat?: IFriendProfile;
+  name?: string;
+  type: EChatType;
+  messages: IChat[];
+}>();
+
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+
+const newMessage = ref<string>('');
 const isOpenChat = ref<boolean>(true);
 const isOpen = ref<boolean>(false);
-const { socketNotifications } = useSockets();
+
 const onClickAway = (event: any) => {
   isOpen.value = false;
 };
@@ -129,7 +133,7 @@ onMounted(() => {
 
 const insertStartingMsg = async () => {
   try {
-    chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
+    // chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
     console.log('CHATS: ');
     console.log(chats.value);
     return chats.value;
@@ -139,22 +143,21 @@ const insertStartingMsg = async () => {
 };
 
 const sendMsg = async () => {
-  try {
-    await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
-    if (message.value.length > 0) {
-      chats.value.push({
-        isRead: false,
-        message: message.value,
-        createdAt: '10.05.2023',
-        userLogin: 'amurcia-',
-      });
-      message.value = '';
-    }
-
-    // socketNotifications.emit('accept-request', );
-  } catch (error) {
-    console.log(error);
-  }
+  //   try {
+  //     await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
+  //     if (message.value.length > 0) {
+  //       chats.value.push({
+  //         isRead: false,
+  //         message: message.value,
+  //         createdAt: '10.05.2023',
+  //         userLogin: 'amurcia-',
+  //       });
+  //       message.value = '';
+  //     }
+  //     // socketNotifications.emit('accept-request', );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
 };
 
 const closeChat = () => {
@@ -168,7 +171,7 @@ const closeChat = () => {
   display: flex;
   justify-content: center;
   flex-direction: column;
-  background-color: var(--color-primary-rgb);
+  //   background-color: var(--bg-dark-0);
   border: solid 1px var(--color-primary);
 
   & header {
@@ -177,7 +180,7 @@ const closeChat = () => {
     align-items: center;
     justify-content: space-between;
     padding: 0.2rem 1rem;
-    background-color: var(--color-bg-primary);
+    background-color: var(--bg-dark-1);
     border-bottom: solid 1px var(--color-primary);
 
     .left {
@@ -227,15 +230,8 @@ const closeChat = () => {
     align-items: flex-start;
     height: calc(100% - 50px);
     align-items: end;
-    background: rgb(0, 0, 0);
     overflow: auto;
     padding: 0.5rem;
-
-    & .input {
-      align-items: center;
-      vertical-align: bottom;
-      border: none;
-    }
 
     & .conversation-start {
       height: 10%;
@@ -276,31 +272,26 @@ const closeChat = () => {
     & .bubble {
       max-width: 75%;
       margin-bottom: 10px;
-      padding: 0.2rem 0.5rem;
+      padding: 0.4rem 0.5rem;
       border-radius: 1rem;
 
       & .username {
-        font-size: 0.8rem;
         font-weight: bold;
       }
     }
 
     .bubble.other {
       align-self: flex-start;
-      color: rgba(0, 0, 128, 0.931);
-      background-color: rgb(4, 223, 223);
-      box-shadow: -1px 2px 0px rgba(0, 0, 128, 0.931);
-      border-radius: 0px var(--border-radius-chat) var(--border-radius-chat)
-        var(--border-radius-chat);
+      background-color: var(--bg-dark-2);
+      box-shadow: -1px 2px 0px var(--bg-dark-2);
+      border-radius: 0px 10px 10px 10px;
     }
 
     .bubble.me {
       align-self: flex-end;
-      color: rgb(115, 8, 115);
-      background-color: rgb(255, 158, 255);
-      box-shadow: -1px 2px 0px rgb(115, 8, 115);
-      border-radius: var(--border-radius-chat) 0px var(--border-radius-chat)
-        var(--border-radius-chat);
+      background-color: var(--color-primary);
+      box-shadow: -1px 2px 0px var(--color-primary);
+      border-radius: 10px 0px 10px 10px;
     }
   }
 }
