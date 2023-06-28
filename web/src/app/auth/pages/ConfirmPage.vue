@@ -44,16 +44,17 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { defineAsyncComponent, inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { storeToRefs } from 'pinia';
 
-import { providers } from '../../../providers';
 import { useAuthStore, useUserStore } from '../../../stores';
 import { useLoading, useNotifications } from '../../common/composables';
 import { IUser } from '../../../interfaces';
 import { useStart } from '../../../composables';
+import { AuthService } from '../services/authService';
+import { FriendsService } from '../../dashboard/services';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
@@ -69,14 +70,15 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 // PROVIDERS
-const { authService } = providers();
+const authService = inject<AuthService>('authService')!;
+const friendsService = inject<FriendsService>('friendsService')!;
 
 // COMPOSABLES
 const route = useRoute();
 const router = useRouter();
 const { isLoading } = useLoading();
 const notifications = useNotifications();
-const { startApp } = useStart();
+const { startApp } = useStart(authService, friendsService);
 
 // VARIABLES
 const isLoadingTFA = ref<boolean>(false);

@@ -25,12 +25,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
+import { computed, defineAsyncComponent, inject, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import { providers } from '../../../providers';
 import { useGameStore, useUserStore } from '../../../stores';
+import { GameService } from '../../dashboard/services';
 const FriendsAside = defineAsyncComponent(
   () => import('../../common/components/friends/FriendsAside.vue'),
 );
@@ -41,7 +41,7 @@ const MediaObject = defineAsyncComponent(
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
-const { gameService } = providers();
+const gameService = inject<GameService>('gameService')!;
 const router = useRouter();
 const gameStore = useGameStore();
 const { type } = storeToRefs(gameStore);

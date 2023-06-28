@@ -1,6 +1,10 @@
 <template>
   <div class="chat pattern">
-    <Chat :type="EChatType.Protected" :messages="messages" name="Lorem ipsum" />
+    <Chat
+      :type="EChatType.Protected"
+      :messages="messages"
+      name="Lorem ipsum"
+      :users="users" />
   </div>
 </template>
 
@@ -12,13 +16,224 @@ const Chat = defineAsyncComponent(
   () => import('../../common/components/Chat.vue'),
 );
 
-const user = {
-  login: 'amurcia-',
-  username: 'amurcia-',
-  avatar: null,
-  avatar42: 'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-  status: 'offline',
-};
+const users = [
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+  {
+    login: 'amurcia-',
+    username: 'amurcia-',
+    avatar: null,
+    avatar42:
+      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
+    status: 'offline',
+  },
+];
 
 const messages: IChat[] = [
   {

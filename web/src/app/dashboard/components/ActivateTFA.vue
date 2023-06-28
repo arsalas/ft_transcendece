@@ -31,16 +31,16 @@
 </template>
 <script lang="ts" setup>
 // IMPORTACIONES
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { defineAsyncComponent, inject, onMounted, ref } from 'vue';
 
 import {
   useLoading,
   useModal,
   useNotifications,
 } from '../../common/composables';
-import { providers } from '../../../providers';
 import { useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
+import { EditProfieService } from '../services';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
@@ -58,8 +58,7 @@ const { isLoading } = useLoading();
 const { close } = useModal();
 
 // PROVIDERS
-const { editProfileService } = providers();
-
+const editProfileService = inject<EditProfieService>('editProfileService')!;
 // PROPS
 defineProps<{
   qr: string;

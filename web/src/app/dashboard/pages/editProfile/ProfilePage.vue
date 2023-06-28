@@ -37,12 +37,12 @@
 	</Box>
 </template>
 <script lang='ts' setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, inject, ref } from 'vue'
 import { storeToRefs } from 'pinia';
 
-import { providers } from '../../../../providers';
 import { useForm, useLoading, useNotifications } from '../../../common/composables'
 import { useUserStore } from '../../../../stores'
+import { EditProfieService } from '../../services';
 
 // COMPONENTES
 const Box = defineAsyncComponent(() => import('../../../common/components/ui/Box.vue'))
@@ -53,7 +53,7 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 // PROVIDERS
-const { editProfileService } = providers();
+const  editProfileService  = inject<EditProfieService>('editProfileService')!;
 
 // COMPOSABLES
 const notifications = useNotifications()

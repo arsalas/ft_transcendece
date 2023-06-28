@@ -1,7 +1,7 @@
 <template>
   <div class="media-object">
     <Avatar
-      :class="status"
+      :class="status ?? 'bordered'"
       :src="image"
       :fallback="imageFallback"
       :width="width" />

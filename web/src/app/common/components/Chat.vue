@@ -1,167 +1,175 @@
 <template>
-  <div v-if="isOpenChat" class="chat-container">
-    <div class="chat-container">
-      <header>
-        <div class="left">
-          <div v-if="type == EChatType.Direct" class="media-object">
-            <MediaObject
-              width="2.5rem"
-              :image="userChat!.avatar"
-              :image-fallback="userChat!.avatar42"
-              :name="userChat!.username"
-              :status="userChat!.status" />
-          </div>
-          <div v-else class="text">
-            {{ name }} (x users)
-          </div>
+  <div class="chat-container">
+    <header>
+      <div class="left">
+        <div v-if="type == EChatType.Direct" class="media-object">
+          <MediaObject
+            width="2.5rem"
+            :image="userChat!.avatar"
+            :image-fallback="userChat!.avatar42"
+            :name="userChat!.username"
+            :status="userChat!.status" />
         </div>
+        <div v-else class="text">{{ name }} ({{ users?.length() }} users)</div>
+      </div>
 
-        <div class="right">
-          <!-- <button @click="chatStore.close" class="close-chat button is-primary">
+      <div class="right">
+        <!-- <button @click="chatStore.close" class="close-chat button is-primary">
             X
           </button> -->
-          <div class="dropdown is-right is-active" @click="isOpen = true">
-            <div class="dropdown-trigger">
-              <button class="ml-2 action-button text">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-            </div>
-
-            <Transition
-              name="custom-classes"
-              enter-active-class="animate__animated animate__fadeIn animate__faster"
-              leave-active-class="animate__animated animate__fadeOut animate__faster">
-              <div
-                v-if="isOpen"
-                v-click-away="onClickAway"
-                class="dropdown-menu"
-                role="menu">
-                <div class="dropdown-content">
-                  <a href="#" class="dropdown-item text is-small">
-                    Invite to group
-                  </a>
-                  <a href="#" class="dropdown-item text is-small">
-                    Send Message
-                  </a>
-                  <a href="#" class="dropdown-item text is-small">
-                    View Profile
-                  </a>
-                  <a href="#" class="dropdown-item text is-small"> Unfriend </a>
-                  <a href="#" class="dropdown-item text is-small"> Block </a>
-                </div>
-              </div>
-            </Transition>
+        <div
+          v-if="type != EChatType.Direct && !isShowUsers"
+          class="dropdown is-right is-active"
+          @click="isOpen = true">
+          <div class="dropdown-trigger">
+            <button class="ml-2 action-button text">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
           </div>
-        </div>
-      </header>
 
-      <div class="chat pattern">
-        <!-- <div class="conversation-start">
+          <Transition
+            name="custom-classes"
+            enter-active-class="animate__animated animate__fadeIn animate__faster"
+            leave-active-class="animate__animated animate__fadeOut animate__faster">
+            <div
+              v-if="isOpen"
+              v-click-away="onClickAway"
+              class="dropdown-menu"
+              role="menu">
+              <div class="dropdown-content">
+                <a
+                  @click.stop="showUsers()"
+                  class="dropdown-item text is-small">
+                  See users
+                </a>
+                <a
+                  @click.stop="exitChannel()"
+                  class="dropdown-item text is-small">
+                  Exit channel
+                </a>
+              </div>
+            </div>
+          </Transition>
+        </div>
+        <div v-if="type != EChatType.Direct && isShowUsers">
+          <button @click="isShowUsers = false" class="ml-2 action-button text">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div v-if="type == EChatType.Direct">
+          <button @click="chatStore.close()" class="ml-2 action-button text">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="chat pattern" ref="refChat">
+      <!-- <div class="conversation-start">
           <span>Today, 9:00 PM</span>
         </div> -->
 
-        <div class="conversation-msg">
-          <ul>
-            <li
-              v-for="message in messages"
-              class="bubble text"
-              :class="message.userId == user.login ? 'me' : 'other'">
-              <div
-                v-if="message.userId != user.login"
-                class="username is-large">
-                {{ message.userId }}
-              </div>
-              {{ message.message }}
-            </li>
-          </ul>
-        </div>
+      <div class="conversation-msg" v-if="!isShowUsers">
+        <ul>
+          <li
+            v-for="message in messages"
+            class="bubble text"
+            :class="message.userId == user.login ? 'me' : 'other'">
+            <div v-if="message.userId != user.login" class="username is-large">
+              {{ message.userId }}
+            </div>
+            {{ message.message }}
+          </li>
+        </ul>
       </div>
 
-      <footer>
-        <form @submit.prevent="sendMsg()">
-          <input
-            v-model.trim="newMessage"
-            type="text"
-            placeHolder="Enviar mensaje"
-            class="input" />
-        </form>
-      </footer>
+      <div class="users-list" v-else>
+        <div class="item-user" v-for="userDetails in users">
+          <MediaObject
+            width="2.5rem"
+            :image="userDetails!.avatar"
+            :image-fallback="userDetails!.avatar42"
+            :name="userDetails!.username" />
+        </div>
+      </div>
     </div>
+
+    <footer v-if="!isShowUsers">
+      <form @submit.prevent="onSubmit()">
+        <input
+          v-model.trim="newMessage"
+          type="text"
+          placeHolder="Enviar mensaje"
+          class="input" />
+      </form>
+    </footer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, onMounted } from 'vue';
+import { defineAsyncComponent, ref, onMounted, nextTick } from 'vue';
 
 import { useUserStore } from '../../../stores';
-// import { providers } from '../../../providers';
 import { EChatType } from '../../../interfaces';
 import { IChat } from '../../../interfaces/chat';
 import { IFriendProfile } from '../../../interfaces';
 import { storeToRefs } from 'pinia';
-// const { chatService } = providers();
+import { useChatStore } from '../../../stores/chats';
 
 const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
 
 const props = defineProps<{
+  id?: string;
   userChat?: IFriendProfile;
   name?: string;
   type: EChatType;
   messages: IChat[];
+  users?: IFriendProfile[];
 }>();
 
+const chatStore = useChatStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
+// const {} = storeToRefs(chatStore)
 
 const newMessage = ref<string>('');
-const isOpenChat = ref<boolean>(true);
-const isOpen = ref<boolean>(false);
+const refChat = ref<HTMLDivElement>();
 
 const onClickAway = (event: any) => {
   isOpen.value = false;
 };
 
-const chats = ref<IChat[]>([]);
+const isOpen = ref<boolean>(false);
+const isShowUsers = ref<boolean>(false);
 
-onMounted(() => {
-  try {
-    insertStartingMsg();
-  } catch (error) {}
-});
+onMounted(() => {});
 
-const insertStartingMsg = async () => {
-  try {
-    // chats.value = await chatService.lastTenMsg(activeFriend!.value!.login);
-    console.log('CHATS: ');
-    console.log(chats.value);
-    return chats.value;
-  } catch (error) {
-    console.log(error);
-  }
+const exitChannel = () => {};
+
+const showUsers = () => {
+  onClickAway();
+  isShowUsers.value = true;
 };
 
-const sendMsg = async () => {
-  //   try {
-  //     await chatService.sendMyMsg(message.value, activeFriend!.value!.login);
-  //     if (message.value.length > 0) {
-  //       chats.value.push({
-  //         isRead: false,
-  //         message: message.value,
-  //         createdAt: '10.05.2023',
-  //         userLogin: 'amurcia-',
-  //       });
-  //       message.value = '';
-  //     }
-  //     // socketNotifications.emit('accept-request', );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-};
+const onSubmit = async () => {
+  if (newMessage.value.length == 0) return;
 
-const closeChat = () => {
-  isOpenChat.value = false;
+  props.messages.push({
+    createdAt: new Date(),
+    isRead: true,
+    message: newMessage.value,
+    userId: user.value.login,
+  });
+  newMessage.value = '';
+  if (!refChat.value) return;
+  nextTick(() => {
+    refChat.value!.scroll({
+      top: refChat.value!.scrollHeight - refChat.value!.clientHeight,
+      behavior: 'smooth',
+    });
+  });
 };
 </script>
 
@@ -231,6 +239,7 @@ const closeChat = () => {
     height: calc(100% - 50px);
     align-items: end;
     overflow: auto;
+    overflow-x: hidden;
     padding: 0.5rem;
 
     & .conversation-start {
@@ -302,5 +311,17 @@ const closeChat = () => {
   border: none;
   cursor: pointer;
   aspect-ratio: 1;
+}
+
+.users-list {
+  width: 100%;
+}
+.item-user {
+  width: 100%;
+  padding: 0.5rem;
+  border-bottom: var(--border);
+  &:last-child {
+    border: 0;
+  }
 }
 </style>

@@ -32,7 +32,9 @@
               class="dropdown-item text is-small">
               Invite to Game
             </a>
-            <a href="#" class="dropdown-item text is-small"> Send Message </a>
+            <a @click.stop="openChat" class="dropdown-item text is-small">
+              Send Message
+            </a>
             <a
               v-if="friend.profile.status == 'game'"
               @click="getIdGame"
@@ -81,26 +83,30 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, inject, ref } from 'vue';
 import { IFriend } from '../../../../interfaces/friends';
-import { providers } from '../../../../providers';
 import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
 import { useRouter } from 'vue-router';
+import { useChatStore } from '../../../../stores/chats';
+import { FriendsService, GameService } from '../../../dashboard/services';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
   friend: IFriend;
 }>();
+const friendsService = inject<FriendsService>('friendsService')!;
+const gameService = inject<GameService>('gameService')!;
 
 const router = useRouter();
-const { socketNotifications } = useSockets();
+const { socketNotifications } = useSockets(friendsService);
 const firendsStore = useFriendsStore();
+const chatStore = useChatStore()
 const gameStore = useGameStore();
 const { friends } = storeToRefs(firendsStore);
-const { friendsService, gameService } = providers();
+
 
 const isOpen = ref<boolean>(false);
 const onClickAway = () => {
@@ -137,6 +143,11 @@ const refuseFriend = async () => {
     socketNotifications.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
+
+const openChat = () => {
+	onClickAway();
+	chatStore.open(props.friend.profile);
+}
 
 const blockUser = async () => {
   try {

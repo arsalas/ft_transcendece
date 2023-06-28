@@ -1,13 +1,26 @@
-.input {
+.input,
+.select,
+select {
   font-family: var(--font-family);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius) !important;
   text-shadow: -0.03rem -0.03rem 0 var(--color-primary),
     0.03rem -0.03rem 0 var(--color-primary),
     -0.03rem 0.03rem 0 var(--color-primary),
     0.03rem 0.03rem 0 var(--color-primary);
 }
 
-.input:focus {
+.input:focus,
+.select:focus,
+select:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 0.125em rgba(var(--color-primary), 0.25);
 }
+
+.select:focus-visible,
+select:focus-visible,
+.select:focus,
+select:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+

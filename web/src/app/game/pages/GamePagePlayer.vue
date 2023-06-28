@@ -1,5 +1,4 @@
 <template>
- 
   <div class="main-container">
     <div class="actions">
       <div class="brand">
@@ -63,7 +62,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted, defineAsyncComponent } from 'vue';
+import { onMounted, ref, onUnmounted, defineAsyncComponent, inject } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -71,10 +70,10 @@ import { useUserStore, useGameStore } from '../../../stores';
 
 import { useGame } from '../composables';
 
-import { providers } from '../../../providers';
 import { GameData } from '../../../interfaces';
 import { PongCPU } from '../classes/PongCPU';
 import { PongPlayer } from '../classes/PongPlayer';
+import { GameService } from '../../dashboard/services';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -112,7 +111,7 @@ const { user } = storeToRefs(userStore);
 const { type } = storeToRefs(gameStore);
 
 // PROVIDERS
-const { gameService } = providers();
+const gameService = inject<GameService>('gameService')!;
 
 // VARIABLES
 const gameData = ref<GameData>();

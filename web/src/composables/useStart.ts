@@ -6,11 +6,16 @@ import {
   useUserStore,
 } from '../stores';
 import { useSockets, useSocketsGame } from '../sockets';
-import { providers } from '../providers';
+import { AuthService } from '../app/auth/services/authService';
+import { FriendsService } from '../app/dashboard/services';
 
-export const useStart = () => {
+export const useStart = (
+  authService: AuthService,
+  friendsService: FriendsService,
+) => {
   // PROVIDERS
-  const { authService, friendsService } = providers();
+  //   const authService = inject<AuthService>('authService')!;
+  //   const friendsService = inject<FriendsService>('friendsService')!;
 
   // STORES
   const authStore = useAuthStore();
@@ -24,6 +29,7 @@ export const useStart = () => {
     themeStore.loadTheme();
     const authToken = authStore.token;
     if (!authToken) return;
+	console.log({authService})
     const { token, user } = await authService.recoverSession();
     authStore.signIn(token);
     userStore.setUser(user);
