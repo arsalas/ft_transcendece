@@ -17,7 +17,7 @@ import { Profile, User } from 'src/user/entities';
 import { ModifyUserDto } from './dto/modify-user.dto';
 import { AddUserDto } from './dto/add-user.dto';
 import { Socket } from 'socket.io';
-import bcrypt from 'bcryptjs';
+import * as bcryptjs from 'bcryptjs';
 import { ChatGateway } from './chat.gateway';
 import { CreateMsgDto } from './dto/create-msg';
 
@@ -47,7 +47,7 @@ export class ChatService {
 
   // store the message
   async storeMessage(userId: string, msg: CreateMsgDto) {
-    const newMsg = await this.chatMessageRepository.create({
+    const newMsg = this.chatMessageRepository.create({
       message: msg.message,
       isRead: false,
       userId: { login: userId },
@@ -59,7 +59,7 @@ export class ChatService {
 
   // no existe el chat directo
   async createSaveChat(senderLogin: string, reciverId: string) {
-    const newChat = await this.chatRoomRepository.create({
+    const newChat = this.chatRoomRepository.create({
       name: `${senderLogin}-${reciverId}`,
       type: 'direct',
     });
@@ -67,13 +67,13 @@ export class ChatService {
     const room = await this.chatRoomRepository.save(newChat);
     console.log({ room });
 
-    const user1 = await this.chatUserRepository.create({
+    const user1 = this.chatUserRepository.create({
       chatRoom: room,
       user: { login: senderLogin },
       isAdmin: false,
       isOwner: false,
     });
-    const user2 = await this.chatUserRepository.create({
+    const user2 = this.chatUserRepository.create({
       chatRoom: room,
       user: { login: reciverId },
       isAdmin: false,
@@ -127,7 +127,7 @@ export class ChatService {
 				}
 		})
 
-		return await chats.filter(async (c) => {
+		return chats.filter(async (c) => {
 			if (c.type !== 'public') {
 				const user = await this.chatUserRepository.findOneBy({ user: {login: userId}});
 				if (!user)
@@ -176,7 +176,7 @@ export class ChatService {
 			relations: ['user']
 		})
 		
-		return await users.map(async (u) => {
+		return users.map(async (u) => {
 			const profile = await this.profileRepository.findOneBy({ login: u.user.login });
 
 			return {
@@ -249,14 +249,14 @@ export class ChatService {
     //   }
 	if (groupDto.type === 'protected' && !groupDto.password)
 		throw Error("MISSSING PASSWORD")
-	const newChat = await this.chatRoomRepository.create({
+	const newChat = this.chatRoomRepository.create({
 		name: groupDto.name,
 		type: groupDto.type,
 		password: groupDto.password ? this.encryptPass(groupDto.password) : null
 	});
 	const room = await this.chatRoomRepository.save(newChat);
 
-	const user = await this.chatUserRepository.create({
+	const user = this.chatUserRepository.create({
 		chatRoom: room,
 		user: { login: userId },
 		isAdmin: true,
@@ -339,7 +339,7 @@ export class ChatService {
 		throw new UnauthorizedException();
       }
 
-      const newUser = await this.chatUserRepository.create({
+      const newUser = this.chatUserRepository.create({
         chatRoom: findRoom,
         user: { login: addUserDto.userId },
         isAdmin: false,
