@@ -16,98 +16,89 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { JwtPayload } from 'src/auth/interfaces';
 import { CreateMsgDto } from './dto/create-msg';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
+import { ModifyUserDto } from './dto/modify-user.dto';
+import { AddUserDto } from './dto/add-user.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  // send a message
-  @Post('send/')
-  async sendMsg(
-    @Request() { user }: { user: JwtPayload },
-    @Body('message') msgDto: string,
-    @Query('reciverId') receiverId: string,
+  @Get('chatrooms/')
+  async getChatRooms(
+	@Request() { user }: { user: JwtPayload },
   ) {
-    return await this.chatService.sendMsg(user.login, receiverId, msgDto);
+	return await this.chatService.getChatRooms(user.login);
   }
 
-  // open a direct chat
-  @Post('direct/')
+  @Get('chatroom/:id')
+  async getChatRoom(
+	@Request() { user }: { user: JwtPayload },
+	@Param('id') reciverId: string,
+  ) {
+	return await this.chatService.getChatRoom(user.login, reciverId);
+  }
+
+  @Get('friends/')
+  async getAllFriendMessages(
+	@Request() { user }: { user: JwtPayload },
+  ) {
+	return await this.chatService.getFriendsMessages(user.login);
+  }
+  
+  @Get('direct/:id')
   async openDirectChat(
-    @Request() { user }: { user: JwtPayload },
-    @Body('reciverId') reciverId: string,
-    // @Param('username') reciverId: string,
+	@Request() { user }: { user: JwtPayload },
+	@Param('id') reciverId:string,
   ) {
-    return await this.chatService.openDirectChat(reciverId, user.login);
+	return await this.chatService.openDirectChat(user.login, reciverId);
   }
 
-  @Post('tenMsg/')
-  async lastTenMsg(
-    @Request() { user }: { user: JwtPayload },
-    @Body('reciverId') reciverId: string,
+  @Post('group/')
+  async createGroupChat(
+	@Request() { user }: { user: JwtPayload },
+	@Body() groupDto: CreateChatDto,
   ) {
-    return await this.chatService.lastTenMsg(reciverId, user.login);
+	return await this.chatService.createGroupChat(user.login, groupDto);
   }
 
-  // open a group chat
-  @Post('group/:username')
-  async openGroupChat(
-    @Request() { user }: { user: JwtPayload },
-    @Body() nameGroup: string,
-    @Param('username') reciverId: string[],
+  @Patch('group/')
+  async updateGroupChat(
+	@Request() { user }: { user: JwtPayload },
+	@Body() groupDto: UpdateChatDto,
   ) {
-    console.log(user, reciverId);
-    return await this.chatService.openGroupChat(
-      nameGroup,
-      reciverId,
-      user.login,
-      'hola',
-    );
+	return await this.chatService.updateGroupChat(user.login, groupDto);
   }
 
-  // open a group chat
-  @Post('createGroup/:username')
-  async createSaveGroupChat(
-    @Request() { user }: { user: JwtPayload },
-    @Body() nameGroup: string,
-    type: string,
-    @Param('username') reciverId: string[],
-  ) {
-    console.log(user, reciverId);
-    return await this.chatService.createSaveGroupChat(
-      nameGroup,
-      reciverId,
-      user.login,
-      type,
-    );
-  }
-
-  // add user
-  @Post('addUser/:username')
+  @Post('add/')
   async addUser(
-    @Request() { user }: { user: JwtPayload },
-    @Body() chatId: string,
-    @Param('username') newUser: string,
+	@Request() { user }: { user: JwtPayload },
+	@Body() addUserDto: AddUserDto
   ) {
-    return await this.chatService.addUser(newUser, chatId);
+	return await this.chatService.addUser(user.login, addUserDto);
   }
 
-  // delete user
-  @Post('deleteUser/:username')
-  async deleteUser(
-    @Request() { user }: { user: JwtPayload },
-    @Body() chatId: string,
-    @Param('username') deletedUser: string,
+  @Post('ban/')
+  async banUser(
+	@Request() { user }: { user: JwtPayload },
+	@Body() modifyUserDto: ModifyUserDto,
   ) {
-    return await this.chatService.deleteUser(deletedUser, chatId);
+	return await this.chatService.banUser(user.login, modifyUserDto);
   }
 
-  @Post('direct/:username')
+  @Post('mute/')
   async mutexUser(
-    @Request() { user }: { user: JwtPayload },
-    @Param('username') silencedUser: string,
+	@Request() { user }: { user: JwtPayload },
+	@Body() modifyUserDto: ModifyUserDto,
   ) {
-    return await this.chatService.mutexUser(silencedUser);
+	return await this.chatService.muteUser(user.login, modifyUserDto);
+  }
+
+  @Post('admin/')
+  async makeAdmin(
+	@Request() { user }: { user: JwtPayload },
+	@Body() modifyUserDto: ModifyUserDto,
+  ) {
+	return await this.chatService.makeAdmin(user.login, modifyUserDto);
   }
 }

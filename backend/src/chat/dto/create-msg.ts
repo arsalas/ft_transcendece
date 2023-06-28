@@ -7,6 +7,6 @@ export class CreateMsgDto {
 
   @IsString()
   @MinLength(1)
-  readonly reciverId: string;
+  readonly chatId: string;
 
 }
