@@ -13,6 +13,12 @@ export class ChatUser {
   @Column()
   isAdmin: boolean;
 
+  @Column({type: 'timestamptz', nullable: true})
+  mutedTo:Date;
+
+  @Column({default: false})
+  isBanned:boolean;
+
   @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.id, {
     onDelete: 'CASCADE',
     // eager: true,
