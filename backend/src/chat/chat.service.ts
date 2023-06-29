@@ -204,9 +204,10 @@ export class ChatService {
 		.leftJoinAndSelect('message.userId', 'user')
 		.getMany()
 
-		return chats.map(async (v) => ({
+		const chatMessages = chats.map(async (v) => ({
 			id: v.chatRoom.id, messages: await this.getMessages(userId, v.chatRoom.id)
 		}))
+		return await Promise.all(chatMessages);
 	}
 	catch (error) {
 		console.log(error);
