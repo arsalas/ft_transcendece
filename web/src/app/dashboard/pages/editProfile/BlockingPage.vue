@@ -49,13 +49,13 @@
   </Box>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, inject, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useUserStore, useFriendsStore } from '../../../../stores';
 import { useForm, useNotifications } from '../../../common/composables';
-import { providers } from '../../../../providers';
 import { IFriend } from '../../../../interfaces/friends';
+import { FriendsService } from '../../services';
 
 const notifications = useNotifications();
 
@@ -71,7 +71,7 @@ const { user } = storeToRefs(userStore);
 const friendStore = useFriendsStore();
 const { block, friends } = storeToRefs(friendStore);
 
-const { friendsService } = providers();
+const friendsService = inject<FriendsService>('friendsService')!;
 
 const userBlock = ref<string>('');
 

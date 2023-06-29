@@ -75,13 +75,13 @@
   </Modal>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, provide, ref } from 'vue';
+import { defineAsyncComponent, inject, provide, ref } from 'vue';
 import { useModal } from '../../composables';
 import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
-import { providers } from '../../../../providers';
 import { useSockets, useSocketsGame } from '../../../../sockets';
 import InvitationBox from './InvitationBox.vue';
+import { FriendsService } from '../../../dashboard/services';
 
 // COMPONENTS
 const AgrupedFriends = defineAsyncComponent(
@@ -100,9 +100,14 @@ const { offline, online, friends, pending, sending } =
   storeToRefs(friendsStore);
 const { invitations } = storeToRefs(gameStore);
 
-const { socketNotifications } = useSockets();
-const { socketGame } = useSocketsGame();
-const { friendsService } = providers();
+const friendsService = inject<FriendsService>('friendsService')!;
+
+
+const { socketNotifications } = useSockets(friendsService);
+// const { socketGame } = useSocketsGame();
+
+// const friendsService = inject<FriendsService>('friendsService')!;
+
 const sendUser = ref<string>('');
 const handleSubmit = async () => {
   socketNotifications.emit('send-request', sendUser.value);

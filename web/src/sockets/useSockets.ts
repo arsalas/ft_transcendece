@@ -1,8 +1,9 @@
+// import { inject } from 'vue';
 import { Manager, Socket } from 'socket.io-client';
 import { useAuthStore, useFriendsStore, useGameStore } from '../stores';
 import { storeToRefs } from 'pinia';
-import { providers } from '../providers';
 import { CONFIG } from '../config';
+import { FriendsService } from '../app/dashboard/services';
 
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
@@ -11,11 +12,12 @@ let manager: Manager;
 
 let socketNotifications: Socket;
 
-export const useSockets = () => {
+export const useSockets = (friendsService?: FriendsService) => {
   const friendsStore = useFriendsStore();
   const gameStore = useGameStore();
   const { friends } = storeToRefs(friendsStore);
   const { invitations } = storeToRefs(gameStore);
+  //   const friendsService = inject<FriendsService>('friendsService')!;
 
   const connectToServerNotifications = () => {
     manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
@@ -40,8 +42,7 @@ export const useSockets = () => {
       friendsStore.friends.push(payload);
     });
     socketNotifications.on('refresh-friends', async () => {
-      const { friendsService } = providers();
-      friendsStore.friends = await friendsService.get();
+      if (friendsService) friendsStore.friends = await friendsService.get();
     });
 
     socketNotifications.on('invite-game', async (payload: any) => {

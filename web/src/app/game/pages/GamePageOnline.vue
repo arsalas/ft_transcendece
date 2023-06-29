@@ -71,7 +71,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, onUnmounted, defineAsyncComponent } from 'vue';
+import { onMounted, ref, onUnmounted, defineAsyncComponent, inject } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -81,8 +81,8 @@ import { useSockets, useSocketsGame } from '../../../sockets';
 import { useGame } from '../composables';
 
 import { PongOnline } from '../classes';
-import { providers } from '../../../providers';
 import { GameData, GameFinish, PlayerType, Scores } from '../../../interfaces';
+import { FriendsService, GameService } from '../../dashboard/services';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -94,11 +94,13 @@ const Logo = defineAsyncComponent(
 const Start = defineAsyncComponent(() => import('../components/Start.vue'));
 const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
 
+const friendsService = inject<FriendsService>('friendsService')!;
+
 // COMPOSABLES
 const router = useRouter();
 const route = useRoute();
 const { socketGame } = useSocketsGame();
-const { socketNotifications } = useSockets();
+const { socketNotifications } = useSockets(friendsService);
 const {
   app,
   canvas,
@@ -122,7 +124,7 @@ const { user } = storeToRefs(userStore);
 const { activeRoom } = storeToRefs(gameStore);
 
 // PROVIDERS
-const { gameService } = providers();
+const gameService = inject<GameService>('gameService')!;
 
 // VARIABLES
 const gameData = ref<GameData>();

@@ -5,13 +5,14 @@ import {
   useThemeStore,
   useUserStore,
 } from '../stores';
-import { useSockets, useSocketsGame } from '../sockets';
-import { providers } from '../providers';
+import { useSockets, useSocketsChat, useSocketsGame } from '../sockets';
+import { AuthService } from '../app/auth/services/authService';
+import { FriendsService } from '../app/dashboard/services';
 
-export const useStart = () => {
-  // PROVIDERS
-  const { authService, friendsService } = providers();
-
+export const useStart = (
+  authService: AuthService,
+  friendsService: FriendsService,
+) => {
   // STORES
   const authStore = useAuthStore();
   const userStore = useUserStore();
@@ -19,17 +20,20 @@ export const useStart = () => {
   const themeStore = useThemeStore();
   const { connectToServerNotifications } = useSockets();
   const { connectToServerGame } = useSocketsGame();
+  const { connectToServerChat } = useSocketsChat();
 
   const startApp = async () => {
     themeStore.loadTheme();
     const authToken = authStore.token;
     if (!authToken) return;
+	console.log({authService})
     const { token, user } = await authService.recoverSession();
     authStore.signIn(token);
     userStore.setUser(user);
     friendsStore.friends = await friendsService.get();
     connectToServerNotifications();
     connectToServerGame();
+	connectToServerChat();
   };
 
   return {

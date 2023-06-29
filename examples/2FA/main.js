@@ -1,6 +1,7 @@
 import { authenticator } from 'otplib'
 import qrcode from 'qrcode'
 import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 
 try {
 

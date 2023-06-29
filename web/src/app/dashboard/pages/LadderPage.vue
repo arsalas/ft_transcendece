@@ -43,15 +43,15 @@
   </section>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
-import { providers } from '../../../providers';
+import { inject, onMounted, ref } from 'vue';
 import { IProfile } from '../../../interfaces';
 import MediaObject from '../../common/components/MediaObject.vue';
 import Image from '../../common/components/images/Image.vue';
 import { useUserStore } from '../../../stores';
 import { storeToRefs } from 'pinia';
+import { ProfileService } from '../services';
 
-const { profileService } = providers();
+const  profileService  = inject<ProfileService>('profileService')!;
 const users = ref<IProfile[]>([]);
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);

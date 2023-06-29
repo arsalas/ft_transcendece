@@ -70,7 +70,6 @@ import { useUserStore, useGameStore } from '../../../stores';
 
 import { useGame } from '../composables';
 
-import { providers } from '../../../providers';
 import { GameData } from '../../../interfaces';
 import { PongCPU } from '../classes/PongCPU';
 
@@ -146,6 +145,7 @@ onUnmounted(() => {
   destroyGame();
 });
 </script>
+
 <style lang="scss" scoped>
 .main-container {
   width: 100vw;

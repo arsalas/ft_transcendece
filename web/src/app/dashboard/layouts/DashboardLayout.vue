@@ -5,10 +5,21 @@
       <router-view></router-view>
     </main>
     <FriendsAside />
+    <div class="chat-direct" v-if="isOpen">
+      <Chat
+        :type="EChatType.Direct"
+        :user-chat="activeFriend"
+        :messages="messages"
+        :id="chatId"
+        name="" />
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue';
+import { EChatType } from '../../../interfaces';
+import { useChatStore } from '../../../stores/chats';
+import { storeToRefs } from 'pinia';
 
 const Navbar = defineAsyncComponent(
   () => import('../../common/components/ui/Navbar.vue'),
@@ -16,6 +27,13 @@ const Navbar = defineAsyncComponent(
 const FriendsAside = defineAsyncComponent(
   () => import('../../common/components/friends/FriendsAside.vue'),
 );
+
+const Chat = defineAsyncComponent(
+  () => import('../../common/components/Chat.vue'),
+);
+
+const chatStore = useChatStore();
+const { isOpen, activeFriend, messages, chatId } = storeToRefs(chatStore);
 </script>
 <style lang="scss" scoped>
 .container-app {
@@ -24,5 +42,14 @@ const FriendsAside = defineAsyncComponent(
   & main {
     flex: 1;
   }
+}
+
+.chat-direct {
+  position: fixed;
+
+  bottom: 0;
+  right: var(--aside-w);
+  height: 50vh;
+  width: calc((100% - var(--aside-w)) / 2);
 }
 </style>

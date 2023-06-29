@@ -65,11 +65,20 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: 'chat',
+        path: 'chats',
         meta: { title: 'Chats' },
-        name: 'chat',
+        name: 'chats',
         component: () =>
-          import(/* webpackChunkName: "chat" */ '../pages/ChatsPage.vue'),
+          import(/* webpackChunkName: "chat" */ '../layouts/ChatLayout.vue'),
+        children: [
+          {
+            path: ':chatId',
+            meta: { title: 'Chat' },
+            name: 'chat',
+            component: () =>
+              import(/* webpackChunkName: "account" */ '../pages/ChatPage.vue'),
+          },
+        ],
       },
       {
         path: 'ladder',

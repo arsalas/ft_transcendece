@@ -1,34 +1,62 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { defineAsyncComponent, onMounted, provide } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { useNotifications } from './app/common/composables/useNotifications';
 import { useAuthStore, useUserStore } from './stores';
 import { storeToRefs } from 'pinia';
 import { useStart } from './composables';
+import {
+  EditProfieService,
+  FriendsService,
+  GameService,
+  ProfileService,
+} from './app/dashboard/services';
+import { AuthService } from './app/auth/services/authService';
+import { Http } from './api';
+import { ChatService } from './app/dashboard/services/ChatService';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
   () => import('./app/common/components/ui/Notification.vue'),
 );
 
+// PROVIDERS
+const http = new Http();
+
+const editProfileService = new EditProfieService(http);
+const profileService = new ProfileService(http);
+const authService = new AuthService(http);
+const friendsService = new FriendsService(http);
+const gameService = new GameService(http);
+const chatService = new ChatService(http);
+
+provide('editProfileService', editProfileService);
+provide('profileService', profileService);
+provide('authService', authService);
+provide('friendsService', friendsService);
+provide('gameService', gameService);
+provide('chatService', chatService);
+
+console.log({authService});
+
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();
 const router = useRouter();
-const route = useRoute();
 
 const { user } = storeToRefs(userStore);
 
 // COMPOSABLES
 const { isOpen } = useNotifications();
-const { startApp } = useStart();
+const { startApp } = useStart(authService, friendsService);
 
 // FUNCTIONS
 onMounted(async () => {
   try {
     await startApp();
-    if (authStore.isAuth && !user.value.username) router.push({ name: 'editProfile' });
+    if (authStore.isAuth && !user.value.username)
+      router.push({ name: 'editProfile' });
   } catch (error) {
     authStore.logOut();
     router.push({ name: 'signin' });

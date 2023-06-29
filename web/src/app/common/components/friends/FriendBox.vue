@@ -32,7 +32,9 @@
               class="dropdown-item text is-small">
               Invite to Game
             </a>
-            <a href="#" class="dropdown-item text is-small"> Send Message </a>
+            <a @click.stop="openChat" class="dropdown-item text is-small">
+              Send Message
+            </a>
             <a
               v-if="friend.profile.status == 'game'"
               @click="getIdGame"
@@ -81,26 +83,31 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, inject, ref } from 'vue';
 import { IFriend } from '../../../../interfaces/friends';
-import { providers } from '../../../../providers';
 import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
 import { useRouter } from 'vue-router';
+import { useChatStore } from '../../../../stores/chats';
+import { FriendsService, GameService } from '../../../dashboard/services';
+import { ChatService } from '../../../dashboard/services/ChatService';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
   friend: IFriend;
 }>();
+const friendsService = inject<FriendsService>('friendsService')!;
+const gameService = inject<GameService>('gameService')!;
+const chatService = inject<ChatService>('chatService')!;
 
 const router = useRouter();
-const { socketNotifications } = useSockets();
+const { socketNotifications } = useSockets(friendsService);
 const firendsStore = useFriendsStore();
+const chatStore = useChatStore();
 const gameStore = useGameStore();
 const { friends } = storeToRefs(firendsStore);
-const { friendsService, gameService } = providers();
 
 const isOpen = ref<boolean>(false);
 const onClickAway = () => {
@@ -138,6 +145,14 @@ const refuseFriend = async () => {
   } catch (error) {}
 };
 
+const openChat = async () => {
+  onClickAway();
+  const chat = await chatService.getDirectChat(props.friend.profile.login);
+  chatStore.chatId = chat.id;
+  chatStore.messages = chat.messages;
+  chatStore.open(props.friend.profile);
+};
+
 const blockUser = async () => {
   try {
     await friendsService.block(props.friend.profile.login);
@@ -152,6 +167,7 @@ const unblockUser = async () => {
   } catch (error) {}
 };
 </script>
+
 <style lang="scss" scoped>
 .actions {
   display: flex;

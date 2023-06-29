@@ -37,7 +37,7 @@
   <Loader v-if="waitingAccept" is-fullsize />
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { EModeGame, ETypeGame } from '../../../game/interfaces/game';
@@ -46,8 +46,11 @@ import { storeToRefs } from 'pinia';
 import MediaObject from '../../../common/components/MediaObject.vue';
 import { useSockets } from '../../../../sockets';
 import Loader from '../../../common/components/Loader.vue';
+import { FriendsService } from '../../services';
 
-const { socketNotifications } = useSockets();
+const friendsService = inject<FriendsService>('friendsService')!;
+
+const { socketNotifications } = useSockets(friendsService);
 // STORES
 const gameStore = useGameStore();
 const userStore = useUserStore();

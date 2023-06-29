@@ -67,7 +67,7 @@
   </Modal>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, inject, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useUserStore } from '../../../../stores';
@@ -76,7 +76,7 @@ import {
   useModal,
   useNotifications,
 } from '../../../common/composables';
-import { providers } from '../../../../providers';
+import { EditProfieService } from '../../services';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
@@ -100,7 +100,7 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 // PROVIDERS
-const { editProfileService } = providers();
+const editProfileService = inject<EditProfieService>('editProfileService')!;
 
 // COMPOSABLES
 const notifications = useNotifications();

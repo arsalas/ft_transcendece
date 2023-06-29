@@ -41,12 +41,12 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref, watch } from 'vue';
+import { defineAsyncComponent, inject, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useProfileStore } from '../../../stores';
 import { useRoute, useRouter } from 'vue-router';
-import { providers } from '../../../providers';
 import { useLoading } from '../../common/composables';
+import { ProfileService } from '../services';
 
 // COMPONENTES
 const Subheader = defineAsyncComponent(
@@ -72,7 +72,7 @@ const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore);
 
 // PROVIDERS
-const { profileService } = providers();
+const profileService = inject<ProfileService>('profileService')!;
 
 const getNavItems = () => [
   {
