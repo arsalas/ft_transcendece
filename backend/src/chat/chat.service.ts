@@ -135,7 +135,8 @@ export class ChatService {
 			return true;
 		}).map((c) => ({
 			id: c.id,
-			name: c.name
+			name: c.name,
+			type: c.type
 		}))
 	} catch {
 
@@ -267,6 +268,11 @@ export class ChatService {
 		isOwner: true,
 	});
     await this.chatUserRepository.save(user);
+	return {
+		id: newChat.id,
+		name: newChat.name,
+		type: newChat.type
+	};
     } catch (error) {
       console.log(error);
     }
@@ -296,8 +302,11 @@ export class ChatService {
 		throw Error("MISSSING PASSWORD")
 
 	const pass = groupDto.password ? this.encryptPass(groupDto.password) : null
-	return await this.chatRoomRepository.update(group, {...groupDto, password: pass})
-
+	await this.chatRoomRepository.update(group, {...groupDto, password: pass})
+	return {
+		name: groupDto.name,
+		type: groupDto.type
+	};
     } catch (error) {
       console.log(error);
     }
@@ -474,11 +483,11 @@ export class ChatService {
 		  }
 		}
 	}
-	
+
 	getUserIdByClient(clientId: string) {
 		return this.connectedClients[clientId].userId;
 	}
-	
+
 	getUserClientById(userId: string) {
 		for (const clientId of Object.keys(this.connectedClients)) {
 		  const connectedClient = this.connectedClients[clientId];
