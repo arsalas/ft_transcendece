@@ -6,7 +6,7 @@
       :type="chat.type"
       :messages="chat.messages"
       :name="chat.name"
-      :users="[]" />
+      :users="chat.users" />
   </div>
 </template>
 

@@ -39,7 +39,6 @@
 </template>
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
-import ChatPage from '../pages/ChatPage.vue';
 import { computed, defineAsyncComponent, inject, onMounted, ref } from 'vue';
 import { useModal } from '../../common/composables';
 import { ChatService } from '../services/ChatService';
@@ -55,7 +54,7 @@ const Modal = defineAsyncComponent(
 );
 
 const route = useRoute();
-const chatService = inject<ChatService>('chatService');
+const chatService = inject<ChatService>('chatService')!;
 
 const { open, isOpen, close, isOpenContent } = useModal();
 const chatFilter = ref<string>('');
@@ -74,6 +73,9 @@ const fetchChats = async () => {
   } finally {
   }
 };
+
+
+
 
 onMounted(() => {
   fetchChats();

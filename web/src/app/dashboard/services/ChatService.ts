@@ -43,4 +43,49 @@ export class ChatService {
       throw new Error(error as string);
     }
   }
+
+  async addUser(username: string, chatId: string) {
+    try {
+      return await this.http.post<IResponseChatRoom>('/chat/add', {
+        userId: username,
+        chatId,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async banUser(userId: string, chatId: string) {
+    try {
+      return await this.http.post<IResponseChatRoom>('/chat/ban', {
+        userId,
+        chatId,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async muteUser(userId: string, chatId: string, time: number) {
+    try {
+      return await this.http.post<IResponseChatRoom>('/chat/mute', {
+        userId,
+        chatId,
+        time,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async addAdmin(userId: string, chatId: string) {
+    try {
+      return await this.http.post<IResponseChatRoom>('/chat/admin', {
+        userId,
+        chatId,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
 }

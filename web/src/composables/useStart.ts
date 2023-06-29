@@ -5,7 +5,7 @@ import {
   useThemeStore,
   useUserStore,
 } from '../stores';
-import { useSockets, useSocketsGame } from '../sockets';
+import { useSockets, useSocketsChat, useSocketsGame } from '../sockets';
 import { AuthService } from '../app/auth/services/authService';
 import { FriendsService } from '../app/dashboard/services';
 
@@ -13,10 +13,6 @@ export const useStart = (
   authService: AuthService,
   friendsService: FriendsService,
 ) => {
-  // PROVIDERS
-  //   const authService = inject<AuthService>('authService')!;
-  //   const friendsService = inject<FriendsService>('friendsService')!;
-
   // STORES
   const authStore = useAuthStore();
   const userStore = useUserStore();
@@ -24,6 +20,7 @@ export const useStart = (
   const themeStore = useThemeStore();
   const { connectToServerNotifications } = useSockets();
   const { connectToServerGame } = useSocketsGame();
+  const { connectToServerChat } = useSocketsChat();
 
   const startApp = async () => {
     themeStore.loadTheme();
@@ -36,6 +33,7 @@ export const useStart = (
     friendsStore.friends = await friendsService.get();
     connectToServerNotifications();
     connectToServerGame();
+	connectToServerChat();
   };
 
   return {

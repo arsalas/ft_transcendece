@@ -40,7 +40,7 @@
                 <a
                   @click.stop="showUsers()"
                   class="dropdown-item text is-small">
-                  See users
+                  Users
                 </a>
                 <a
                   @click.stop="exitChannel()"
@@ -71,25 +71,44 @@
 
       <div class="conversation-msg" v-if="!isShowUsers">
         <ul>
-          <li
-            v-for="message in messages"
-            class="bubble text"
-            :class="message.userId == user.login ? 'me' : 'other'">
-            <div v-if="message.userId != user.login" class="username is-large">
-              {{ message.userId }}
-            </div>
-            {{ message.message }}
-          </li>
+          <template v-for="(message, index) in messages">
+            <li
+              class="date text"
+              v-if="
+                !isSameDay(message.createdAt, messages[index - 1]?.createdAt)
+              ">
+              <span>
+                {{ formatRelativeTime(message.createdAt) }}
+              </span>
+            </li>
+            <li
+              class="bubble text"
+              :class="message.userId == user.login ? 'me' : 'other'">
+              <div
+                v-if="message.userId != user.login"
+                class="username is-large">
+                {{ message.userId }}
+              </div>
+              {{ message.message }}
+            </li>
+          </template>
         </ul>
       </div>
 
       <div class="users-list" v-else>
+        <form action="" @submit.prevent="handleAddUser" v-if="isUserOwner()">
+          <input
+            v-model.trim="addUser"
+            type="text"
+            class="input"
+            placeholder="Add user" />
+        </form>
         <div class="item-user" v-for="userDetails in users">
-          <MediaObject
-            width="2.5rem"
-            :image="userDetails!.avatar"
-            :image-fallback="userDetails!.avatar42"
-            :name="userDetails!.username" />
+          <ChatUser
+            :chat-id="id!"
+            :user="userDetails"
+            :is-user-admin="isUserAdmin()"
+            :is-user-owner="isUserOwner()" />
         </div>
       </div>
     </div>
@@ -107,18 +126,58 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, onMounted, nextTick } from 'vue';
-
-import { useUserStore } from '../../../stores';
-import { EChatType } from '../../../interfaces';
-import { IChat, IMessage } from '../../../interfaces/chat';
-import { IFriendProfile } from '../../../interfaces';
+import {
+  defineAsyncComponent,
+  ref,
+  nextTick,
+  inject,
+  onUnmounted,
+  onMounted,
+} from 'vue';
 import { storeToRefs } from 'pinia';
+
+import { ChatService } from '../../dashboard/services/ChatService';
+import { EChatType, IFriendProfile } from '../../../interfaces';
+import { IMessage, IUserChat } from '../../../interfaces/chat';
 import { useChatStore } from '../../../stores/chats';
+import { useUserStore } from '../../../stores';
+import { useSocketsChat } from '../../../sockets';
+
+const { socketChat } = useSocketsChat();
+
+onMounted(() => {
+  if (props.type != EChatType.Direct) {
+    socketChat.value?.emit('chat-connect', props.id);
+    socketChat.value?.on('recive-message-group', (payload: IMessage) => {
+      props.messages.push(payload);
+    });
+  }
+});
+
+onUnmounted(() => {
+  if (props.type != EChatType.Direct)
+    socketChat.value?.off('recive-message-group');
+});
+
+const isSameDay = (date1: string, date2: string | undefined) => {
+  if (!date2) return false;
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  d1.setHours(0, 0, 0, 0);
+  d2.setHours(0, 0, 0, 0);
+  if (d1.getTime() == d2.getTime()) {
+    return true;
+  }
+  return false;
+};
 
 const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
+
+const ChatUser = defineAsyncComponent(() => import('./ChatUser.vue'));
+
+const chatService = inject<ChatService>('chatService')!;
 
 const props = defineProps<{
   id?: string;
@@ -126,25 +185,65 @@ const props = defineProps<{
   name?: string;
   type: EChatType;
   messages: IMessage[];
-  users?: IFriendProfile[];
+  users?: IUserChat[];
 }>();
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
-// const {} = storeToRefs(chatStore)
-
+const addUser = ref<string>('');
 const newMessage = ref<string>('');
 const refChat = ref<HTMLDivElement>();
 
-const onClickAway = (event: any) => {
+const onClickAway = () => {
   isOpen.value = false;
 };
 
 const isOpen = ref<boolean>(false);
 const isShowUsers = ref<boolean>(false);
 
-onMounted(() => {});
+const getTimesFormat = (time: number) => {
+  const seconds = Math.floor(time / 1000); // -1937124.765
+  const minutes = Math.floor(seconds / 60); // -5158.739066666666
+  const hours = Math.floor(minutes / 60); // -85.97898444444444
+  const days = Math.floor(hours / 24);
+  return {
+    seconds,
+    minutes,
+    hours,
+    days,
+  };
+};
+
+const formatRelativeTime = (date: string) => {
+  let diff = Math.floor((new Date(date) - new Date()) as number);
+  if (diff < 0) diff = 0;
+  const { days } = getTimesFormat(diff);
+  const formatter = new Intl.RelativeTimeFormat('en-EN', {
+    numeric: 'auto',
+  });
+  return formatter.format(days, 'days');
+};
+
+const handleAddUser = async () => {
+  try {
+    // TODO response incluya el user para hacer push en la array
+    const response = await chatService.addUser(addUser.value, props.id!);
+  } catch (error) {}
+};
+
+const isUserAdmin = (): boolean => {
+  const isFind = props.users!.find(
+    (us) => us.isAdmin && us.login == user.value.login,
+  );
+  return isFind ? true : false;
+};
+const isUserOwner = () => {
+  const isFind = props.users!.find(
+    (us) => us.isOwner && us.login == user.value.login,
+  );
+  return isFind ? true : false;
+};
 
 const exitChannel = () => {};
 
@@ -157,7 +256,7 @@ const onSubmit = async () => {
   if (newMessage.value.length == 0) return;
 
   props.messages.push({
-    createdAt: new Date(),
+    createdAt: new Date().toDateString(),
     isRead: true,
     message: newMessage.value,
     userId: user.value.login,
@@ -322,6 +421,41 @@ const onSubmit = async () => {
   border-bottom: var(--border);
   &:last-child {
     border: 0;
+  }
+}
+
+.users-list form {
+  position: sticky;
+  top: 0;
+}
+
+.date {
+  position: relative;
+  width: 100%;
+  margin-bottom: 27px;
+  text-align: center;
+  text-transform: capitalize;
+  span {
+    display: inline-block;
+    // color: var(--grey);
+    &:before,
+    &:after {
+      position: absolute;
+      top: 10px;
+      display: inline-block;
+      width: 40%;
+      height: 3px;
+      content: '';
+      background-color: var(--color-text-primary);
+      border: solid 1px var(--color-primary);
+    }
+
+    &:before {
+      left: 0;
+    }
+    &:after {
+      right: 0;
+    }
   }
 }
 </style>

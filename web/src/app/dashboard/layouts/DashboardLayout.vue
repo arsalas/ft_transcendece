@@ -48,8 +48,8 @@ const { isOpen, activeFriend, messages, chatId } = storeToRefs(chatStore);
   position: fixed;
 
   bottom: 0;
-  right: 0;
+  right: var(--aside-w);
   height: 50vh;
-  width: 50%;
+  width: calc((100% - var(--aside-w)) / 2);
 }
 </style>

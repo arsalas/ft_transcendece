@@ -34,6 +34,9 @@
 
 }
 
+.avatar.none{
+  border: 2px solid var(--color-primary);
+}
 .avatar.online{
   border: 2px solid var(--color-online-0);
 }
