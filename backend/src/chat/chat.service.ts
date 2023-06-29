@@ -54,7 +54,6 @@ export class ChatService {
       chatRoomId: { id: msg.chatId },
     });
     await this.chatMessageRepository.save(newMsg);
-    console.log('NUEVO MENSAJE GUARDADO');
   }
 
   // no existe el chat directo
@@ -175,16 +174,21 @@ export class ChatService {
 			},
 			relations: ['user']
 		})
-		
-		return users.map(async (u) => {
+
+		if (!users)
+			return [];
+
+		const usersInChat = [];
+		for (let u of users) {
 			const profile = await this.profileRepository.findOneBy({ login: u.user.login });
 
-			return {
+			usersInChat.push({
 				...profile,
 				isAdmin: u.isAdmin,
 				isOwner: u.isOwner
-			}
-		})
+			})
+		}
+		return usersInChat;
 
 	} catch {
 
