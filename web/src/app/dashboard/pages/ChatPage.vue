@@ -1,333 +1,52 @@
 <template>
-  <div class="chat pattern">
+  <div class="chat pattern" v-bind="chat">
     <Chat
-      :type="EChatType.Protected"
-      :messages="messages"
-      name="Lorem ipsum"
-      :users="users" />
+      v-if="chat"
+      :id="chat.id"
+      :type="chat.type"
+      :messages="chat.messages"
+      :name="chat.name"
+      :users="[]" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent } from 'vue';
-import { EChatType, IChat } from '../../../interfaces';
+import {
+  computed,
+  defineAsyncComponent,
+  inject,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
+import { IResponseChatRoom } from '../../../interfaces';
+import { useRoute } from 'vue-router';
+import { ChatService } from '../services/ChatService';
 
 const Chat = defineAsyncComponent(
   () => import('../../common/components/Chat.vue'),
 );
 
-const users = [
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-  {
-    login: 'amurcia-',
-    username: 'amurcia-',
-    avatar: null,
-    avatar42:
-      'https://cdn.intra.42.fr/users/f9d736eaefdcc160d0f742b44a8f5d4a/amurcia-.jpg',
-    status: 'offline',
-  },
-];
+const chatService = inject<ChatService>('chatService')!;
 
-const messages: IChat[] = [
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'aramirez',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'aramirez',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'aramirez',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'aramirez',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'amurcia-',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-  {
-    isRead: true,
-    createdAt: new Date(),
-    userId: 'aramirez',
-    message:
-      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, voluptate explicabo ullam ipsam pariatur tenetur eveniet cum provident ipsum unde.',
-  },
-];
+const route = useRoute();
+
+const chat = ref<IResponseChatRoom>();
+
+const chatId = computed(() => route.params.chatId as string);
+watch(chatId, () => {
+  fetchData();
+});
+
+const fetchData = async () => {
+  try {
+    chat.value = await chatService.getChat(chatId.value);
+	console.log(chat.value)
+  } catch (error) {}
+};
+
+onMounted(() => fetchData());
+
 </script>
 
 <style lang="scss" scoped>

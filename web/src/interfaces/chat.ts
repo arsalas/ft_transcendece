@@ -15,6 +15,7 @@ export enum EChatType {
 export interface IChatRoomResponse {
   name: string;
   id: string;
+  type: EChatType;
 }
 
 export interface IResponseChatRoom {

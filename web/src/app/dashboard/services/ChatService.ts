@@ -1,39 +1,44 @@
-import { ref } from 'vue';
 import { HttpService } from '../../../api/http';
-import { IChat, IUser } from '../../../interfaces';
+import {
+  EChatType,
+  IChatRoomResponse,
+  IResponseChatRoom,
+} from '../../../interfaces';
 
 export class ChatService {
   constructor(private http: HttpService) {}
-  chats = ref<IChat[]>([]);
 
-  async sendMyMsg(message: string, reciverId: string) {
+  async getAllChatsByUser() {
     try {
-      const payload = {
-        message: message,
-        reciverId: reciverId,
-      };
-      return await this.http.post<void>('/chat/send', payload);
+      return await this.http.get<IChatRoomResponse[]>('/chat/chatrooms');
     } catch (error) {
       throw new Error(error as string);
     }
   }
 
-  async lastTenMsg(login: string) {
+  async getChat(chatId: string) {
     try {
-      const response = await this.http.post<IChat[]>('/chat/tenMsg', { login });
-      this.chats.value = response;
-      console.log('RESPONSE:');
-      console.log(this.chats.value);
-
-      return response;
+      return await this.http.get<IResponseChatRoom>('/chat/chatroom/' + chatId);
     } catch (error) {
       throw new Error(error as string);
     }
   }
 
-  async openDirectChat(reciverId: string) {
+  async getDirectChat(userId: string) {
     try {
-      return await this.http.post<void>('/chat/direct', { reciverId });
+      return await this.http.get<IResponseChatRoom>('/chat/direct/' + userId);
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async createChat(payload: {
+    name: string;
+    type: EChatType;
+    password?: string;
+  }) {
+    try {
+      return await this.http.post<IChatRoomResponse>('/chat/group', payload);
     } catch (error) {
       throw new Error(error as string);
     }

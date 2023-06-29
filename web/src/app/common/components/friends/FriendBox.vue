@@ -91,6 +91,7 @@ import { useSockets } from '../../../../sockets';
 import { useRouter } from 'vue-router';
 import { useChatStore } from '../../../../stores/chats';
 import { FriendsService, GameService } from '../../../dashboard/services';
+import { ChatService } from '../../../dashboard/services/ChatService';
 
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
@@ -99,14 +100,14 @@ const props = defineProps<{
 }>();
 const friendsService = inject<FriendsService>('friendsService')!;
 const gameService = inject<GameService>('gameService')!;
+const chatService = inject<ChatService>('chatService')!;
 
 const router = useRouter();
 const { socketNotifications } = useSockets(friendsService);
 const firendsStore = useFriendsStore();
-const chatStore = useChatStore()
+const chatStore = useChatStore();
 const gameStore = useGameStore();
 const { friends } = storeToRefs(firendsStore);
-
 
 const isOpen = ref<boolean>(false);
 const onClickAway = () => {
@@ -144,10 +145,13 @@ const refuseFriend = async () => {
   } catch (error) {}
 };
 
-const openChat = () => {
-	onClickAway();
-	chatStore.open(props.friend.profile);
-}
+const openChat = async () => {
+  onClickAway();
+  const chat = await chatService.getDirectChat(props.friend.profile.login);
+  chatStore.chatId = chat.id;
+  chatStore.messages = chat.messages;
+  chatStore.open(props.friend.profile);
+};
 
 const blockUser = async () => {
   try {

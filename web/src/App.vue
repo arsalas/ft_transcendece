@@ -14,6 +14,7 @@ import {
 } from './app/dashboard/services';
 import { AuthService } from './app/auth/services/authService';
 import { Http } from './api';
+import { ChatService } from './app/dashboard/services/ChatService';
 
 // COMPONENTES
 const Notification = defineAsyncComponent(
@@ -28,12 +29,14 @@ const profileService = new ProfileService(http);
 const authService = new AuthService(http);
 const friendsService = new FriendsService(http);
 const gameService = new GameService(http);
+const chatService = new ChatService(http);
 
 provide('editProfileService', editProfileService);
 provide('profileService', profileService);
 provide('authService', authService);
 provide('friendsService', friendsService);
 provide('gameService', gameService);
+provide('chatService', chatService);
 
 console.log({authService});
 

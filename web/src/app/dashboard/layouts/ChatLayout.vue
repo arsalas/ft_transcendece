@@ -3,7 +3,11 @@
     <aside>
       <header>
         <div>
-          <input v-model.trim="chatFilter" type="text" class="input is-small" placeholder="Search..." />
+          <input
+            v-model.trim="chatFilter"
+            type="text"
+            class="input is-small"
+            placeholder="Search..." />
         </div>
         <button @click="open" class="ml-2 action-button text">
           <i class="fas fa-plus"></i>
@@ -21,7 +25,6 @@
       </ul>
     </aside>
     <main>
-      <!-- <ChatPage /> -->
       <router-view></router-view>
     </main>
   </article>
@@ -37,8 +40,10 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
 import ChatPage from '../pages/ChatPage.vue';
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, inject, onMounted, ref } from 'vue';
 import { useModal } from '../../common/composables';
+import { ChatService } from '../services/ChatService';
+import { IChatRoomResponse } from '../../../interfaces';
 
 // COMPONENTES
 const NewChat = defineAsyncComponent(() => import('../components/NewChat.vue'));
@@ -50,198 +55,29 @@ const Modal = defineAsyncComponent(
 );
 
 const route = useRoute();
+const chatService = inject<ChatService>('chatService');
 
 const { open, isOpen, close, isOpenContent } = useModal();
 const chatFilter = ref<string>('');
 const chatList = computed(() =>
-  chats.filter((chat) =>
+  chats.value.filter((chat) =>
     chat.name.toLowerCase().includes(chatFilter.value.toLowerCase()),
   ),
 );
 
-const chats = [
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-  {
-    id: Math.floor(Math.random() * 100).toString(),
-    name: 'Lorem ipsum ' + Math.floor(Math.random() * 100),
-  },
-];
+const chats = ref<IChatRoomResponse[]>([]);
 
+const fetchChats = async () => {
+  try {
+    chats.value = await chatService!.getAllChatsByUser();
+  } catch (error) {
+  } finally {
+  }
+};
+
+onMounted(() => {
+  fetchChats();
+});
 </script>
 <style lang="scss" scoped>
 article {

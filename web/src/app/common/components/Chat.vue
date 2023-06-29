@@ -10,7 +10,7 @@
             :name="userChat!.username"
             :status="userChat!.status" />
         </div>
-        <div v-else class="text">{{ name }} ({{ users?.length() }} users)</div>
+        <div v-else class="text">{{ name }} ({{ users?.length }} users)</div>
       </div>
 
       <div class="right">
@@ -111,7 +111,7 @@ import { defineAsyncComponent, ref, onMounted, nextTick } from 'vue';
 
 import { useUserStore } from '../../../stores';
 import { EChatType } from '../../../interfaces';
-import { IChat } from '../../../interfaces/chat';
+import { IChat, IMessage } from '../../../interfaces/chat';
 import { IFriendProfile } from '../../../interfaces';
 import { storeToRefs } from 'pinia';
 import { useChatStore } from '../../../stores/chats';
@@ -125,7 +125,7 @@ const props = defineProps<{
   userChat?: IFriendProfile;
   name?: string;
   type: EChatType;
-  messages: IChat[];
+  messages: IMessage[];
   users?: IFriendProfile[];
 }>();
 
