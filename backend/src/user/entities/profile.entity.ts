@@ -25,7 +25,18 @@ export class Profile {
   @Column({ unique: true, nullable: true })
   username: string;
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    transformer: {
+      to(value) {
+        return value;
+      },
+      from(value: string) {
+        if (value) return process.env.WEB_URL + '/image/' + value;
+        return value;
+      },
+    },
+  })
   avatar: string;
 
   @Column()

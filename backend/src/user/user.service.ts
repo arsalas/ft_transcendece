@@ -56,9 +56,6 @@ export class UserService {
     const profile = await this.profileRepository.findOneBy({ username });
     if (!profile) throw new NotFoundException();
 
-    if (profile.avatar)
-      profile.avatar =
-        this.configService.get<string>('webURL') + '/image/' + profile.avatar;
 
     const history = await this.gameService.getHistoryByUser(profile.login);
 
@@ -118,14 +115,6 @@ export class UserService {
       // "generatedMaps": [],
       // "raw": [],
       // "affected": 1
-      if (profile.avatar)
-        profile = {
-          ...profile,
-          avatar:
-            this.configService.get<string>('webURL') +
-            '/image/' +
-            profile.avatar,
-        };
       return profile;
     } catch (error) {
       throw new HttpException('Something is wrong', 500);

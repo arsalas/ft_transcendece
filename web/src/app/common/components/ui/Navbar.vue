@@ -123,7 +123,7 @@ const { socketGame } = useSocketsGame();
 const changeStatus = () => {
   if (user.value.status == 'online') user.value.status = 'away';
   else user.value.status = 'online';
-  socketNotifications.emit('change-status', user.value.status);
+  socketNotifications.value?.emit('change-status', user.value.status);
 };
 const logout = () => {
   socketGame.value?.emit('force-diconnect', user.value.login);

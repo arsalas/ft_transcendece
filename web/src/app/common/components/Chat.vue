@@ -144,19 +144,31 @@ import { useUserStore } from '../../../stores';
 import { useSocketsChat } from '../../../sockets';
 
 const { socketChat } = useSocketsChat();
+const chatStore = useChatStore();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+const addUser = ref<string>('');
+const newMessage = ref<string>('');
+const refChat = ref<HTMLDivElement>();
 
 onMounted(() => {
   if (props.type != EChatType.Direct) {
-    socketChat.value?.emit('chat-connect', props.id);
-    socketChat.value?.on('recive-message-group', (payload: IMessage) => {
-      props.messages.push(payload);
+    console.log('connect');
+    socketChat.value?.emit('join-chat', props.id);
+    socketChat.value?.on('recive-message-group', (payload) => {
+      console.log(payload);
+      const { chatIdValue, ...msg } = payload;
+      if (payload.userId != user.value.login) props.messages.push(msg);
     });
   }
 });
 
 onUnmounted(() => {
-  if (props.type != EChatType.Direct)
+  if (props.type != EChatType.Direct) {
+    console.log('leave - chat', props.id);
+    socketChat.value?.emit('leave-chat', props.id);
     socketChat.value?.off('recive-message-group');
+  }
 });
 
 const isSameDay = (date1: string, date2: string | undefined) => {
@@ -187,13 +199,6 @@ const props = defineProps<{
   messages: IMessage[];
   users?: IUserChat[];
 }>();
-
-const chatStore = useChatStore();
-const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
-const addUser = ref<string>('');
-const newMessage = ref<string>('');
-const refChat = ref<HTMLDivElement>();
 
 const onClickAway = () => {
   isOpen.value = false;
@@ -227,9 +232,9 @@ const formatRelativeTime = (date: string) => {
 
 const handleAddUser = async () => {
   try {
-    // TODO response incluya el user para hacer push en la array
     const response = await chatService.addUser(addUser.value, props.id!);
-	props.users?.push(response);
+    props.users?.push(response);
+    addUser.value = '';
   } catch (error) {}
 };
 
@@ -247,11 +252,9 @@ const isUserOwner = () => {
 };
 
 const exitChannel = () => {
-	try {
-		chatService.leaveChat(props.id!);
-	} catch (error) {
-		
-	}
+  try {
+    chatService.leaveChat(props.id!);
+  } catch (error) {}
 };
 
 const showUsers = () => {
@@ -267,6 +270,12 @@ const onSubmit = async () => {
     isRead: true,
     message: newMessage.value,
     userId: user.value.login,
+  });
+  socketChat.value?.emit('send-message', {
+    message: newMessage.value,
+    chatId: props.id,
+    type: props.type,
+    reciverId: props.userChat?.login,
   });
   newMessage.value = '';
   if (!refChat.value) return;

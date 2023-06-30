@@ -16,10 +16,20 @@
       <ul>
         <li
           v-for="chat in chatList"
-          class="text is-small"
+          class="text is-small chat-item"
           :class="{ 'is-active': chat.id == route.params.chatId }">
-          <router-link :to="{ name: 'chat', params: { chatId: chat.id } }">
-            {{ chat.name }}
+          <a
+            @click="handleProtectedGroup(chat.id)"
+            v-if="chat.type == EChatType.Protected">
+            <span> {{ chat.name }}</span>
+            <span class="icon">
+              <i class="fas fa-lock"></i>
+            </span>
+          </a>
+          <router-link
+            v-else
+            :to="{ name: 'chat', params: { chatId: chat.id } }">
+            <span> {{ chat.name }}</span>
           </router-link>
         </li>
       </ul>
@@ -32,17 +42,46 @@
     <Box>
       <template v-slot:header> Create Chat </template>
       <template v-slot:body>
-        <NewChat />
+        <NewChat @close="close" />
       </template>
     </Box>
   </Modal>
+  <ModalPass
+    v-if="isOpenPass"
+    @close="closePass"
+    :isOpenContent="isOpenContentPass">
+    <Box>
+      <template v-slot:header> Password Chat </template>
+      <template v-slot:body>
+        <form @submit.prevent="handleFormPass">
+          <div class="field">
+            <div class="control">
+              <input
+                v-model.trim="password"
+                type="password"
+                class="input"
+                placeholder="password" />
+            </div>
+          </div>
+
+          <div class="field">
+            <button type="submit" class="button is-primary is-fullwidth">
+              Enter
+            </button>
+          </div>
+        </form>
+      </template>
+    </Box>
+  </ModalPass>
 </template>
 <script lang="ts" setup>
-import { useRoute } from 'vue-router';
-import { computed, defineAsyncComponent, inject, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { defineAsyncComponent, inject, onMounted, ref } from 'vue';
 import { useModal } from '../../common/composables';
 import { ChatService } from '../services/ChatService';
-import { IChatRoomResponse } from '../../../interfaces';
+import { useChatStore } from '../../../stores/chats';
+import { storeToRefs } from 'pinia';
+import { EChatType } from '../../../interfaces';
 
 // COMPONENTES
 const NewChat = defineAsyncComponent(() => import('../components/NewChat.vue'));
@@ -52,19 +91,22 @@ const Box = defineAsyncComponent(
 const Modal = defineAsyncComponent(
   () => import('../../common/components/ui/Modal.vue'),
 );
+const ModalPass = defineAsyncComponent(
+  () => import('../../common/components/ui/Modal.vue'),
+);
 
+const chatStore = useChatStore();
+const { chatFilter, chatList, chats, password } = storeToRefs(chatStore);
 const route = useRoute();
 const chatService = inject<ChatService>('chatService')!;
 
 const { open, isOpen, close, isOpenContent } = useModal();
-const chatFilter = ref<string>('');
-const chatList = computed(() =>
-  chats.value.filter((chat) =>
-    chat.name.toLowerCase().includes(chatFilter.value.toLowerCase()),
-  ),
-);
-
-const chats = ref<IChatRoomResponse[]>([]);
+const {
+  open: openPass,
+  isOpen: isOpenPass,
+  close: closePass,
+  isOpenContent: isOpenContentPass,
+} = useModal();
 
 const fetchChats = async () => {
   try {
@@ -74,8 +116,22 @@ const fetchChats = async () => {
   }
 };
 
-
-
+const chatSelect = ref<string>('');
+const handleProtectedGroup = (chatId: string) => {
+  password.value = '';
+  chatSelect.value = chatId;
+  openPass();
+};
+const router = useRouter();
+const handleFormPass = () => {
+  closePass();
+  router.push({
+    name: 'chat',
+    params: {
+      chatId: chatSelect.value,
+    },
+  });
+};
 
 onMounted(() => {
   fetchChats();
@@ -144,5 +200,11 @@ li {
   aspect-ratio: 1;
   //   display: flex;
   //   align-items: center;
+}
+
+.chat-item a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

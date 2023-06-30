@@ -29,6 +29,7 @@ import { CreateMsgDto } from './dto/create-msg';
 	  try {
 		payload = this.jwtService.verify(token);
 		client.join(payload.login);
+		console.log('chat connect ', payload.login);
 	  } catch (error) {
 		console.log(error);
 		client.disconnect();
@@ -42,18 +43,18 @@ import { CreateMsgDto } from './dto/create-msg';
 	}
   
 	@SubscribeMessage('send-message')
-	sendMessage(client: Socket, @MessageBody() payload: CreateMsgDto) {
-    	const userId = this.chatService.getUserIdByClient(client.id);
+	sendMessage(client: Socket, payload: CreateMsgDto) {
+		const userId = this.chatService.getUserIdByClient(client.id);
 		this.chatService.sendMessage(userId, payload)
 	}
 
 	@SubscribeMessage('join-chat') 
-	joinChat(client: Socket, @MessageBody() chatId: string) {
+	joinChat(client: Socket,chatId: string) {
 		client.join(chatId);
 	}
 
 	@SubscribeMessage('leave-chat')
-	chatDisconnect(client: Socket, @MessageBody() chatId: string) {
+	chatDisconnect(client: Socket, chatId: string) {
 		client.leave(chatId);
 	}
 

@@ -131,7 +131,7 @@ const acceptFriend = async () => {
   try {
     await friendsService.acceptRequest(props.friend.profile.login);
     props.friend.activedAt = new Date().toDateString();
-    socketNotifications.emit('accept-request', props.friend.profile.login);
+    socketNotifications.value?.emit('accept-request', props.friend.profile.login);
   } catch (error) {}
 };
 const refuseFriend = async () => {
@@ -141,7 +141,7 @@ const refuseFriend = async () => {
       (f) => f.profile.login == props.friend.profile.login,
     );
     friends.value.splice(i, 1);
-    socketNotifications.emit('refuse-request', props.friend.profile.login);
+    socketNotifications.value?.emit('refuse-request', props.friend.profile.login);
   } catch (error) {}
 };
 

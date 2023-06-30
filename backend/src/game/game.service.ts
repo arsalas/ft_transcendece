@@ -323,9 +323,6 @@ export class GameService {
             },
           };
 
-          if (data.playerLeft.profile.avatar)
-            data.playerLeft.profile.avatar =
-              process.env.WEB_URL + '/image/' + data.playerLeft.profile.avatar;
 
           historyData.push(data);
         } else {
@@ -334,11 +331,6 @@ export class GameService {
             isWinner: h.isWinner,
             result: h.result,
           };
-          if (historyData[index].playerRight.profile.avatar)
-            historyData[index].playerRight.profile.avatar =
-              process.env.WEB_URL +
-              '/image/' +
-              historyData[index].playerRight.profile.avatar;
         }
       });
 

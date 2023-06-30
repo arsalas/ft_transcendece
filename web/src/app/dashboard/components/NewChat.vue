@@ -1,8 +1,4 @@
 <template>
-  <!-- TIPO
-	PASSWORD
-	NOMBRE -->
-
   <div class="cont container">
     <form @submit.prevent="handleSubmit" action="">
       <div class="field">
@@ -18,9 +14,9 @@
         <div class="control">
           <div class="select is-fullwidth text">
             <select v-model="type">
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-              <option value="protected">Protected</option>
+              <option :value="EChatType.Public">Public</option>
+              <option :value="EChatType.Private">Private</option>
+              <option :value="EChatType.Protected">Protected</option>
             </select>
           </div>
         </div>
@@ -47,17 +43,43 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
-
+import { inject, ref } from 'vue';
+import { ChatService } from '../services/ChatService';
+import { EChatType } from '../../../interfaces';
+import { useChatStore } from '../../../stores/chats';
+import { storeToRefs } from 'pinia';
 
 const isLoading = ref<boolean>(false);
 const name = ref<string>('');
 const password = ref<string>('');
-const type = ref<'public' | 'private' | 'protected'>('public');
+const type = ref<EChatType>(EChatType.Public);
 
-const handleSubmit = () => {
-  if (name.value.length == 0) return;
-  if (type.value == 'protected' && password.value.length == 0) return;
+const chatStore = useChatStore();
+const { chats } = storeToRefs(chatStore);
+const chatService = inject<ChatService>('chatService')!;
+
+interface ChatPayload {
+  name: string;
+  type: EChatType;
+  password?: string;
+}
+
+const emits = defineEmits(['close']);
+
+const handleSubmit = async () => {
+  try {
+    if (name.value.length == 0) return;
+    if (type.value == 'protected' && password.value.length == 0) return;
+
+    const payload: ChatPayload = {
+      name: name.value,
+      type: type.value,
+    };
+    if (type.value == EChatType.Protected) payload.password = password.value;
+    const response = await chatService.createChat(payload);
+    chats.value.push(response);
+	emits('close')
+  } catch (error) {}
 };
 </script>
 <style lang="scss" scoped>

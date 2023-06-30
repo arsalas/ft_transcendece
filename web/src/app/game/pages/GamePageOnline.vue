@@ -219,7 +219,7 @@ onMounted(async () => {
   );
   socketGame.value?.on('start-game', () => {
     isStart.value = true;
-    socketNotifications.emit('change-status', 'game');
+    socketNotifications.value?.emit('change-status', 'game');
     setTimeout(() => {
       console.log('start');
       createdGame();
@@ -231,7 +231,7 @@ onMounted(async () => {
     isFinish.value = true;
     result.value = resultGame;
     setTimeout(() => {
-      socketNotifications.emit('change-status', 'online');
+      socketNotifications.value?.emit('change-status', 'online');
       router.push({ name: 'home' });
     }, 4000);
   });

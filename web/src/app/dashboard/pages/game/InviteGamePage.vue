@@ -74,7 +74,7 @@ const selectType = (type: ETypeGame) => {
 const inviteGame = () => {
   gameStore.selectGameType(typeGame.value!);
   waitingAccept.value = true;
-  socketNotifications.emit('invite-game', {
+  socketNotifications.value?.emit('invite-game', {
     typeGame: typeGame.value,
     userId: inviteUser.value?.login,
     user: {

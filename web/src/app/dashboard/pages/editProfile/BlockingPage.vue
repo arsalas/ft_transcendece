@@ -28,7 +28,6 @@
 
       <div class="mt-4 text">Blocked Users</div>
 
-      <!-- TODO preparar con componente -->
       <div class="panel mt-3">
         <header class="text">USER</header>
         <div class="body">

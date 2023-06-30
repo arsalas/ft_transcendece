@@ -6,6 +6,7 @@ import { Manager, Socket } from 'socket.io-client';
 import { CONFIG } from '../config';
 import { useGameStore } from '../stores';
 import { storeToRefs } from 'pinia';
+import { useChatStore } from '../stores/chats';
 
 let manager: Manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
   extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
@@ -25,12 +26,15 @@ export const useSocketsChat = () => {
   };
 
   const addListeners = () => {
-
+    const chatStore = useChatStore();
+    const { chatId, messages } = storeToRefs(chatStore);
     socketChat.value?.on('recive-message-direct', (payload) => {
       console.log('recive-message-direct', payload);
+      const { chatIdValue, ...msg } = payload;
+      if (payload.chatRoomId == chatId.value) {
+        messages.value.push(msg);
+      }
     });
-
-  
   };
 
   return {

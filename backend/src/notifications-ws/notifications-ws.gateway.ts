@@ -31,6 +31,7 @@ export class NotificationsWsGateway
       payload = this.jwtService.verify(token);
 
       client.join(payload.login);
+	  console.log('notifications connect ', payload.login);
     } catch (error) {
       client.disconnect();
       return;

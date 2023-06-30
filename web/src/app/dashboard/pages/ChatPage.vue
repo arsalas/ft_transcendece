@@ -1,7 +1,7 @@
 <template>
   <div class="chat pattern" v-bind="chat">
     <Chat
-      v-if="chat"
+      v-if="!isLoading && chat"
       :id="chat.id"
       :type="chat.type"
       :messages="chat.messages"
@@ -19,9 +19,10 @@ import {
   ref,
   watch,
 } from 'vue';
-import { IResponseChatRoom } from '../../../interfaces';
 import { useRoute } from 'vue-router';
 import { ChatService } from '../services/ChatService';
+import { useChatStore } from '../../../stores/chats';
+import { storeToRefs } from 'pinia';
 
 const Chat = defineAsyncComponent(
   () => import('../../common/components/Chat.vue'),
@@ -29,9 +30,11 @@ const Chat = defineAsyncComponent(
 
 const chatService = inject<ChatService>('chatService')!;
 
+const chatStore = useChatStore();
+const { password, chat } = storeToRefs(chatStore);
 const route = useRoute();
 
-const chat = ref<IResponseChatRoom>();
+const isLoading = ref<boolean>(false);
 
 const chatId = computed(() => route.params.chatId as string);
 watch(chatId, () => {
@@ -40,13 +43,17 @@ watch(chatId, () => {
 
 const fetchData = async () => {
   try {
-    chat.value = await chatService.getChat(chatId.value);
-	console.log(chat.value)
+    isLoading.value = true;
+    console.log(route.params);
+    chat.value = await chatService.getChat(
+      chatId.value,
+      password.value.length > 0 ? password.value : '123',
+    );
+    isLoading.value = false;
   } catch (error) {}
 };
 
 onMounted(() => fetchData());
-
 </script>
 
 <style lang="scss" scoped>

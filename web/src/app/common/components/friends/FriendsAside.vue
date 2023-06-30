@@ -110,7 +110,7 @@ const { socketNotifications } = useSockets(friendsService);
 
 const sendUser = ref<string>('');
 const handleSubmit = async () => {
-  socketNotifications.emit('send-request', sendUser.value);
+  socketNotifications.value?.emit('send-request', sendUser.value);
   //   const newFriend = await friendsService.sendRequest(sendUser.value);
   //   friends.value.push(newFriend);
 };

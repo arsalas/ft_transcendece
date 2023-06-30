@@ -150,9 +150,6 @@ export class AuthService {
     });
 
     // Comprobamos si tiene un avatar para unir el path de la url de la imagen
-    if (profile.avatar)
-      profile.avatar =
-        this.configService.get<string>('webURL') + '/image/' + profile.avatar;
 
     return {
       token,

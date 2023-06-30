@@ -18,7 +18,7 @@ export const useStart = (
   const userStore = useUserStore();
   const friendsStore = useFriendsStore();
   const themeStore = useThemeStore();
-  const { connectToServerNotifications } = useSockets();
+  const { connectToServerNotifications } = useSockets(friendsService);
   const { connectToServerGame } = useSocketsGame();
   const { connectToServerChat } = useSocketsChat();
 

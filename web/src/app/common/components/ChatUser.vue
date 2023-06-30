@@ -89,6 +89,8 @@
 import { defineAsyncComponent, inject, ref } from 'vue';
 import { IUserChat } from '../../../interfaces';
 import { ChatService } from '../../dashboard/services/ChatService';
+import { useChatStore } from '../../../stores/chats';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps<{
   user: IUserChat;
@@ -101,6 +103,9 @@ const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
 const chatService = inject<ChatService>('chatService')!;
+
+const chatStore = useChatStore();
+const { chat } = storeToRefs(chatStore);
 
 const isOpen = ref<boolean>(false);
 const onClickAway = () => {
@@ -140,13 +145,18 @@ const banUser = async () => {
 const kickUser = async () => {
   try {
     await chatService.kickUser(props.user.login, props.chatId);
-	// TODO remove user from userArray
+
+    const index = chat.value?.users?.findIndex(
+      (us) => us.login == props.user.login,
+    );
+	console.log({index})
+    chat.value?.users?.splice(index!, 1);
+
     onClickAway();
   } catch (error) {
   } finally {
   }
 };
-
 </script>
 <style lang="scss" scoped>
 .user-chat {
