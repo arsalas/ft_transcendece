@@ -13,7 +13,7 @@ import {
   import { Inject, forwardRef } from '@nestjs/common';
 import { CreateMsgDto } from './dto/create-msg';
   
-  @WebSocketGateway({ cors: true, namespace: '/game' })
+  @WebSocketGateway({ cors: true, namespace: '/chat' })
   export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() wss: Server;
   
@@ -52,7 +52,7 @@ import { CreateMsgDto } from './dto/create-msg';
 		client.join(chatId);
 	}
 
-	@SubscribeMessage('chat-disconnect')
+	@SubscribeMessage('leave-chat')
 	chatDisconnect(client: Socket, @MessageBody() chatId: string) {
 		client.leave(chatId);
 	}

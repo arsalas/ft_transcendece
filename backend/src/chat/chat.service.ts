@@ -20,6 +20,7 @@ import { Socket } from 'socket.io';
 import * as bcryptjs from 'bcryptjs';
 import { ChatGateway } from './chat.gateway';
 import { CreateMsgDto } from './dto/create-msg';
+import { GetChatDto } from './dto/get-chat.dto';
 
 interface ConnectedClients {
 	[id: string]: {
@@ -53,7 +54,7 @@ export class ChatService {
       userId: { login: userId },
       chatRoomId: { id: msg.chatId },
     });
-    await this.chatMessageRepository.save(newMsg);
+    return await this.chatMessageRepository.save(newMsg);
   }
 
   // no existe el chat directo
@@ -79,7 +80,7 @@ export class ChatService {
       isOwner: false,
     });
     await this.chatUserRepository.save([user1, user2]);
-    console.log('NUEVO CHAT CREADO');
+    return newChat;
   }
 
   async getMessages(userId: string, chatId: string) {
@@ -101,7 +102,7 @@ export class ChatService {
 
 	  const msgs = await this.chatMessageRepository
 		.createQueryBuilder('message')
-		.leftJoinAndSelect('message.userId', 'user') // Cargar la relación 'userId' con la entidad 'User'
+		.leftJoinAndSelect('message.userId', 'user')
 		.where('message.chatRoomId = :chatId', { chatId })
 		.orderBy('message.createdAt', 'DESC')
 		.take(this.LIMIT_MESSAGE)
@@ -127,8 +128,8 @@ export class ChatService {
 		})
 
 		return chats.filter(async (c) => {
-			if (c.type !== 'public') {
-				const user = await this.chatUserRepository.findOneBy({ user: {login: userId}});
+			if (c.type === 'private') {
+				const user = await this.chatUserRepository.findOneBy({ user: {login: userId}, chatRoom: { id: c.id }});
 				if (!user)
 					return false;
 			}
@@ -143,23 +144,37 @@ export class ChatService {
 	}
   }
 
-  async getChatRoom(userId: string, chatId: string) {
+  async getChatRoom(userId: string, getChatDto: GetChatDto) {
 	try {
-	  const room = await this.chatRoomRepository.findOneBy({ id: chatId });
+	  const room = await this.chatRoomRepository.findOneBy({ id: getChatDto.chatId });
 
 	  if (!room) {
 		throw new NotFoundException();
 	  }
-		return {
-			id: room.id,
-			name: room.name,
-			type: room.type,
-			messages: await this.getMessages(userId, chatId),
-			users: await this.getUsersFromRoom(chatId),
-		};
+
+	  const user = await this.chatUserRepository.findOneBy({ user: {login: userId }, chatRoom: { id: getChatDto.chatId }});
+
+	  if (!user) {
+		if (room.type === 'protected' && !this.matchPass(getChatDto.password ,room.password))
+			throw new UnauthorizedException();
+		const chatUser = this.chatUserRepository.create({
+			user: {login: userId},
+			isAdmin: false,
+			isOwner: false,
+			chatRoom: room
+		})
+		await this.chatUserRepository.save(chatUser);
+	  }
+	return {
+		id: room.id,
+		name: room.name,
+		type: room.type,
+		messages: await this.getMessages(userId, getChatDto.chatId),
+		users: await this.getUsersFromRoom(getChatDto.chatId),
+	};
 	} catch (error) {
 	  console.log(error);
-	  throw error;
+	  throw new InternalServerErrorException();
 	}
   }
 
@@ -177,7 +192,7 @@ export class ChatService {
 		})
 
 		if (!users)
-			return [];
+			throw new InternalServerErrorException();
 
 		const usersInChat = [];
 		for (let u of users) {
@@ -192,7 +207,7 @@ export class ChatService {
 		return usersInChat;
 
 	} catch {
-
+		throw new InternalServerErrorException();
 	}
   }
 
@@ -229,11 +244,10 @@ export class ChatService {
 		});
       if (!chat) {
         console.log('El chat NO existe');
-        await this.createSaveChat(senderLogin, reciverId);
-        return [];
+        return await this.createSaveChat(senderLogin, reciverId);
       }
 
-		return await this.getChatRoom(senderLogin, chat.chatRoom.id);
+		return await this.getChatRoom(senderLogin, {chatId: chat.chatRoom.id, password: ''});
 	  } catch (error) {
 		console.log(error);
 		throw new InternalServerErrorException();
@@ -242,17 +256,6 @@ export class ChatService {
 
   async createGroupChat(userId:string, groupDto: CreateChatDto) {
     try {
-    //   const chat = await this.chatRoomRepository.findOne({
-    //     where: [
-    //       {
-    //         name: groupDto.name,
-    //       },
-    //     ],
-    //   });
-    //   if (chat) {
-    //     console.log('EXISTE EL CHAT');
-    //     return [];
-    //   }
 	if (groupDto.type === 'protected' && !groupDto.password)
 		throw Error("MISSSING PASSWORD")
 	const newChat = this.chatRoomRepository.create({
@@ -285,11 +288,11 @@ export class ChatService {
 			where: [
 			  {
 				user: { login: userId },
-				chatRoom: { name: groupDto.name },
+				chatRoom: { name: groupDto.id },
 			  },
 			],
 		});
-		if (!user) {
+		if (!user || !user.isOwner) {
 			throw new UnauthorizedException();
 		}
 
@@ -305,6 +308,7 @@ export class ChatService {
 	const pass = groupDto.password ? this.encryptPass(groupDto.password) : null
 	await this.chatRoomRepository.update(group, {...groupDto, password: pass})
 	return {
+		id: groupDto.id,
 		name: groupDto.name,
 		type: groupDto.type
 	};
@@ -324,44 +328,41 @@ export class ChatService {
         ],
       });
 
-      if (!user || !user.isAdmin || !user.isOwner) {
+      if (!user || !user.isAdmin)
 		throw new UnauthorizedException();
-      }
+
+	  const userProfile = await this.profileRepository.findOneBy({ username: addUserDto.userId });
+
+	  if (!userProfile)
+	  	throw new NotFoundException();
 
 	  const addUser = await this.chatUserRepository.findOne({
         where: [
           {
-			user: { login: addUserDto.userId },
+			user: { login: userProfile.login },
             chatRoom: { id: addUserDto.chatId },
           },
         ],
       });
 
-	  if (addUser) {
+	  if (addUser)
 		throw new BadRequestException();
-	  }
-
-      const findRoom = await this.chatRoomRepository.findOne({
-        where: [
-          {
-			id: addUserDto.chatId,
-          },
-        ],
-      });
-
-	  if (findRoom.type === 'protected' && !this.matchPass(findRoom.password, addUserDto.password)) {
-		throw new UnauthorizedException();
-      }
 
       const newUser = this.chatUserRepository.create({
-        chatRoom: findRoom,
+        chatRoom: { id: addUserDto.chatId },
         user: { login: addUserDto.userId },
         isAdmin: false,
         isOwner: false,
       });
       await this.chatUserRepository.save(newUser);
+	  return {
+		...userProfile,
+		isAdmin: false,
+		isOwner: false
+	  }
     } catch (error) {
       console.log(error);
+	  throw new InternalServerErrorException();
     }
   }
 
@@ -375,9 +376,9 @@ export class ChatService {
           },
         ],
       });
-      if (!user || !user.isAdmin || !user.isOwner) {
+      if (!user || !user.isAdmin)
 		throw new UnauthorizedException();
-      }
+
 	  const modifyUser = await this.chatUserRepository.findOne({
 		where: [
 			{
@@ -387,21 +388,22 @@ export class ChatService {
 		  ],
 		});
 
-		if (!modifyUser) {
+		if (!modifyUser)
 			throw new BadRequestException();
-		}
-		if (modifyUser.isOwner) {
+		if (modifyUser.isOwner)
 			throw new UnauthorizedException();
-		}
+
 		await this.chatUserRepository.update(modifyUser, {isBanned: true});
+		return { message: 'Success' };
     } catch (error) {
       console.log(error);
+	  throw new InternalServerErrorException();
     }
   }
 
   async muteUser(userId: string, modifyUserDto: ModifyUserDto) {
-    try {
-		const user = await this.chatUserRepository.findOne({
+    try {	
+		const chatUser = await this.chatUserRepository.findOne({
 		  where: [
 			{
 			  user: { login: userId },
@@ -409,9 +411,9 @@ export class ChatService {
 			},
 		  ],
 		});
-		if (!user || !user.isAdmin || !user.isOwner) {
+		if (!chatUser || !chatUser.isAdmin)
 		  throw new UnauthorizedException();
-		}
+
 		const modifyUser = await this.chatUserRepository.findOne({
 		  where: [
 			  {
@@ -421,16 +423,17 @@ export class ChatService {
 			],
 		  });
   
-		  if (!modifyUser) {
+		  if (!modifyUser)
 			  throw new BadRequestException();
-		  }
-		  if (modifyUser.isOwner) {
+		  if (modifyUser.isOwner)
 			  throw new UnauthorizedException();
-		  }
+
 		  await this.chatUserRepository.update(modifyUser, {mutedTo: modifyUserDto.time});
-	  } catch (error) {
+		  return { message: 'Success' };
+	} catch (error) {
 		console.log(error);
-	  }
+		throw new InternalServerErrorException();
+	}
   }
 
   async makeAdmin(userId: string, modifyUserDto: ModifyUserDto) {
@@ -443,7 +446,7 @@ export class ChatService {
 			},
 		  ],
 		});
-		if (!user || !user.isAdmin || !user.isOwner) {
+		if (!user || !user.isOwner) {
 		  throw new UnauthorizedException();
 		}
 		const modifyUser = await this.chatUserRepository.findOne({
@@ -455,14 +458,69 @@ export class ChatService {
 			],
 		  });
   
-		  if (!modifyUser) {
+		  if (!modifyUser)
 			  throw new BadRequestException();
-		  }
 		  await this.chatUserRepository.update(modifyUser, {isAdmin: true});
-	  } catch (error) {
+		  return { message: 'Success' };
+	} catch (error) {
 		console.log(error);
-	  }
+		throw new InternalServerErrorException();
+	}
   }
+
+  	private async removeUserFromChat(userId:string, chatId:string) {
+		try {
+			await this.chatUserRepository.delete({
+				user: {login: userId},
+				chatRoom: {id: chatId}
+			});
+			const user = await this.getUsersFromRoom(chatId);
+			if (user.length === 0)
+				await this.chatRoomRepository.delete({id: chatId});
+			return {message: 'Success'};
+		}
+		catch {
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async leaveChatRoom(userId:string, chatId:string) {
+		try {
+			const chatUser = await this.chatUserRepository.findOneBy({user: {login: userId}, chatRoom: {id: chatId}});
+
+			if (!chatUser)
+				throw new BadRequestException();
+			await this.removeUserFromChat(userId, chatId);
+			const chat = await this.chatUserRepository.find({
+				where: { chatRoom: {id: chatId} }
+			})
+			if (chat && chat.length > 0 && chatUser.isOwner) {
+				const admins = chat.sort((a, b) => (a.isAdmin === b.isAdmin) ? 0 : a.isAdmin ? -1 : 1);
+				await this.chatUserRepository.update({id: admins[0].id}, {isOwner: true});
+			}
+			return {message: 'Success'};
+		}
+		catch {
+			throw new InternalServerErrorException();
+		}
+	}
+
+	async kickFromChatRoom(userId:string, modifyUserDto: ModifyUserDto) {
+		try {
+			const chatUser = await this.chatUserRepository.findOneBy({user: {login: userId}, chatRoom: {id: modifyUserDto.chatId}});
+
+			if (!chatUser || chatUser.isAdmin || userId === modifyUserDto.userId)
+				throw new BadRequestException();
+			const user = await this.chatUserRepository.findOneBy({user: {login: modifyUserDto.userId}, chatRoom: {id: modifyUserDto.chatId}});
+			if (!user || user.isOwner)
+				throw new BadRequestException();
+			await this.removeUserFromChat(userId, modifyUserDto.userId);
+			return {message: 'Success'};
+		}
+		catch {
+			throw new InternalServerErrorException();
+		}
+	}
 
 	encryptPass (password: string): string {
 		const salt = bcryptjs.genSaltSync();
@@ -531,10 +589,14 @@ export class ChatService {
 			if (!user || user.isBanned || (user.mutedTo && user.mutedTo.valueOf() - Date.now() < 0)) {
 				throw new UnauthorizedException();
 			}
-			await this.storeMessage(userId, payload);
-			this.gameGateway.wss.to(payload.chatId).emit('recive-message', payload.message);
+			const msg = await this.storeMessage(userId, payload);
+			const { id, chatRoomId, ...message } = msg;
+			if (payload.type === 'direct')
+				this.gameGateway.wss.to(userId).emit('recive-message-direct', message)
+			else
+				this.gameGateway.wss.to(payload.chatId).emit('recive-message-group', message)
 		} catch {
-
+			throw new InternalServerErrorException();
 		}
 	}
 

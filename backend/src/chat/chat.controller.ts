@@ -18,6 +18,7 @@ import { CreateMsgDto } from './dto/create-msg';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { ModifyUserDto } from './dto/modify-user.dto';
 import { AddUserDto } from './dto/add-user.dto';
+import { GetChatDto } from './dto/get-chat.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('chat')
@@ -31,12 +32,12 @@ export class ChatController {
 	return await this.chatService.getChatRooms(user.login);
   }
 
-  @Get('chatroom/:id')
+  @Post('chatroom/')
   async getChatRoom(
 	@Request() { user }: { user: JwtPayload },
-	@Param('id') reciverId: string,
+	@Body() getChatDto: GetChatDto,
   ) {
-	return await this.chatService.getChatRoom(user.login, reciverId);
+	return await this.chatService.getChatRoom(user.login, getChatDto);
   }
 
   @Get('friends/')
@@ -100,5 +101,21 @@ export class ChatController {
 	@Body() modifyUserDto: ModifyUserDto,
   ) {
 	return await this.chatService.makeAdmin(user.login, modifyUserDto);
+  }
+
+  @Post('kick/')
+  async kickUser(
+	@Request() { user }: { user: JwtPayload },
+	@Body() modifyUserDto: ModifyUserDto,
+  ) {
+	return await this.chatService.kickFromChatRoom(user.login, modifyUserDto);
+  }
+
+  @Post('leave/')
+  async leaveChatRoom(
+	@Request() { user }: { user: JwtPayload },
+	@Body() chatId: string,
+  ) {
+	return await this.chatService.leaveChatRoom(user.login, chatId);
   }
 }

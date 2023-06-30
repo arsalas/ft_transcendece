@@ -9,4 +9,7 @@ export class CreateMsgDto {
   @MinLength(1)
   readonly chatId: string;
 
+  @IsString()
+  @MinLength(1)
+  readonly type: string;
 }
