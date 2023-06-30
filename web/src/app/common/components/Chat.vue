@@ -229,6 +229,7 @@ const handleAddUser = async () => {
   try {
     // TODO response incluya el user para hacer push en la array
     const response = await chatService.addUser(addUser.value, props.id!);
+	props.users?.push(response);
   } catch (error) {}
 };
 
@@ -245,7 +246,13 @@ const isUserOwner = () => {
   return isFind ? true : false;
 };
 
-const exitChannel = () => {};
+const exitChannel = () => {
+	try {
+		chatService.leaveChat(props.id!);
+	} catch (error) {
+		
+	}
+};
 
 const showUsers = () => {
   onClickAway();

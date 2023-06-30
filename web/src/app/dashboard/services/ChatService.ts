@@ -3,6 +3,7 @@ import {
   EChatType,
   IChatRoomResponse,
   IResponseChatRoom,
+  IUserChat,
 } from '../../../interfaces';
 
 export class ChatService {
@@ -16,9 +17,9 @@ export class ChatService {
     }
   }
 
-  async getChat(chatId: string) {
+  async getChat(chatId: string, password?:string) {
     try {
-      return await this.http.get<IResponseChatRoom>('/chat/chatroom/' + chatId);
+      return await this.http.post<IResponseChatRoom>('/chat/chatroom/', {chatId, password});
     } catch (error) {
       throw new Error(error as string);
     }
@@ -46,7 +47,7 @@ export class ChatService {
 
   async addUser(username: string, chatId: string) {
     try {
-      return await this.http.post<IResponseChatRoom>('/chat/add', {
+      return await this.http.post<IUserChat>('/chat/add', {
         userId: username,
         chatId,
       });
@@ -82,6 +83,27 @@ export class ChatService {
     try {
       return await this.http.post<IResponseChatRoom>('/chat/admin', {
         userId,
+        chatId,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async kickUser(userId: string, chatId: string) {
+    try {
+      return await this.http.post<{message:string}>('/chat/kick', {
+        userId,
+        chatId,
+      });
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async leaveChat(chatId: string) {
+    try {
+      return await this.http.post<{message:string}>('/chat/leave', {
         chatId,
       });
     } catch (error) {

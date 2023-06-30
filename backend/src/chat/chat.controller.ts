@@ -114,8 +114,8 @@ export class ChatController {
   @Post('leave/')
   async leaveChatRoom(
 	@Request() { user }: { user: JwtPayload },
-	@Body() chatId: string,
+	@Body() chatId: any,
   ) {
-	return await this.chatService.leaveChatRoom(user.login, chatId);
+	return await this.chatService.leaveChatRoom(user.login, chatId.chatId);
   }
 }

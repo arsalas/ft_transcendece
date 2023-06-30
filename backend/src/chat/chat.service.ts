@@ -350,7 +350,7 @@ export class ChatService {
 
       const newUser = this.chatUserRepository.create({
         chatRoom: { id: addUserDto.chatId },
-        user: { login: addUserDto.userId },
+        user: { login: userProfile.login },
         isAdmin: false,
         isOwner: false,
       });
@@ -479,7 +479,8 @@ export class ChatService {
 				await this.chatRoomRepository.delete({id: chatId});
 			return {message: 'Success'};
 		}
-		catch {
+		catch (error) {
+			console.log(error);
 			throw new InternalServerErrorException();
 		}
 	}
@@ -487,7 +488,6 @@ export class ChatService {
 	async leaveChatRoom(userId:string, chatId:string) {
 		try {
 			const chatUser = await this.chatUserRepository.findOneBy({user: {login: userId}, chatRoom: {id: chatId}});
-
 			if (!chatUser)
 				throw new BadRequestException();
 			await this.removeUserFromChat(userId, chatId);
@@ -500,7 +500,8 @@ export class ChatService {
 			}
 			return {message: 'Success'};
 		}
-		catch {
+		catch (error) {
+			console.log(error);
 			throw new InternalServerErrorException();
 		}
 	}
@@ -509,15 +510,16 @@ export class ChatService {
 		try {
 			const chatUser = await this.chatUserRepository.findOneBy({user: {login: userId}, chatRoom: {id: modifyUserDto.chatId}});
 
-			if (!chatUser || chatUser.isAdmin || userId === modifyUserDto.userId)
+			if (!chatUser || !chatUser.isAdmin || userId === modifyUserDto.userId)
 				throw new BadRequestException();
 			const user = await this.chatUserRepository.findOneBy({user: {login: modifyUserDto.userId}, chatRoom: {id: modifyUserDto.chatId}});
 			if (!user || user.isOwner)
 				throw new BadRequestException();
-			await this.removeUserFromChat(userId, modifyUserDto.userId);
+			await this.removeUserFromChat(modifyUserDto.userId, modifyUserDto.chatId);
 			return {message: 'Success'};
 		}
-		catch {
+		catch (error) {
+			console.log(error);
 			throw new InternalServerErrorException();
 		}
 	}

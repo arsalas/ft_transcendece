@@ -28,6 +28,12 @@
               Add admin
             </a>
             <a
+              v-if="!user.isOwner && isUserAdmin"
+              @click.stop="kickUser()"
+              class="dropdown-item text is-small">
+              Kick
+            </a>
+            <a
               v-if="isUserAdmin"
               @click.stop="muteUser()"
               class="dropdown-item text is-small">
@@ -39,6 +45,15 @@
               class="dropdown-item text is-small">
               Ban User
             </a>
+            <router-link
+              @click.stop="isOpen = false"
+              :to="{
+                name: 'profileUser',
+                params: { username: user.username },
+              }"
+              class="dropdown-item text is-small">
+              View Profile
+            </router-link>
             <router-link
               @click.stop="isOpen = false"
               :to="{
@@ -121,6 +136,17 @@ const banUser = async () => {
   } finally {
   }
 };
+
+const kickUser = async () => {
+  try {
+    await chatService.kickUser(props.user.login, props.chatId);
+	// TODO remove user from userArray
+    onClickAway();
+  } catch (error) {
+  } finally {
+  }
+};
+
 </script>
 <style lang="scss" scoped>
 .user-chat {
