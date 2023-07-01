@@ -1,5 +1,5 @@
 <template>
-  <aside>
+  <aside class="is-hidden-mobile">
     <div v-if="invitations.length > 0">
       <header class="text friends-header">
         GAME INVITES({{ invitations.length }})

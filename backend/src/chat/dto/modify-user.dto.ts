@@ -1,4 +1,4 @@
-import { IsString, MinLength, IsOptional, IsDate, MinDate } from 'class-validator';
+import { IsString, MinLength, IsOptional, IsDate, MinDate, IsNumber, Min } from 'class-validator';
 
 export class ModifyUserDto {
   @IsString()
@@ -9,9 +9,9 @@ export class ModifyUserDto {
   @MinLength(1)
   readonly userId: string;
 
-  @IsDate()
+  @IsNumber()
   @IsOptional()
-  @MinDate(new Date())
-  readonly time: Date;
+  @Min(0)
+  readonly time: number;
   
 }

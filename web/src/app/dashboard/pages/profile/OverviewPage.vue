@@ -1,6 +1,6 @@
 <template>
   <div class="overview-container">
-    <div class="flag-container">
+    <div class="flag-container is-hidden-touch">
       <div class="flag" :style="{ backgroundColor: profile?.profile.color }">
         <div class="info">
           <Avatar
@@ -23,7 +23,39 @@
       </div>
     </div>
 
-    <div class="stadistics-container">
+    <div
+      class="is-hidden-desktop"
+      style="width: 100%; display: flex; justify-content: center">
+      <div
+        class="is-flex is-align-content-center is-flex-direction-column"
+        style="display: flex; justify-content: center">
+        <Avatar
+          class="bordered"
+          :src="profile!.profile.avatar!"
+          :fallback="profile!.profile.avatar42"
+          width="8rem" />
+        <div class="text is-extra mt-5">{{ profile?.profile.username }}</div>
+        <div class="text">{{ profile?.profile.login }}</div>
+        <header>
+          <ul class="mt-5">
+            <li class="has-text-centered text">Victories</li>
+            <li class="has-text-centered text">
+              {{ profile?.stadistics.victories }}
+            </li>
+            <li class="has-text-centered text">Defeats</li>
+            <li class="has-text-centered text">
+              {{ profile?.stadistics.victories }}
+            </li>
+            <li class="has-text-centered text">Ladder</li>
+            <li class="has-text-centered text">
+              {{ profile?.profile.ladder }}
+            </li>
+          </ul>
+        </header>
+      </div>
+    </div>
+
+    <div class="stadistics-container is-hidden-touch">
       <header>
         <ul>
           <li class="has-text-centered text is-extra">Win Rate</li>
@@ -55,7 +87,11 @@
               {{ profile?.stadistics.defeats }}
             </div>
           </li>
-          <li><div class="has-text-centered text is-huge">{{profile?.profile.ladder}}</div></li>
+          <li>
+            <div class="has-text-centered text is-huge">
+              {{ profile?.profile.ladder }}
+            </div>
+          </li>
         </ul>
       </footer>
     </div>

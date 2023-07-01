@@ -3,11 +3,13 @@
     <div class="left">
       <div class="brand">
         <div class="menu mr-4 is-hidden-desktop">
-          <span class="icon text">
+          <span class="icon text is-clickable" @click="menuOpen = true">
             <i class="fa-solid fa-bars"></i>
           </span>
         </div>
-        <div class="text">CYBERP<i class="fa-solid fa-circle"></i>NG</div>
+        <div class="text is-hidden-mobile">
+          CYBERP<i class="fa-solid fa-circle"></i>NG
+        </div>
       </div>
       <nav class="is-hidden-touch">
         <ul>
@@ -68,9 +70,6 @@
           </li>
         </ul>
       </nav>
-      <!-- </div>
-		<aside class="right"> -->
-      <!-- <div class="right"> -->
 
       <div class="media-object right">
         <MediaObject
@@ -94,20 +93,109 @@
           </span>
         </div>
       </div>
-      <!-- </div> -->
-      <!-- </aside> -->
     </div>
   </header>
+
+  <div class="menu-responsive is-hidden-desktop" v-if="menuOpen">
+    <ul>
+      <li @click="menuOpen = false">
+        <span class="icon">
+          <i class="fa-solid fa-xmark"></i>
+        </span>
+      </li>
+      <li>
+        <router-link @click="menuOpen = false" :to="{ name: 'selectGame' }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </span>
+            <span>Play</span>
+          </span>
+        </router-link>
+      </li>
+      <li>
+        <router-link @click="menuOpen = false" :to="{ name: 'chats' }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-sharp fa-solid fa-comments"></i>
+            </span>
+            <span>Chats</span>
+          </span>
+        </router-link>
+      </li>
+      <li>
+        <router-link @click="menuOpen = false" :to="{ name: 'ladder' }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-solid fa-table"></i>
+            </span>
+            <span>Ladder</span>
+          </span>
+        </router-link>
+      </li>
+      <li>
+        <router-link @click="menuOpen = false" :to="{ name: 'achivements' }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-solid fa-trophy"></i>
+            </span>
+            <span>Achivements</span>
+          </span>
+        </router-link>
+      </li>
+
+      <li>
+        <router-link
+          @click="menuOpen = false"
+          :to="{
+            name: 'profileUser',
+            params: { username: user.username || user.login },
+          }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <span>Profile</span>
+          </span>
+        </router-link>
+      </li>
+
+      <li>
+        <router-link @click="menuOpen = false" :to="{ name: 'editProfile' }">
+          <span class="icon-text text">
+            <span class="icon">
+              <i class="fa-solid fa-gear"></i>
+            </span>
+            <span>Settings</span>
+          </span>
+        </router-link>
+      </li>
+      <li>
+        <router-link
+          @click="logout"
+          :to="{
+            name: 'profileUser',
+            params: { username: user.username || user.login },
+          }">
+          <span class="icon-text text">
+            <span class="icon">
+				<i class="fa-solid fa-right-from-bracket"></i>
+            </span>
+            <span>log out</span>
+          </span>
+        </router-link>
+      </li>
+    </ul>
+  </div>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import { useUserStore, useAuthStore } from '../../../../stores';
-import Image from '../images/Image.vue';
 import { useSockets, useSocketsGame } from '../../../../sockets';
 import MediaObject from '../MediaObject.vue';
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import { FriendsService } from '../../../dashboard/services';
 import { ChatService } from '../../../dashboard/services/ChatService';
 
@@ -120,6 +208,7 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const { socketNotifications } = useSockets(friendsService, chatService);
 const { socketGame } = useSocketsGame();
+const menuOpen = ref<boolean>(false);
 
 const changeStatus = () => {
   if (user.value.status == 'online') user.value.status = 'away';
@@ -268,5 +357,19 @@ aside {
   aspect-ratio: 1;
   object-fit: cover;
   border: 2px solid var(--color-online-0);
+}
+
+.menu-responsive {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-dark-0);
+  z-index: 2;
+  padding: 1rem;
+  & ul li {
+    margin-bottom: 1rem;
+  }
 }
 </style>

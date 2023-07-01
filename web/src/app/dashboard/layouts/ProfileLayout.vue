@@ -9,7 +9,7 @@
     ),
     url(${profile!.profile.background});
  `">
-    <Subheader :items="items">
+    <Subheader :items="items" class="is-hidden-touch">
       <template v-slot:left>
         <div class="player-info">
           <Avatar

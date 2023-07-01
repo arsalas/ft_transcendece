@@ -478,8 +478,10 @@ export class ChatService {
       if (!modifyUser) throw new BadRequestException();
       if (modifyUser.isOwner) throw new UnauthorizedException();
 
+      const time = new Date();
+      time.setMinutes((time.getMinutes() + modifyUserDto.time) as number);
       await this.chatUserRepository.update(modifyUser, {
-        mutedTo: modifyUserDto.time,
+        mutedTo: time.toDateString(),
       });
       return { message: 'Success' };
     } catch (error) {

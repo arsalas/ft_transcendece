@@ -1,5 +1,5 @@
 <template>
-  <div class="chat pattern" v-bind="chat">
+  <div class="chat pattern is-hidden-mobile" v-bind="chat">
     <Chat
       v-if="!isLoading && chat"
       :id="chat.id"

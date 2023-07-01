@@ -35,9 +35,21 @@
             </a>
             <a
               v-if="isUserAdmin"
-              @click.stop="muteUser()"
+              @click.stop="muteUser(1)"
               class="dropdown-item text is-small">
-              Mute User
+              Mute User 1 min
+            </a>
+            <a
+              v-if="isUserAdmin"
+              @click.stop="muteUser(10)"
+              class="dropdown-item text is-small">
+              Mute User 10 min
+            </a>
+            <a
+              v-if="isUserAdmin"
+              @click.stop="muteUser(30)"
+              class="dropdown-item text is-small">
+              Mute User 30 min
             </a>
             <a
               v-if="isUserAdmin"
@@ -122,9 +134,9 @@ const addAdmin = async () => {
   }
 };
 
-const muteUser = async () => {
+const muteUser = async (minutes: number) => {
   try {
-    await chatService.muteUser(props.user.login, props.chatId, 10);
+    await chatService.muteUser(props.user.login, props.chatId, minutes);
     props.user.isAdmin = true;
     onClickAway();
   } catch (error) {
