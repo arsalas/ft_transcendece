@@ -19,7 +19,7 @@ import {
   ref,
   watch,
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ChatService } from '../services/ChatService';
 import { useChatStore } from '../../../stores/chats';
 import { storeToRefs } from 'pinia';
@@ -33,6 +33,7 @@ const chatService = inject<ChatService>('chatService')!;
 const chatStore = useChatStore();
 const { password, chat } = storeToRefs(chatStore);
 const route = useRoute();
+const router = useRouter();
 
 const isLoading = ref<boolean>(false);
 
@@ -49,7 +50,9 @@ const fetchData = async () => {
       password.value.length > 0 ? password.value : '123',
     );
     isLoading.value = false;
-  } catch (error) {}
+  } catch (error) {
+	router.push({name: 'chats'})
+  }
 };
 
 onMounted(() => fetchData());

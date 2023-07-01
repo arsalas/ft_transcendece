@@ -43,6 +43,7 @@ export class ChatService {
     private chatMessageRepository: Repository<ChatMessage>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    @InjectRepository(Block)
 	private blockRepository: Repository<Block>,
     @InjectRepository(Profile)
 
@@ -166,6 +167,7 @@ export class ChatService {
         chatRoom: { id: getChatDto.chatId },
       });
 
+	  console.log(getChatDto.password, room.password);
       if (!user) {
         if (
           room.type === 'protected' &&
@@ -431,7 +433,7 @@ export class ChatService {
         where: [
           {
             user: { login: userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
@@ -441,7 +443,7 @@ export class ChatService {
         where: [
           {
             user: { login: modifyUserDto.userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
@@ -459,34 +461,40 @@ export class ChatService {
 
   async muteUser(userId: string, modifyUserDto: ModifyUserDto) {
     try {
+		console.log(1);
       const chatUser = await this.chatUserRepository.findOne({
         where: [
           {
             user: { login: userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
       if (!chatUser || !chatUser.isAdmin) throw new UnauthorizedException();
+	  console.log(2);
 
       const modifyUser = await this.chatUserRepository.findOne({
         where: [
           {
             user: { login: modifyUserDto.userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
 
       if (!modifyUser) throw new BadRequestException();
+	  console.log(3);
       if (modifyUser.isOwner) throw new UnauthorizedException();
+	  console.log(4);
 
       const time = new Date();
       time.setMinutes((time.getMinutes() + modifyUserDto.time) as number);
-      await this.chatUserRepository.update(modifyUser, {
-        mutedTo: time.toDateString(),
+      const a = await this.chatUserRepository.update({id: modifyUser.id}, {
+        mutedTo: time,
       });
-      return { message: 'Success' };
+	  console.log(time);
+	  console.log(a);
+		return { message: 'Success' };
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -499,7 +507,7 @@ export class ChatService {
         where: [
           {
             user: { login: userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
@@ -510,13 +518,15 @@ export class ChatService {
         where: [
           {
             user: { login: modifyUserDto.userId },
-            chatRoom: { name: modifyUserDto.chatId },
+            chatRoom: { id: modifyUserDto.chatId },
           },
         ],
       });
 
       if (!modifyUser) throw new BadRequestException();
-      await this.chatUserRepository.update(modifyUser, { isAdmin: true });
+	
+      const b = await this.chatUserRepository.update({id: modifyUser.id}, { isAdmin: true });
+	  console.log(b);
       return { message: 'Success' };
     } catch (error) {
       console.log(error);
@@ -657,18 +667,28 @@ export class ChatService {
       if (
         !user ||
         user.isBanned ||
-        (user.mutedTo && user.mutedTo.valueOf() - Date.now() < 0)
+        (user.mutedTo && new Date < new Date(user.mutedTo))
       ) {
-        throw new UnauthorizedException();
+		console.log('AAA');
+        return ;
       }
 
 	  if (payload.type === 'direct') {
-		const block = this.blockRepository.findOneBy({
-		  user: {login: payload.reciverId},
-		  blockUser: {login: userId}
+		const block = await this.blockRepository.find({
+		  where: [
+			{
+			user: {login: payload.reciverId},
+		  	blockUser: {login: userId}
+		    },
+			{
+				user: {login: userId},
+				blockUser: {login: payload.reciverId}
+			},
+		]
 	  	});
-	  	if (block)
-		  throw new UnauthorizedException();
+		console.log(block);
+	  	if (block.length > 0)
+		  return ;
 	  }
 
       const msg = await this.storeMessage(userId, payload);

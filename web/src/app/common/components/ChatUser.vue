@@ -66,15 +66,6 @@
               class="dropdown-item text is-small">
               View Profile
             </router-link>
-            <router-link
-              @click.stop="isOpen = false"
-              :to="{
-                name: 'profileUser',
-                params: { username: user.username },
-              }"
-              class="dropdown-item text is-small">
-              View Profile
-            </router-link>
             <!-- <a
               v-if="friend.profile.status == 'online'"
               @click.stop="inviteGame"
