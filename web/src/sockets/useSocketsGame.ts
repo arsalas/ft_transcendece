@@ -10,7 +10,6 @@ import { storeToRefs } from 'pinia';
 let manager: Manager = new Manager(CONFIG.API_URL + '/socket.io/socket.io.js', {
   extraHeaders: { authentication: sessionStorage.getItem('token') || '' },
 });
-console.log({ manager });
 const socketGame = ref<Socket>();
 
 export const useSocketsGame = () => {
@@ -26,12 +25,10 @@ export const useSocketsGame = () => {
 
   const addListeners = () => {
     socketGame.value?.on('connect', () => {
-      console.log('game connected');
     });
 
     // Escucha el evento cuando el cliente se desconecta
     socketGame.value?.on('disconnect', () => {
-      console.log('game disconnect');
     });
 
     // Escucha el evento cuando el cliente se desconecta
@@ -42,7 +39,6 @@ export const useSocketsGame = () => {
     });
 
     socketGame.value?.on('game-start', (gameId: string) => {
-      console.log('El JUEGO ha empezado', gameId);
       router.push({ name: 'online', params: { id: gameId } });
     });
   };

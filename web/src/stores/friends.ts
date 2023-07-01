@@ -18,7 +18,6 @@ export const useFriendsStore = defineStore('friends', () => {
   );
 
   const offline = computed<IFriendMessages[]>(() => {
-    console.log({ j: friends.value });
     return friendsMsg.value.filter(
       (f) => f.activedAt && f.profile.status == 'offline',
     );
@@ -51,7 +50,6 @@ export const useFriendsStore = defineStore('friends', () => {
       };
       return { ...agroupData };
     });
-    console.log({ f1: friends.value });
     friends.value = friendsMsg.value;
   };
 

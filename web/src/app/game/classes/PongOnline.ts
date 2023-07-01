@@ -57,7 +57,6 @@ export class PongOnline extends PongGame {
     this.socket.on('playerRight-stop', () => {
       this.playerRightMovement.isMovement = false;
     });
-    console.log('LISTEN');
     this.socket.on('update-game', (gameData) => {
       this.paddlePosition.left = (gameData.playerLeft * this.height) / 100;
       this.paddlePosition.right = (gameData.playerRight * this.height) / 100;

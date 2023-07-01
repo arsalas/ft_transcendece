@@ -34,20 +34,16 @@ export const useSockets = (
 
   const addListenersNotifications = () => {
     socketNotifications.value?.on('connect', () => {
-      console.log('notifications connected');
     });
 
     // Escucha el evento cuando el cliente se desconecta
     socketNotifications.value?.on('disconnect', () => {
-      console.log('notifications disconnect');
     });
 
     socketNotifications.value?.on('request-recived', (payload: any) => {
-      console.log('request-recived', { payload });
       friendsStore.friends.push(payload);
     });
     socketNotifications.value?.on('refresh-friends', async () => {
-      console.log('refresh-friends', friendsService);
       if (friendsService && chatService) {
         friendsStore.setFriends(
           await friendsService.get(),
@@ -57,20 +53,17 @@ export const useSockets = (
     });
 
     socketNotifications.value?.on('invite-game', async (payload: any) => {
-      console.log('INVITED');
       invitations.value.push(payload);
     });
 
     // Escucha el evento clients-updated
     socketNotifications.value?.on('clients-connect', (clients: any) => {
-      console.log('clients-connect', clients);
       const haveFriend = friends.value.find(
         (fr) => fr.profile.login == (clients.userId as string),
       );
       if (haveFriend) haveFriend.profile.status = 'online';
     });
     socketNotifications.value?.on('clients-disconect', (clients: any) => {
-      console.log('clients-disconect', clients);
       const haveFriend = friends.value.find(
         (fr) => fr.profile.login == (clients.userId as string),
       );

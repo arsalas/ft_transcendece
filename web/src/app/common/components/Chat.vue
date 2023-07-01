@@ -153,7 +153,6 @@ const refChat = ref<HTMLDivElement>();
 
 onMounted(() => {
   if (props.type != EChatType.Direct) {
-    console.log('connect');
     socketChat.value?.emit('join-chat', props.id);
     socketChat.value?.on('recive-message-group', (payload) => {
       console.log(payload);
@@ -165,7 +164,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (props.type != EChatType.Direct) {
-    console.log('leave - chat', props.id);
     socketChat.value?.emit('leave-chat', props.id);
     socketChat.value?.off('recive-message-group');
   }

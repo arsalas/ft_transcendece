@@ -30,7 +30,6 @@ export const useSocketsChat = () => {
     const chatStore = useChatStore();
     const { chatId, messages } = storeToRefs(chatStore);
     socketChat.value?.on('recive-message-direct', (payload) => {
-      console.log('recive-message-direct', payload);
       const { chatIdValue, ...msg } = payload;
       if (payload.chatRoomId == chatId.value) {
         messages.value.push(msg);

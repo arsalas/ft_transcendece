@@ -11,8 +11,8 @@
 					SIGN IN 42
 				</a>
 			</div>
-			<footer class="text">
-				ft_trancendence by -amurcia & aramirez
+			<footer class="text is-small">
+				ft_trancendence by amurcia- & smiro & aramirez
 			</footer>
 
 		</div>

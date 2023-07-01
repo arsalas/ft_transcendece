@@ -149,7 +149,6 @@ const kickUser = async () => {
     const index = chat.value?.users?.findIndex(
       (us) => us.login == props.user.login,
     );
-	console.log({index})
     chat.value?.users?.splice(index!, 1);
 
     onClickAway();

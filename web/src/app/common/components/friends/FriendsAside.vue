@@ -100,10 +100,10 @@ const { isOpen, isOpenContent, close, open } = useModal();
 
 const friendsStore = useFriendsStore();
 const gameStore = useGameStore();
-const { offline, online, pending, sending, friends } =
+const { offline, online, pending, sending } =
   storeToRefs(friendsStore);
 const { invitations } = storeToRefs(gameStore);
-console.log({ a: offline.value, b: friends.value });
+
 const friendsService = inject<FriendsService>('friendsService')!;
 	const chatService = inject<ChatService>('chatService')!;
 

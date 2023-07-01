@@ -38,8 +38,6 @@ provide('friendsService', friendsService);
 provide('gameService', gameService);
 provide('chatService', chatService);
 
-console.log({authService});
-
 // STORES
 const authStore = useAuthStore();
 const userStore = useUserStore();

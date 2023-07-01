@@ -59,7 +59,6 @@ const loadLadder = async () => {
   try {
     users.value = await profileService.getLadder();
   } catch (error) {
-    console.log(error);
   }
 };
 

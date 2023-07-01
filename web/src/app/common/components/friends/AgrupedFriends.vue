@@ -36,7 +36,6 @@ const props = defineProps<{
   total: number;
   friends: IFriendMessages[];
 }>();
-console.log(props.friends);
 const isOpen = ref<boolean>(true);
 </script>
 

@@ -44,7 +44,6 @@ watch(chatId, () => {
 const fetchData = async () => {
   try {
     isLoading.value = true;
-    console.log(route.params);
     chat.value = await chatService.getChat(
       chatId.value,
       password.value.length > 0 ? password.value : '123',

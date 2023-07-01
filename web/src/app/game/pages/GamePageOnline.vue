@@ -215,7 +215,6 @@ onMounted(async () => {
     ({ user, gameId }: { user: string; gameId: string }) => {
       if (gameId != (route.params.id as string)) return;
       game.value?.gameExit(user);
-      console.log('player-exit');
       //   router.push({ name: 'home' });
     },
   );
@@ -223,7 +222,6 @@ onMounted(async () => {
     isStart.value = true;
     socketNotifications.value?.emit('change-status', 'game');
     setTimeout(() => {
-      console.log('start');
       createdGame();
       game.value?.startGame();
     }, 500);

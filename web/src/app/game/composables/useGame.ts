@@ -28,7 +28,6 @@ export const useGame = () => {
   };
 
   const createCanvasDiv = () => {
-    console.log(app.value);
     canvas.height = app.value!.clientHeight - 1;
     canvas.width = app.value!.clientWidth - 1;
     document.querySelector('#game')!.appendChild(canvas);
