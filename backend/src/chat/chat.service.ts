@@ -21,6 +21,7 @@ import * as bcryptjs from 'bcryptjs';
 import { ChatGateway } from './chat.gateway';
 import { CreateMsgDto } from './dto/create-msg';
 import { GetChatDto } from './dto/get-chat.dto';
+import { Block } from 'src/friends/entities';
 
 interface ConnectedClients {
   [id: string]: {
@@ -42,6 +43,8 @@ export class ChatService {
     private chatMessageRepository: Repository<ChatMessage>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+	private blockRepository: Repository<Block>,
+    @InjectRepository(Profile)
 
     private readonly dataSource: DataSource,
   ) {}
@@ -656,6 +659,16 @@ export class ChatService {
       ) {
         throw new UnauthorizedException();
       }
+
+	  if (payload.type === 'direct') {
+		const block = this.blockRepository.findOneBy({
+		  user: {login: payload.reciverId},
+		  blockUser: {login: userId}
+	  	});
+	  	if (block)
+		  throw new UnauthorizedException();
+	  }
+
       const msg = await this.storeMessage(userId, payload);
       const { id, chatRoomId, ...message } = msg;
       const resp = {
