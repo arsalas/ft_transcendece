@@ -7,6 +7,7 @@ import { useAuthStore, useUserStore } from './stores';
 import { storeToRefs } from 'pinia';
 import { useStart } from './composables';
 import {
+AchivementsService,
   EditProfieService,
   FriendsService,
   GameService,
@@ -30,6 +31,7 @@ const authService = new AuthService(http);
 const friendsService = new FriendsService(http);
 const gameService = new GameService(http);
 const chatService = new ChatService(http);
+const achivementsService = new AchivementsService(http);
 
 provide('editProfileService', editProfileService);
 provide('profileService', profileService);
@@ -37,6 +39,7 @@ provide('authService', authService);
 provide('friendsService', friendsService);
 provide('gameService', gameService);
 provide('chatService', chatService);
+provide('achivementsService', achivementsService);
 
 // STORES
 const authStore = useAuthStore();

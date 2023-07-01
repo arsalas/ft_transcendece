@@ -15,6 +15,7 @@ import { FriendsModule } from './friends/friends.module';
 import { MessagesWsModule } from './messages-ws/messages-ws.module';
 import { NotificationsWsModule } from './notifications-ws/notifications-ws.module';
 import { ChatModule } from './chat/chat.module';
+import { AchivementModule } from './achivement/achivement.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ChatModule } from './chat/chat.module';
     MessagesWsModule,
     NotificationsWsModule,
     ChatModule,
+    AchivementModule,
   ],
   controllers: [AppController, ImageController],
   providers: [AppService, ImageHelpers],
