@@ -1,6 +1,5 @@
 <template>
   <div class="game-container" v-if="inviteUser">
-   
     <div class="columns">
       <div class="column">
         <div
@@ -47,10 +46,12 @@ import MediaObject from '../../../common/components/MediaObject.vue';
 import { useSockets } from '../../../../sockets';
 import Loader from '../../../common/components/Loader.vue';
 import { FriendsService } from '../../services';
+import { ChatService } from '../../services/ChatService';
 
 const friendsService = inject<FriendsService>('friendsService')!;
+const chatService = inject<ChatService>('chatService')!;
 
-const { socketNotifications } = useSockets(friendsService);
+const { socketNotifications } = useSockets(friendsService, chatService);
 // STORES
 const gameStore = useGameStore();
 const userStore = useUserStore();

@@ -6,8 +6,10 @@
     :name="friend.profile.username"
     :status="friend.profile.status" />
   <div v-if="friend.activedAt" class="actions">
-    <div class="badge is-primary" v-if="false">
-      <span class="text is-small"> 1 </span>
+    <div class="badge is-primary" v-if="friend.noRead > 0">
+      <span class="text is-small">
+        {{ friend.noRead > 9 ? '+9' : friend.noRead }}
+      </span>
     </div>
 
     <div class="dropdown is-right is-active" @click="isOpen = true">
@@ -84,7 +86,7 @@
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent, inject, ref } from 'vue';
-import { IFriend } from '../../../../interfaces/friends';
+import { IFriendMessages } from '../../../../interfaces/friends';
 import { useFriendsStore, useGameStore } from '../../../../stores';
 import { storeToRefs } from 'pinia';
 import { useSockets } from '../../../../sockets';
@@ -96,14 +98,15 @@ import { ChatService } from '../../../dashboard/services/ChatService';
 const MediaObject = defineAsyncComponent(() => import('../MediaObject.vue'));
 
 const props = defineProps<{
-  friend: IFriend;
+  friend: IFriendMessages;
 }>();
+
 const friendsService = inject<FriendsService>('friendsService')!;
 const gameService = inject<GameService>('gameService')!;
 const chatService = inject<ChatService>('chatService')!;
 
 const router = useRouter();
-const { socketNotifications } = useSockets(friendsService);
+const { socketNotifications } = useSockets(friendsService, chatService);
 const firendsStore = useFriendsStore();
 const chatStore = useChatStore();
 const gameStore = useGameStore();
@@ -131,7 +134,10 @@ const acceptFriend = async () => {
   try {
     await friendsService.acceptRequest(props.friend.profile.login);
     props.friend.activedAt = new Date().toDateString();
-    socketNotifications.value?.emit('accept-request', props.friend.profile.login);
+    socketNotifications.value?.emit(
+      'accept-request',
+      props.friend.profile.login,
+    );
   } catch (error) {}
 };
 const refuseFriend = async () => {
@@ -141,7 +147,10 @@ const refuseFriend = async () => {
       (f) => f.profile.login == props.friend.profile.login,
     );
     friends.value.splice(i, 1);
-    socketNotifications.value?.emit('refuse-request', props.friend.profile.login);
+    socketNotifications.value?.emit(
+      'refuse-request',
+      props.friend.profile.login,
+    );
   } catch (error) {}
 };
 
@@ -151,6 +160,7 @@ const openChat = async () => {
   chatStore.chatId = chat.id;
   chatStore.messages = chat.messages;
   chatStore.open(props.friend.profile);
+  firendsStore.resetUserMessages(props.friend.profile.login);
 };
 
 const blockUser = async () => {

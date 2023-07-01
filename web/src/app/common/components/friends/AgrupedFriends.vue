@@ -28,15 +28,15 @@
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent, ref } from 'vue';
-import { IFriend } from '../../../../interfaces/friends';
+import { IFriendMessages } from '../../../../interfaces/friends';
 const FriendBox = defineAsyncComponent(() => import('./FriendBox.vue'));
 
-defineProps<{
+const props = defineProps<{
   title: string;
   total: number;
-  friends: IFriend[];
+  friends: IFriendMessages[];
 }>();
-
+console.log(props.friends);
 const isOpen = ref<boolean>(true);
 </script>
 

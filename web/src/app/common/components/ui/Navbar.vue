@@ -109,15 +109,16 @@ import { useSockets, useSocketsGame } from '../../../../sockets';
 import MediaObject from '../MediaObject.vue';
 import { inject } from 'vue';
 import { FriendsService } from '../../../dashboard/services';
+import { ChatService } from '../../../dashboard/services/ChatService';
 
 const friendsService = inject<FriendsService>('friendsService')!;
-
+const chatService = inject<ChatService>('chatService')!;
 
 const router = useRouter();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
-const { socketNotifications } = useSockets(friendsService);
+const { socketNotifications } = useSockets(friendsService, chatService);
 const { socketGame } = useSocketsGame();
 
 const changeStatus = () => {

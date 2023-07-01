@@ -12,3 +12,9 @@ export interface IFriendProfile {
   avatar42: string;
   status: string;
 }
+
+
+export interface IFriendMessages extends IFriend {
+	noRead: number;
+  }
+  

@@ -1,3 +1,4 @@
+import { useFriendsStore } from './../stores/friends';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -33,6 +34,9 @@ export const useSocketsChat = () => {
       const { chatIdValue, ...msg } = payload;
       if (payload.chatRoomId == chatId.value) {
         messages.value.push(msg);
+      } else {
+        const friendsStore = useFriendsStore();
+        friendsStore.userIncrementMessages(payload.userId);
       }
     });
   };

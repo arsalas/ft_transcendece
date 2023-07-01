@@ -49,7 +49,7 @@ const { user } = storeToRefs(userStore);
 
 // COMPOSABLES
 const { isOpen } = useNotifications();
-const { startApp } = useStart(authService, friendsService);
+const { startApp } = useStart(authService, friendsService,chatService);
 
 // FUNCTIONS
 onMounted(async () => {

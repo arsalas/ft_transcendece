@@ -22,6 +22,7 @@ export const useChatStore = defineStore('chat', () => {
   };
 
   const close = () => {
+	chatId.value = '';
     isOpen.value = false;
   };
 

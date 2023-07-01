@@ -28,9 +28,12 @@
       :friends="pending"
       title="FRIENDS REQUESTS" />
 
-    <AgrupedFriends :total="friends.length" :friends="online" title="ONLINE" />
     <AgrupedFriends
-      :total="friends.length"
+      :total="offline.length + online.length"
+      :friends="online"
+      title="ONLINE" />
+    <AgrupedFriends
+      :total="offline.length + online.length"
       :friends="offline"
       title="OFFLINE" />
   </aside>
@@ -82,6 +85,7 @@ import { storeToRefs } from 'pinia';
 import { useSockets, useSocketsGame } from '../../../../sockets';
 import InvitationBox from './InvitationBox.vue';
 import { FriendsService } from '../../../dashboard/services';
+import { ChatService } from '../../../dashboard/services/ChatService';
 
 // COMPONENTS
 const AgrupedFriends = defineAsyncComponent(
@@ -96,14 +100,14 @@ const { isOpen, isOpenContent, close, open } = useModal();
 
 const friendsStore = useFriendsStore();
 const gameStore = useGameStore();
-const { offline, online, friends, pending, sending } =
+const { offline, online, pending, sending, friends } =
   storeToRefs(friendsStore);
 const { invitations } = storeToRefs(gameStore);
-
+console.log({ a: offline.value, b: friends.value });
 const friendsService = inject<FriendsService>('friendsService')!;
+	const chatService = inject<ChatService>('chatService')!;
 
-
-const { socketNotifications } = useSockets(friendsService);
+const { socketNotifications } = useSockets(friendsService, chatService);
 // const { socketGame } = useSocketsGame();
 
 // const friendsService = inject<FriendsService>('friendsService')!;

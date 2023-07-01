@@ -8,7 +8,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { ChatMessage, ChatRoom, ChatUser } from './entities';
@@ -42,6 +42,8 @@ export class ChatService {
     private chatMessageRepository: Repository<ChatMessage>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   private readonly LIMIT_MESSAGE = 50;
@@ -175,6 +177,17 @@ export class ChatService {
         });
         await this.chatUserRepository.save(chatUser);
       }
+
+      const manager = this.dataSource.manager;
+      const result = await manager.query(
+        `
+	 update "chat_message"
+	 set "isRead" = true
+	 where "chatRoomIdId" = $1 and "userIdLogin" != $2
+	  `,
+        [getChatDto.chatId, userId],
+      );
+
       return {
         id: room.id,
         name: room.name,
@@ -223,22 +236,41 @@ export class ChatService {
 
   async getFriendsMessages(userId: string) {
     try {
-      const chats = await this.chatUserRepository
-        .createQueryBuilder('chats')
-        .where(
-          'chat.userId.login = :userId and chat.chatRoom.type = "direct"',
-          { userId },
-        )
-        .leftJoinAndSelect('message.userId', 'user')
-        .getMany();
+      //   const chats = await this.chatUserRepository
+      //     .createQueryBuilder('chat')
+      //     .where(
+      //       'chat.userId.login = :userId and chat.chatRoom.type = "direct"',
+      //       { userId },
+      //     )
+      //     .leftJoinAndSelect('message.userId', 'user')
+      //     .getMany();
 
-      const chatMessages = chats.map(async (v) => ({
-        id: v.chatRoom.id,
-        messages: await this.getMessages(userId, v.chatRoom.id),
+      const manager = this.dataSource.manager;
+      const result = await manager.query(
+        `
+		select t2."userIdLogin" as userId, count(t2."userIdLogin") from 
+		(
+		select chat_room.id, chat_user."userLogin"
+		from chat_room 
+		inner join chat_user 
+		on chat_room.id = chat_user."chatRoomId"
+		where chat_room.type = 'direct' and chat_user."userLogin" !=  $1
+		) as t1
+		right join chat_message t2
+		on t1.id = t2."chatRoomIdId" 
+		where t2."isRead" = false  and t2."userIdLogin" !=  $2
+		group by t2."userIdLogin"
+`,
+        [userId, userId],
+      );
+
+      return result.map((r: { count: string; userid: string }) => ({
+        count: Number(r.count),
+        userId: r.userid,
       }));
-      return await Promise.all(chatMessages);
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException();
     }
   }
 

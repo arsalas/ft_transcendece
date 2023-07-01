@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { CONFIG } from '../config';
 import { FriendsService } from '../app/dashboard/services';
 import { ref } from 'vue';
+import { ChatService } from '../app/dashboard/services/ChatService';
 
 // TODO Crear varias conexiones a diferentes namespaces?
 // Sockets con nofificaciones, game, chat
@@ -13,7 +14,10 @@ let manager: Manager;
 
 const socketNotifications = ref<Socket>();
 
-export const useSockets = (friendsService?: FriendsService) => {
+export const useSockets = (
+  friendsService: FriendsService,
+  chatService: ChatService,
+) => {
   const friendsStore = useFriendsStore();
   const gameStore = useGameStore();
   const { friends } = storeToRefs(friendsStore);
@@ -44,7 +48,12 @@ export const useSockets = (friendsService?: FriendsService) => {
     });
     socketNotifications.value?.on('refresh-friends', async () => {
       console.log('refresh-friends', friendsService);
-      if (friendsService) friendsStore.friends = await friendsService.get();
+      if (friendsService && chatService) {
+        friendsStore.setFriends(
+          await friendsService.get(),
+          await chatService.getFriendsNotRead(),
+        );
+      }
     });
 
     socketNotifications.value?.on('invite-game', async (payload: any) => {

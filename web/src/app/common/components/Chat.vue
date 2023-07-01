@@ -57,7 +57,7 @@
           </button>
         </div>
         <div v-if="type == EChatType.Direct">
-          <button @click="chatStore.close()" class="ml-2 action-button text">
+          <button @click="closeChat" class="ml-2 action-button text">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -187,6 +187,10 @@ const MediaObject = defineAsyncComponent(
   () => import('../../common/components/MediaObject.vue'),
 );
 
+const closeChat = () => {
+  chatStore.close();
+};
+
 const ChatUser = defineAsyncComponent(() => import('./ChatUser.vue'));
 
 const chatService = inject<ChatService>('chatService')!;
@@ -264,27 +268,28 @@ const showUsers = () => {
 
 const onSubmit = async () => {
   if (newMessage.value.length == 0) return;
-
-  props.messages.push({
-    createdAt: new Date().toDateString(),
-    isRead: true,
-    message: newMessage.value,
-    userId: user.value.login,
-  });
-  socketChat.value?.emit('send-message', {
-    message: newMessage.value,
-    chatId: props.id,
-    type: props.type,
-    reciverId: props.userChat?.login,
-  });
-  newMessage.value = '';
-  if (!refChat.value) return;
-  nextTick(() => {
-    refChat.value!.scroll({
-      top: refChat.value!.scrollHeight - refChat.value!.clientHeight,
-      behavior: 'smooth',
+  try {
+    props.messages.push({
+      createdAt: new Date().toDateString(),
+      isRead: true,
+      message: newMessage.value,
+      userId: user.value.login,
     });
-  });
+    socketChat.value?.emit('send-message', {
+      message: newMessage.value,
+      chatId: props.id,
+      type: props.type,
+      reciverId: props.userChat?.login,
+    });
+    newMessage.value = '';
+    if (!refChat.value) return;
+    nextTick(() => {
+      refChat.value!.scroll({
+        top: refChat.value!.scrollHeight - refChat.value!.clientHeight,
+        behavior: 'smooth',
+      });
+    });
+  } catch (error) {}
 };
 </script>
 

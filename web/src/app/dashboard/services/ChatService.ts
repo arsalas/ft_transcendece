@@ -17,9 +17,22 @@ export class ChatService {
     }
   }
 
-  async getChat(chatId: string, password?:string) {
+  async getFriendsNotRead() {
     try {
-      return await this.http.post<IResponseChatRoom>('/chat/chatroom/', {chatId, password});
+      return await this.http.get<{ userId: string; count: number }[]>(
+        '/chat/friends',
+      );
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async getChat(chatId: string, password?: string) {
+    try {
+      return await this.http.post<IResponseChatRoom>('/chat/chatroom/', {
+        chatId,
+        password,
+      });
     } catch (error) {
       throw new Error(error as string);
     }
@@ -92,7 +105,7 @@ export class ChatService {
 
   async kickUser(userId: string, chatId: string) {
     try {
-      return await this.http.post<{message:string}>('/chat/kick', {
+      return await this.http.post<{ message: string }>('/chat/kick', {
         userId,
         chatId,
       });
@@ -103,7 +116,7 @@ export class ChatService {
 
   async leaveChat(chatId: string) {
     try {
-      return await this.http.post<{message:string}>('/chat/leave', {
+      return await this.http.post<{ message: string }>('/chat/leave', {
         chatId,
       });
     } catch (error) {

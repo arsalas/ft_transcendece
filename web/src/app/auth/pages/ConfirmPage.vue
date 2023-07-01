@@ -55,6 +55,7 @@ import { IUser } from '../../../interfaces';
 import { useStart } from '../../../composables';
 import { AuthService } from '../services/authService';
 import { FriendsService } from '../../dashboard/services';
+import { ChatService } from '../../dashboard/services/ChatService';
 
 // COMPONENTES
 const Box = defineAsyncComponent(
@@ -72,13 +73,14 @@ const { user } = storeToRefs(userStore);
 // PROVIDERS
 const authService = inject<AuthService>('authService')!;
 const friendsService = inject<FriendsService>('friendsService')!;
+const chatService = inject<ChatService>('chatService')!;
 
 // COMPOSABLES
 const route = useRoute();
 const router = useRouter();
 const { isLoading } = useLoading();
 const notifications = useNotifications();
-const { startApp } = useStart(authService, friendsService);
+const { startApp } = useStart(authService, friendsService, chatService);
 
 // VARIABLES
 const isLoadingTFA = ref<boolean>(false);

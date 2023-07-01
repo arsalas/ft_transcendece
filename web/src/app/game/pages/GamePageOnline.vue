@@ -83,6 +83,7 @@ import { useGame } from '../composables';
 import { PongOnline } from '../classes';
 import { GameData, GameFinish, PlayerType, Scores } from '../../../interfaces';
 import { FriendsService, GameService } from '../../dashboard/services';
+import { ChatService } from '../../dashboard/services/ChatService';
 
 // COMPONENTES
 const Image = defineAsyncComponent(
@@ -95,12 +96,13 @@ const Start = defineAsyncComponent(() => import('../components/Start.vue'));
 const Finish = defineAsyncComponent(() => import('../components/Finish.vue'));
 
 const friendsService = inject<FriendsService>('friendsService')!;
+const chatService = inject<ChatService>('chatService')!;
 
 // COMPOSABLES
 const router = useRouter();
 const route = useRoute();
 const { socketGame } = useSocketsGame();
-const { socketNotifications } = useSockets(friendsService);
+const { socketNotifications } = useSockets(friendsService, chatService);
 const {
   app,
   canvas,
